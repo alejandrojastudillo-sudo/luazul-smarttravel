@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="../images/favicon-64.png">
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Cabo Frío · LUAZUL Smart Travel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/destinos-shared.css">
+    
+            <link rel="preload" as="image" href="../images/cabo-frio-hero.webp" type="image/webp">
+    <link rel="canonical" href="https://www.luazul.com/destinos/cabo-frio.html">
+    <meta name="description" content="Cabo Frío, Brasil — el destino más completo de la Costa do Sol. Playas con sello Bandeira Azul, historia colonial, Lagoa Araruama y 155 km de Río de Janeiro.">
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="Luazul Smart Travel">
+    <meta property="og:title"       content="Cabo Frío — Luazul Smart Travel">
+    <meta property="og:description" content="Cabo Frío, Brasil — el destino más completo de la Costa do Sol. Playas con sello Bandeira Azul, historia colonial, Lagoa Araruama y 155 km de Río de Janeiro.">
+    <meta property="og:image"       content="https://www.luazul.com/images/cabo-frio-hero.webp">
+    <meta property="og:url"         content="https://www.luazul.com/destinos/cabo-frio.html">
+    <meta name="twitter:card"       content="summary_large_image">
+    <meta name="twitter:title"      content="Cabo Frío — Luazul Smart Travel">
+    <meta name="twitter:description" content="Cabo Frío, Brasil — el destino más completo de la Costa do Sol. Playas con sello Bandeira Azul, historia colonial, Lagoa Araruama y 155 km de Río de Janeiro.">
+    <meta name="twitter:image"      content="https://www.luazul.com/images/cabo-frio-hero.webp">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="../index.html" class="navbar-logo" style="text-decoration:none;color:inherit;">
+        <img src="../images/logo-nav.png" alt="Luazul Smart Travel" / loading="lazy">
+        <div class="navbar-brand">
+            <span class="name">LUAZUL</span>
+            <span class="tagline">Smart Travel</span>
+        </div>
+    </a>
+    <div class="navbar-links">
+        <a href="../ofertas.html">Paquetes</a>
+        <a href="../empresa.html">Método</a>
+        <a href="../simulador.html">Simulador</a>
+        <a href="../tours.html">Tours</a>
+        <a href="../index.html#destinos" class="active">Destinos</a>
+        <a href="../panel_cliente_luazul.html" style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:30px;border:1px solid rgba(100,160,255,.25);transition:all .2s;">👤 Mi panel</a>
+        <a href="#reservar" onclick="openAgents()" class="navbar-cta" style="text-decoration:none;">Reservar</a>
+    </div>
+    <button class="navbar-burger" id="navBurger" aria-label="Menú" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+<!-- MOBILE NAV DRAWER -->
+<nav class="navbar-mobile" id="mobileNav">
+    <a href="../ofertas.html" onclick="closeMobileNav()">Paquetes</a>
+    <a href="../empresa.html" onclick="closeMobileNav()">Método</a>
+    <a href="../simulador.html" onclick="closeMobileNav()">Simulador</a>
+    <a href="../tours.html" onclick="closeMobileNav()">Tours</a>
+    <a href="../destinos.html" onclick="closeMobileNav()">Destinos</a>
+    <a href="../panel_cliente_luazul.html" onclick="closeMobileNav()">👤 Mi Panel</a>
+    <a href="#" class="mobile-cta" onclick="openAgents();closeMobileNav();return false;">🔵 Reservar ahora</a>
+</nav>
+
+<!-- HERO -->
+<section class="dest-hero">
+    <img class="dest-hero-img" src="../images/cabo-frio-hero.webp" alt="Praia do Peró, Cabo Frío — vista aérea" />
+    <div class="dest-hero-overlay"></div>
+    <div class="dest-hero-content container">
+        <div class="dest-hero-tag">🏖️ Río de Janeiro · Brasil</div>
+        <h1 class="dest-hero-title">Cabo Frío</h1>
+        <p class="dest-hero-sub">Donde el Atlántico se vuelve turquesa y la arena quema suave bajo los pies. Un lugar que no se describe — se siente.</p>
+        <button class="dest-hero-reserve-btn" onclick="openAgents()">
+            🌴 Reservar este viaje
+        </button>
+    </div>
+</section>
+
+<div class="container">
+
+    <!-- BREADCRUMB -->
+    <div class="dest-breadcrumb">
+        <a href="../index.html">Inicio</a>
+        <span>/</span>
+        <a href="../index.html#destinos">Destinos</a>
+        <span>/</span>
+        Cabo Frío
+    </div>
+
+    <!-- INTRODUCCIÓN -->
+    <section class="dest-section">
+        <div class="dest-section-sub">🌴 La experiencia</div>
+        <h2 class="dest-section-title">Un viaje que <span>cambia todo</span></h2>
+        <div class="dest-intro-text">
+            <p>Hay destinos que prometen y hay destinos que <strong>cumplen con creces</strong>. Cabo Frío es uno de esos lugares que te hace entender por qué la gente habla de Brasil con los ojos brillantes. A solo <strong>155 km de Río de Janeiro</strong>, es la ciudad más completa de toda la Costa do Sol: playa, historia colonial, laguna hipersalina, deportes náuticos y gastronomía de primer nivel en un solo destino.</p>
+            <p style="margin-top:1.4rem;">Su secreto más poderoso tiene nombre científico: la <strong>ressurgência (upwelling)</strong> — un fenómeno <strong>único en toda la costa de Brasil</strong> que hace ascender aguas frías y ricas en nutrientes desde el fondo marino. Esto es lo que crea ese color azul eléctrico imposible de las aguas, sostiene una biodiversidad marina extraordinaria y convierte a Cabo Frío en uno de los mejores destinos de buceo del país. La NASA confirmó que este fenómeno enfría las aguas locales varios grados por encima de lo habitual en la región. Las dunas, el Canal do Itajuru, el Forte São Mateus del siglo XVII y la majestuosa Lagoa Araruama completan una experiencia que va mucho más allá de la playa.</p>
+            <p style="margin-top:1.4rem;">Con más de <strong>222.000 habitantes</strong>, Cabo Frío no es un balneario pequeño — es una <strong>ciudad completa con toda la infraestructura</strong> que necesitás: conexiones directas desde Río por la Via Lagos, aeropuerto propio (CFB) con vuelos internacionales, oferta gastronómica diversa en el Boulevard Canal y el barrio Passagem, y playas certificadas con el sello <strong>Bandeira Azul</strong> (Peró, Pontal do Peró y Foguete). Además es la base perfecta para excursiones a Arraial do Cabo (13 km) y Búzios (25 km). Con Luazul Smart Travel, todo eso está a tu alcance en cómodas cuotas desde hoy.</p>
+        </div>
+    </section>
+<!-- HIGHLIGHTS -->
+    <section class="dest-section">
+        <div class="dest-section-sub">🌟 Por qué este destino</div>
+        <h2 class="dest-section-title">Lo que hace <span>especial</span> este lugar</h2>
+        <div class="dest-highlights">
+                    <div class="dest-highlight"><span class="dh-icon">🌊</span><div><strong>Ressurgência — fenómeno único en Brasil</strong><p>El upwelling de aguas frías y ricas en nutrientes crea ese azul imposible que no existe en ningún otro punto de la costa brasileña. La NASA lo documentó como fenómeno excepcional.</p></div></div>
+                    <div class="dest-highlight"><span class="dh-icon">🏖️</span><div><strong>6 playas para cada perfil</strong><p>Desde calas protegidas para snorkel (Praia das Conchas) hasta corredores de viento para kitesurf (Dunas/Foguete). Hay una playa perfecta para cada tipo de viajero.</p></div></div>
+                    <div class="dest-highlight"><span class="dh-icon">🏰</span><div><strong>Historia colonial del siglo XVII</strong><p>El Forte São Mateus, construido con piedra y cal de ballena, defiende la entrada del canal desde 1616. Es el ícono histórico más fotografiado de toda la Costa do Sol.</p></div></div>
+                    <div class="dest-highlight"><span class="dh-icon">🛣️</span><div><strong>Hub de toda la región</strong><p>Base estratégica para explorar Arraial do Cabo (13 km), Búzios (25 km) y la Lagoa Araruama. Más servicios, más opciones y conexión directa desde Río de Janeiro.</p></div></div>
+        </div>
+    </section>
+
+    <!-- ATRACCIONES -->
+    <section class="dest-section">
+        <div class="dest-section-sub">📍 Lugares imperdibles</div>
+        <h2 class="dest-section-title">Qué vas a <span>descubrir</span></h2>
+        <div class="dest-attr-grid">
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🏰</div>
+                        <div class="dac-name">Forte São Mateus</div>
+                        <div class="dac-desc">Fortaleza portuguesa del siglo XVII construida para defender el canal de invasiones. Protegido por IPHAN, ofrece vistas panorámicas al mar y al Canal do Itajuru desde su estructura original de piedra y argamasa. Visita diaria 8:30–17:00.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🤿</div>
+                        <div class="dac-name">Praia das Conchas</div>
+                        <div class="dac-desc">Una cala de 600 metros en forma de concha, protegida del viento dentro del Parque Estadual da Costa do Sol. Aguas rasas, transparentes y calmas con piscinas naturales entre rocas — el mejor spot de snorkel de Cabo Frío.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🌊</div>
+                        <div class="dac-name">Canal do Itajuru e Ilha do Japonês</div>
+                        <div class="dac-desc">El canal que conecta la Lagoa Araruama con el mar es el corazón náutico de la ciudad. La Ilha do Japonês, en sus aguas calmas y cristalinas, es el paraíso del kayak, SUP y snorkel con fondo transparente.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🏄</div>
+                        <div class="dac-name">Praia do Peró y Praia das Dunas</div>
+                        <div class="dac-desc">Peró tiene 7 km de extensión con solo 1 km urbanizado — surf en sus olas y relax en tramos vírgenes de restinga. Las Dunas forman un corredor de viento perfecto para kitesurf y windsurf dentro de un Área de Preservación Permanente.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🛶</div>
+                        <div class="dac-name">Lagoa Araruama</div>
+                        <div class="dac-desc">La laguna hipersalina permanente más grande de América del Sur con 220 km². Sus aguas abrigadas son ideales para vela, windsurf, kitesurf y kayak en condiciones controladas — un segundo mar dentro del destino.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">⛵</div>
+                        <div class="dac-name">Paseo "Cabo Frío Vista do Mar"</div>
+                        <div class="dac-desc">Tour náutico histórico oficial con salida desde el Boulevard Canal. Recorre el barrio Passagem, Ilha do Japonês, Forte São Mateus y Farol da Lajinha integrando paisaje, historia y fotografía en 90 minutos. Viernes, sábados y domingos.</div>
+                    </div>
+        </div>
+    </section>
+
+    <!-- GALERÍA -->
+    <section class="dest-section">
+        <div class="dest-section-sub">📸 Galería</div>
+        <h2 class="dest-section-title">Tu <span>galería</span></h2>
+        <div class="dest-gallery dest-gallery--small">
+            <div class="gallery-item"><img src="../images/cabo-frio-pero.webp" alt="Praia do Peró — vista aérea" loading="lazy" /></div>
+            <div class="gallery-item"><img src="../images/cabo-frio-canal.webp" alt="Canal do Itajuru — boulevard" loading="lazy" /></div>
+            <div class="gallery-item"><img src="../images/cabo-frio-ilha.webp" alt="Ilha do Japonês — aguas cristalinas" loading="lazy" /></div>
+            <div class="gallery-item"><img src="../images/cabo-frio-city.webp" alt="Amamos Cabo Frío — Praia do Forte" loading="lazy" /></div>
+        </div>
+    </section>
+
+    <!-- CLIMA -->
+    <section class="dest-section">
+        <div class="dest-section-sub">🌤️ Clima ahora mismo</div>
+        <h2 class="dest-section-title">Cabo Frío — <span>Tiempo actual</span></h2>
+        <div id="climaWidget" style="margin-top:28px;">
+            <div class="clima-loading"><div class="clima-spinner"></div> Conectando con datos del clima...</div>
+        </div>
+    </section>
+
+
+    <!-- QUÉ INCLUYE -->
+    <section class="dest-section">
+        <div class="dest-section-sub">✅ Tu paquete</div>
+        <h2 class="dest-section-title">¿Qué <span>incluye</span> tu viaje?</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:28px;">
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🏨</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">7 noches seleccionadas</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Hoteles cuidadosamente elegidos, frente al mar o en ubicación privilegiada.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🚐</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Traslados privados</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Llegada y salida organizadas. Te esperamos en destino desde el primer momento.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🗺️</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">2 tours incluidos</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Tour en Río de Janeiro + Paseo de Barco en Arraial do Cabo con almuerzo a bordo.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🤝</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Asesoramiento personalizado</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Un asesor Luazul disponible antes y durante el viaje para lo que necesitás.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">💱</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Exchange inteligente</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Pagá en moneda local con una de las mejores tasas del mercado.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">📲</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">App exclusiva del viajero</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Panel personal con cuotas, voucher, contrato y seguimiento de tu plan.</div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top:20px;display:inline-flex;align-items:center;gap:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:12px 20px;">
+            <span style="font-size:1.1rem;">🚫</span>
+            <span style="font-size:.88rem;color:rgba(255,200,200,.85);"><strong style="color:#fca5a5;">No incluye vuelos</strong> — vos elegís cómo llegar. Nosotros nos ocupamos de todo lo demás.</span>
+        </div>
+        <div style="margin-top:20px;">
+            <a href="../ofertas.html" class="view-all-btn">🏖️ Ver todos los paquetes →</a>
+        </div>
+    </section>
+
+    <section class="dest-section">
+        <div class="dest-section-sub">📊 Simulador de cuotas</div>
+        <h2 class="dest-section-title">Calculá <span>tu plan</span></h2>
+        <div class="dest-simulator">
+            <div class="sim-controls">
+                <div class="sim-field">
+                    <label>Personas</label>
+                    <select id="dSimPersonas" onchange="dCalcSim()">
+                            <option value="cabofrio2_2">2 personas</option>
+                            <option value="cabofrio4_4">4 personas</option>
+                            <option value="cabofrio6_6">6 personas</option>
+                    </select>
+                </div>
+                <div class="sim-field">
+                    <label>Cuotas</label>
+                    <select id="dSimCuotas" onchange="dCalcSim()">
+                        <option value="6">6 cuotas</option>
+                        <option value="10" selected>10 cuotas</option>
+                        <option value="12">12 cuotas</option>
+                        <option value="18">18 cuotas</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sim-result">
+                <div class="sim-result-box highlight" style="flex:1;">
+                    <span class="sim-val" id="dSimCuota">USD 37.99</span>
+                    <span class="sim-label">Por persona / mes</span>
+                </div>
+                <div class="sim-result-box" style="flex:1;">
+                    <span class="sim-val" id="dSimDia" style="font-size:1.3rem;">USD 1.26</span>
+                    <span class="sim-label">Por día / persona ☕</span>
+                </div>
+            </div>
+            <p id="dSimSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;margin-top:8px;">4 personas · 10 cuotas</p>
+            <p class="sim-note">Precios en dólares (USD) · Sin costos ocultos</p>
+            <a href="../simulador.html" class="view-all-btn" style="margin-top:20px;display:inline-block;">📊 Ver simulador completo →</a>
+        </div>
+        <script>
+        (function(){
+            var TOTALES = {'cabofrio2':1100,'cabofrio4':1500,'cabofrio6':2000};
+            var INTERESES = {'6':0,'10':0,'12':0.02,'18':0.05};
+            window.dCalcSim = function() {
+                var p = document.getElementById('dSimPersonas');
+                var c = document.getElementById('dSimCuotas');
+                if (!p || !c) return;
+                var parts = p.value.split('_');
+                var key   = parts[0];
+                var pax   = parseInt(parts[1]) || 1;
+                var nc    = parseInt(c.value);
+                var tasa  = INTERESES[c.value] || 0;
+                var base  = TOTALES[key] || 1500;
+                var total = Math.round(base * (1 + tasa));
+                var cuotaTot   = Math.round(total / nc);
+                var porPersona = cuotaTot / pax;
+                var mostrar    = (Math.floor(porPersona * 100 - 1) / 100).toFixed(2);
+                var porDia     = (porPersona / 30).toFixed(2);
+                document.getElementById('dSimCuota').textContent = 'USD ' + mostrar;
+                document.getElementById('dSimDia').textContent   = 'USD ' + porDia;
+                document.getElementById('dSimSubLabel').textContent = pax + ' persona' + (pax > 1 ? 's' : '') + ' · ' + nc + ' cuotas';
+            };
+            dCalcSim();
+        })();
+        </script>
+    </section>
+
+</div><!-- /container -->
+
+<!-- CTA RESERVA -->
+<div class="dest-cta-section" id="reservar">
+    <div class="container">
+        <div class="dest-cta-box">
+            <div style="font-size:3rem;margin-bottom:16px;">🏖️</div>
+            <h2>¿Listo para viajar a <span>Cabo Frío</span>?</h2>
+            <p>Hablá directamente con tu asesora de viajes y comenzá hoy tu plan en cuotas. Sin complicaciones, sin sorpresas.</p>
+            <button class="dest-hero-reserve-btn" onclick="openAgents()" style="font-size:1.05rem;padding:18px 48px;">
+                🌴 Quiero reservar este viaje
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="../images/logo-footer.png" alt="Luazul Smart Travel" / loading="lazy">
+                <div class="name">LUAZUL</div>
+                <div class="sub">Smart Travel · Travel Planning System™</div>
+            </div>
+            <div class="footer-info">
+                📍 Atención personalizada<br>
+                📱 WhatsApp Business<br>
+                📧 <a href="mailto:info@luazul.travel">info@luazul.travel</a><br>
+                🌐 @luazul.travel
+            </div>
+            <div class="footer-legal">
+                Planificación en dólares estadounidenses (USD).<br>
+                Contrato de adhesión disponible.<br>
+                Condiciones sujetas a disponibilidad.
+            </div>
+        </div>
+        <div class="footer-bottom">🔵 Begin your journey today · LUAZUL SMART TRAVEL</div>
+    </div>
+</footer>
+
+<!-- AGENT SELECTOR MODAL -->
+<div class="agent-overlay" id="agentOverlay" onclick="closeAgentsOutside(event)">
+    <div class="agent-modal" id="agentModal">
+        <div style="font-size:2rem;margin-bottom:12px;">👋</div>
+        <h3>Seleccioná tu asesora</h3>
+        <p>Contactate directo por WhatsApp — te responden en minutos.</p>
+        <div class="agent-cards">
+            <a class="agent-card" id="agentLuci" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">🦋</div>
+                <div class="agent-name">Lucía</div>
+                <div class="agent-role">Asesora · Brasil 🇧🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+            <a class="agent-card" id="agentAle" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">✨</div>
+                <div class="agent-name">Ale</div>
+                <div class="agent-role">Asesora · Argentina 🇦🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+        </div>
+        <div class="agent-close" onclick="closeAgents()">✕ Cerrar</div>
+    </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../mariposa-chat.js"></script>
+<script>
+/* ── AGENT MODAL ── */
+var LZ_AGENTS = {
+  luci: { wa: "5522998977213", nombre: "Lucía" },
+  ale:  { wa: "5492974726449",  nombre: "Ale" }
+};
+var LZ_PAGE_CONTEXT = "el viaje a Cabo Frío";
+
+function openAgents(context) {
+  var ctx = context || LZ_PAGE_CONTEXT;
+  var msg = encodeURIComponent("¡Hola! Me gustaría recibir información sobre " + ctx + " con Luazul Smart Travel.");
+  document.getElementById("agentLuci").href = "https://wa.me/" + LZ_AGENTS.luci.wa + "?text=" + msg;
+  document.getElementById("agentAle").href  = "https://wa.me/" + LZ_AGENTS.ale.wa  + "?text=" + msg;
+  document.getElementById("agentOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeAgents() {
+  document.getElementById("agentOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function closeAgentsOutside(e) {
+  if (e.target === document.getElementById("agentOverlay")) closeAgents();
+}
+</script>
+
+<script>
+function toggleMobileNav() {
+    var nav = document.getElementById('mobileNav');
+    var btn = document.getElementById('navBurger');
+    nav.classList.toggle('open');
+    btn.classList.toggle('open');
+    document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+}
+function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+    document.getElementById('navBurger').classList.remove('open');
+    document.body.style.overflow = '';
+}
+</script>
+
+<script>
+/* ── WIDGET DE CLIMA — open-meteo.com (gratuito, sin API key) ── */
+(function() {
+  var LAT = -22.88;
+  var LON = -42.03;
+  var DESTINO = "Cabo Frío";
+
+  var WMO_DESC = {
+    0:'Despejado ☀️', 1:'Mayormente despejado 🌤️', 2:'Parcialmente nublado ⛅',
+    3:'Nublado ☁️', 45:'Neblina 🌫️', 48:'Neblina con hielo 🌫️',
+    51:'Llovizna ligera 🌦️', 53:'Llovizna 🌧️', 55:'Llovizna intensa 🌧️',
+    61:'Lluvia ligera 🌦️', 63:'Lluvia 🌧️', 65:'Lluvia intensa 🌧️',
+    80:'Lluvia breve 🌦️', 81:'Chubascos 🌧️', 82:'Chubascos fuertes ⛈️',
+    95:'Tormenta ⛈️', 96:'Tormenta con granizo ⛈️', 99:'Tormenta fuerte ⛈️'
+  };
+
+  function wmoDesc(code) {
+    return WMO_DESC[code] || 'Condición desconocida';
+  }
+
+  function renderClima(data) {
+    var cur = data.current;
+    var daily = data.daily;
+    var temp   = Math.round(cur.temperature_2m);
+    var feels  = Math.round(cur.apparent_temperature);
+    var hum    = cur.relative_humidity_2m;
+    var wind   = Math.round(cur.wind_speed_10m);
+    var desc   = wmoDesc(cur.weather_code);
+    var uv     = cur.uv_index !== undefined ? cur.uv_index.toFixed(1) : '—';
+
+    // Pronóstico 4 días
+    var forecastHTML = '';
+    var days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    for (var i = 1; i < Math.min(5, daily.time.length); i++) {
+      var d = new Date(daily.time[i] + 'T12:00:00');
+      var dayName = days[d.getDay()];
+      var hi = Math.round(daily.temperature_2m_max[i]);
+      var lo = Math.round(daily.temperature_2m_min[i]);
+      var icon = wmoDesc(daily.weather_code[i]).split(' ').pop();
+      forecastHTML += '<div class="clima-day">'
+        + '<div class="clima-day-name">' + dayName + '</div>'
+        + '<div class="clima-day-icon">' + icon + '</div>'
+        + '<div class="clima-day-temps"><span class="hi">' + hi + '°</span> <span class="lo">' + lo + '°</span></div>'
+        + '</div>';
+    }
+
+    var html = '<div class="clima-card">'
+      + '<div class="clima-main">'
+      +   '<div class="clima-temp">' + temp + '<span class="clima-unit">°C</span></div>'
+      +   '<div class="clima-info">'
+      +     '<div class="clima-desc">' + desc + '</div>'
+      +     '<div class="clima-place">📍 ' + DESTINO + '</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="clima-details">'
+      +   '<div class="clima-detail"><span class="lbl">Sensación</span><span class="val">' + feels + '°C</span></div>'
+      +   '<div class="clima-detail"><span class="lbl">Humedad</span><span class="val">' + hum + '%</span></div>'
+      +   '<div class="clima-detail"><span class="lbl">Viento</span><span class="val">' + wind + ' km/h</span></div>'
+      +   '<div class="clima-detail"><span class="lbl">UV</span><span class="val">' + uv + '</span></div>'
+      + '</div>'
+      + '<div class="clima-forecast">' + forecastHTML + '</div>'
+      + '<div class="clima-footer">Datos: <a href="https://open-meteo.com" target="_blank" rel="noopener" style="color:rgba(126,184,255,.6);">Open-Meteo</a> · Actualizado ahora</div>'
+      + '</div>';
+
+    document.getElementById('climaWidget').innerHTML = html;
+  }
+
+  function loadClima() {
+    var url = 'https://api.open-meteo.com/v1/forecast'
+      + '?latitude=' + LAT + '&longitude=' + LON
+      + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,uv_index'
+      + '&daily=temperature_2m_max,temperature_2m_min,weather_code'
+      + '&timezone=America%2FSao_Paulo'
+      + '&forecast_days=5';
+
+    fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(renderClima)
+      .catch(function() {
+        document.getElementById('climaWidget').innerHTML =
+          '<div class="clima-loading" style="color:rgba(200,180,100,.7);">⚠️ No se pudo cargar el clima. Intentá recargar la página.</div>';
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadClima);
+  } else {
+    loadClima();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunidad Luazul Smart Travel</title>
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #020a1e;
+  --surface:   rgba(5,20,60,.6);
+  --border:    rgba(100,160,255,.18);
+  --accent:    #7eb8ff;
+  --blue:      #0B3D91;
+  --text:      #fff;
+  --muted:     rgba(200,220,255,.7);
+  --green:     #10b981;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Montserrat',system-ui,sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height:100vh;
+}
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(11,61,145,.35) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 100%, rgba(5,25,80,.4) 0%, transparent 60%);
+  pointer-events:none; z-index:0;
+}
+
+/* ── HEADER ── */
+.header {
+  position:sticky; top:0; z-index:100;
+  background:rgba(2,10,30,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 20px;
+  display:flex; align-items:center; justify-content:space-between;
+  height:60px;
+}
+.header-brand { display:flex; align-items:center; gap:12px; text-decoration:none; }
+.header-logo { height:38px; width:38px; border-radius:50%; object-fit:contain; }
+.header-name { font-size:1rem; font-weight:800; letter-spacing:1px; color:#fff; }
+.header-tag  { font-size:.6rem; letter-spacing:2px; text-transform:uppercase; color:var(--accent); display:block; }
+.header-right { display:flex; align-items:center; gap:10px; }
+.btn-back {
+  display:flex; align-items:center; gap:6px;
+  background:rgba(11,61,145,.3); border:1px solid var(--border);
+  color:var(--accent); font-size:.75rem; font-weight:700;
+  padding:7px 14px; border-radius:30px; cursor:pointer;
+  text-decoration:none; transition:background .2s;
+  font-family:inherit; letter-spacing:.5px;
+}
+.btn-back:hover { background:rgba(11,61,145,.55); }
+.live-dot {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:.65rem; color:var(--green); font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+}
+.live-dot::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--green);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+/* ── FEED LAYOUT ── */
+.feed-wrap {
+  position:relative; z-index:1;
+  max-width:560px; margin:0 auto;
+  padding:24px 16px 60px;
+}
+
+/* ── STORY BAR ── */
+.story-bar {
+  display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;
+  margin-bottom:24px; scrollbar-width:none;
+}
+.story-bar::-webkit-scrollbar { display:none; }
+.story-item {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  flex-shrink:0; cursor:default;
+}
+.story-ring {
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg,#7eb8ff,#0B3D91);
+  padding:2.5px;
+  display:flex; align-items:center; justify-content:center;
+}
+.story-inner {
+  width:100%; height:100%; border-radius:50%;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem;
+}
+.story-ring.new { background:linear-gradient(135deg,#f59e0b,#ef4444,#7eb8ff); }
+.story-label { font-size:.6rem; font-weight:700; color:var(--muted); letter-spacing:.5px; max-width:60px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ── POST CARD ── */
+.post-card {
+  background:var(--surface);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:20px; overflow:hidden;
+  margin-bottom:20px;
+  animation: fadeUp .4s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.post-header {
+  display:flex; align-items:center; gap:12px;
+  padding:14px 16px;
+}
+.post-avatar {
+  width:40px; height:40px; border-radius:50%;
+  background:linear-gradient(135deg,#1a5bb5,#0B3D91);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; flex-shrink:0;
+  border:2px solid rgba(126,184,255,.3);
+}
+.post-author { font-size:.88rem; font-weight:800; color:#fff; }
+.post-time   { font-size:.68rem; color:var(--muted); margin-top:2px; }
+.post-badge  {
+  margin-left:auto;
+  font-size:.6rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  padding:3px 10px; border-radius:20px;
+  background:rgba(126,184,255,.12); border:1px solid rgba(126,184,255,.25);
+  color:var(--accent);
+}
+
+.post-image { width:100%; display:block; max-height:380px; object-fit:cover; }
+.post-image-placeholder {
+  width:100%; height:220px;
+  background:linear-gradient(135deg,rgba(11,61,145,.5),rgba(5,20,60,.8));
+  display:flex; align-items:center; justify-content:center;
+  font-size:3rem;
+}
+
+.post-body { padding:14px 16px 10px; }
+.post-title { font-size:1rem; font-weight:800; color:#fff; margin-bottom:6px; line-height:1.3; }
+.post-text  { font-size:.88rem; color:var(--muted); line-height:1.7; }
+
+/* ── REACTIONS ── */
+.reactions-bar {
+  padding:12px 16px 14px;
+  display:flex; align-items:center; gap:8px;
+  border-top:1px solid rgba(100,160,255,.08);
+}
+.reaction-btn {
+  display:flex; align-items:center; gap:5px;
+  background:rgba(11,61,145,.2);
+  border:1px solid rgba(100,160,255,.15);
+  border-radius:30px; padding:6px 12px;
+  cursor:pointer; transition:all .2s;
+  font-family:inherit; color:var(--muted);
+  font-size:.82rem; font-weight:700;
+  user-select:none;
+}
+.reaction-btn:hover { background:rgba(11,61,145,.45); border-color:rgba(126,184,255,.35); transform:scale(1.05); }
+.reaction-btn.reacted { background:rgba(11,61,145,.5); border-color:rgba(126,184,255,.5); color:#fff; }
+.reaction-btn.reacted { animation:pop .2s cubic-bezier(.22,1,.36,1); }
+@keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1)} }
+.reaction-emoji { font-size:1rem; }
+.reaction-count { font-size:.78rem; }
+.reactions-total { margin-left:auto; font-size:.72rem; color:rgba(150,190,255,.45); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align:center; padding:60px 24px;
+  color:var(--muted);
+}
+.empty-state .icon { font-size:3rem; margin-bottom:16px; opacity:.5; }
+.empty-state p { font-size:.9rem; line-height:1.7; }
+
+/* ── PINNED BANNER ── */
+.pinned-banner {
+  background:linear-gradient(135deg,rgba(11,61,145,.4),rgba(5,20,60,.6));
+  border:1px solid rgba(126,184,255,.25);
+  border-radius:16px; padding:18px;
+  margin-bottom:24px;
+  display:flex; align-items:flex-start; gap:14px;
+}
+.pinned-icon { font-size:1.8rem; flex-shrink:0; }
+.pinned-text h3 { font-size:.95rem; font-weight:800; color:#fff; margin-bottom:4px; }
+.pinned-text p  { font-size:.82rem; color:var(--muted); line-height:1.6; }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:rgba(16,185,129,.15); border:1px solid rgba(16,185,129,.3);
+  color:#6ee7b7; font-size:.82rem; font-weight:700;
+  padding:10px 22px; border-radius:30px;
+  transition:transform .3s ease, opacity .3s ease;
+  opacity:0; z-index:999; white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+/* ── MOBILE ── */
+@media(max-width:480px) {
+  .header-tag { display:none; }
+  .feed-wrap { padding:16px 12px 60px; }
+}
+</style>
+    <meta name="description" content="Comunidad de viajeros Luazul Smart Travel. Novedades, sorteos y todo lo que pasa entre quienes viajan a Brasil en cuotas. Bienvenido a tu espacio.">
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="Luazul Smart Travel">
+    <meta property="og:title"       content="Comunidad — Luazul Smart Travel">
+    <meta property="og:description" content="Comunidad de viajeros Luazul Smart Travel. Novedades, sorteos y todo lo que pasa entre quienes viajan a Brasil en cuotas. Bienvenido a tu espacio.">
+    <meta property="og:image"       content="https://www.luazul.com/images/buzios-rua-pedras.webp">
+    <meta property="og:url"         content="https://www.luazul.com/comunidad.html">
+    <meta name="twitter:card"       content="summary_large_image">
+    <meta name="twitter:title"      content="Comunidad — Luazul Smart Travel">
+    <meta name="twitter:description" content="Comunidad de viajeros Luazul Smart Travel. Novedades, sorteos y todo lo que pasa entre quienes viajan a Brasil en cuotas. Bienvenido a tu espacio.">
+    <meta name="twitter:image"      content="https://www.luazul.com/images/buzios-rua-pedras.webp">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <a class="header-brand" href="index.html" target="_blank">
+    <img class="header-logo" src="images/logo-nav.png" alt="Luazul Smart Travel">
+    <div>
+      <span class="header-name">LUAZUL</span>
+      <span class="header-tag">Comunidad de viajeros</span>
+    </div>
+  </a>
+  <div class="header-right">
+    <span class="live-dot">En vivo</span>
+    <a class="btn-back" href="javascript:window.close()">✕ Cerrar</a>
+  </div>
+</header>
+
+<!-- FEED -->
+<div class="feed-wrap">
+
+  <!-- Story bar -->
+  <div class="story-bar" id="storyBar">
+    <div class="story-item">
+      <div class="story-ring new"><div class="story-inner">🦋</div></div>
+      <span class="story-label">Luazul</span>
+    </div>
+    <div class="story-item">
+      <div class="story-ring"><div class="story-inner">🏖️</div></div>
+      <span class="story-label">Cabo Frío</span>
+    </div>
+    <div class="story-item">
+      <div class="story-ring"><div class="story-inner">⛵</div></div>
+      <span class="story-label">Búzios</span>
+    </div>
+    <div class="story-item">
+      <div class="story-ring"><div class="story-inner">🌊</div></div>
+      <span class="story-label">Arraial</span>
+    </div>
+    <div class="story-item">
+      <div class="story-ring"><div class="story-inner">🌆</div></div>
+      <span class="story-label">Copacabana</span>
+    </div>
+  </div>
+
+  <!-- Pinned welcome -->
+  <div class="pinned-banner">
+    <div class="pinned-icon">📌</div>
+    <div class="pinned-text">
+      <h3>¡Bienvenido a la Comunidad Luazul Smart Travel!</h3>
+      <p>Acá vas a encontrar sorteos, novedades, fotos de los viajes y todo lo que pasa en nuestra comunidad de viajeros. Podés reaccionar a cada publicación. ✈️</p>
+    </div>
+  </div>
+
+  <!-- Feed posts rendered by JS -->
+  <div id="feedContainer"></div>
+
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script>
+var STORAGE_KEY = 'luazul_comunidad_posts';
+var REACTIONS_KEY = 'luazul_comunidad_reactions';
+var USER_KEY = 'luazul_comunidad_uid';
+
+// Generate anonymous user ID for reactions
+function getUID() {
+  var uid = localStorage.getItem(USER_KEY);
+  if (!uid) {
+    uid = 'u_' + Math.random().toString(36).slice(2,10);
+    localStorage.setItem(USER_KEY, uid);
+  }
+  return uid;
+}
+
+function getPosts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function getReactions() {
+  try { return JSON.parse(localStorage.getItem(REACTIONS_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function saveReactions(r) {
+  localStorage.setItem(REACTIONS_KEY, JSON.stringify(r));
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+function timeAgo(dateStr) {
+  var d = new Date(dateStr);
+  var now = new Date();
+  var diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return 'Hace un momento';
+  if (diff < 3600) return 'Hace ' + Math.floor(diff/60) + ' min';
+  if (diff < 86400) return 'Hace ' + Math.floor(diff/3600) + ' h';
+  var days = Math.floor(diff/86400);
+  if (days === 1) return 'Ayer';
+  if (days < 7) return 'Hace ' + days + ' días';
+  return d.toLocaleDateString('es-AR', {day:'numeric', month:'long'});
+}
+
+var EMOJIS = [
+  { key:'heart',   emoji:'❤️',  label:'Me encanta' },
+  { key:'fire',    emoji:'🔥',  label:'Fuego' },
+  { key:'wow',     emoji:'😍',  label:'Increíble' },
+  { key:'plane',   emoji:'✈️',  label:'Quiero ir' },
+  { key:'clap',    emoji:'🙌',  label:'Genial' },
+];
+
+function react(postId, emojiKey) {
+  var uid = getUID();
+  var reactions = getReactions();
+  var postR = reactions[postId] || {};
+  var emojiR = postR[emojiKey] || { count:0, users:[] };
+
+  var userIdx = emojiR.users.indexOf(uid);
+  if (userIdx >= 0) {
+    // Remove reaction
+    emojiR.users.splice(userIdx, 1);
+    emojiR.count = Math.max(0, emojiR.count - 1);
+  } else {
+    // Add reaction
+    emojiR.users.push(uid);
+    emojiR.count++;
+    showToast('¡Reacción añadida!');
+  }
+
+  postR[emojiKey] = emojiR;
+  reactions[postId] = postR;
+  saveReactions(reactions);
+  renderFeed();
+}
+
+function renderFeed() {
+  var posts = getPosts();
+  var reactions = getReactions();
+  var uid = getUID();
+  var container = document.getElementById('feedContainer');
+
+  if (!posts.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🌊</div><p>Las publicaciones del equipo<br>aparecerán acá muy pronto.</p></div>';
+    return;
+  }
+
+  // Sort by date descending
+  posts.sort(function(a,b){ return new Date(b.fecha) - new Date(a.fecha); });
+
+  container.innerHTML = posts.map(function(post, i) {
+    var postR = reactions[post.id] || {};
+    var totalReactions = EMOJIS.reduce(function(acc, e) {
+      return acc + ((postR[e.key] && postR[e.key].count) || 0);
+    }, 0);
+
+    var imgHtml = '';
+    if (post.imagen) {
+      imgHtml = '<img class="post-image" src="' + post.imagen + '" alt="' + (post.titulo || '') + '" loading="lazy" onerror="this.style.display=\'none\'">';
+    } else if (post.tipo === 'sorteo') {
+      imgHtml = '<div class="post-image-placeholder">🎁</div>';
+    } else if (post.tipo === 'foto') {
+      imgHtml = '<div class="post-image-placeholder">📸</div>';
+    }
+
+    var reactionBtns = EMOJIS.map(function(e) {
+      var count = (postR[e.key] && postR[e.key].count) || 0;
+      var hasReacted = postR[e.key] && postR[e.key].users && postR[e.key].users.indexOf(uid) >= 0;
+      return '<button class="reaction-btn' + (hasReacted?' reacted':'') + '" onclick="react(\'' + post.id + '\',\'' + e.key + '\')" title="' + e.label + '">'
+        + '<span class="reaction-emoji">' + e.emoji + '</span>'
+        + (count > 0 ? '<span class="reaction-count">' + count + '</span>' : '')
+        + '</button>';
+    }).join('');
+
+    var badge = post.tipo === 'sorteo' ? '🎁 Sorteo'
+              : post.tipo === 'novedad' ? '📣 Novedad'
+              : post.tipo === 'foto'    ? '📸 Foto'
+              : post.tipo === 'tip'     ? '💡 Tip'
+              : '✨ Post';
+
+    return '<div class="post-card" style="animation-delay:' + (i*0.06) + 's">'
+      + '<div class="post-header">'
+      + '<div class="post-avatar">🦋</div>'
+      + '<div><div class="post-author">Luazul Smart Travel</div><div class="post-time">' + timeAgo(post.fecha) + '</div></div>'
+      + '<div class="post-badge">' + badge + '</div>'
+      + '</div>'
+      + imgHtml
+      + '<div class="post-body">'
+      + (post.titulo ? '<div class="post-title">' + post.titulo + '</div>' : '')
+      + (post.texto  ? '<div class="post-text">'  + post.texto  + '</div>' : '')
+      + '</div>'
+      + '<div class="reactions-bar">'
+      + reactionBtns
+      + (totalReactions > 0 ? '<span class="reactions-total">' + totalReactions + ' reacciones</span>' : '')
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// Auto-refresh every 30 seconds
+renderFeed();
+setInterval(renderFeed, 30000);
+</script>
+</body>
+</html>

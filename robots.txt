@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Páginas privadas — no indexar
+Disallow: /panel_cliente_luazul.html
+Disallow: /comunidad-admin.html
+Disallow: /mariposa-chat.html
+Disallow: /comunidad.html
+
+# Sitemap
+Sitemap: https://www.luazul.com/sitemap.xml

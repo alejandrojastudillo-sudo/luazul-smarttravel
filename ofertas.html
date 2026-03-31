@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Paquetes · Luazul Smart Travel</title>
+    <link rel="stylesheet" href="css/style.css">
+
+<style>
+/* ── OFERTAS.HTML — responsive + freedom banner ── */
+.freedom-banner {
+  background: linear-gradient(135deg, rgba(11,45,120,.55) 0%, rgba(5,18,55,.7) 100%);
+  border: 1px solid rgba(126,184,255,.22);
+  border-radius: 22px;
+  padding: 32px 36px;
+  margin-top: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.freedom-banner::before {
+  content: '🌴';
+  position: absolute;
+  right: -10px; top: -10px;
+  font-size: 7rem;
+  opacity: .07;
+  line-height: 1;
+  pointer-events: none;
+}
+.freedom-banner-title {
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #7eb8ff;
+  margin-bottom: 12px;
+}
+.freedom-banner-text {
+  font-size: .95rem;
+  color: rgba(220,235,255,.88);
+  line-height: 1.75;
+  margin-bottom: 18px;
+  max-width: 680px;
+}
+.freedom-banner-text strong { color: #fff; }
+.freedom-banner-tagline {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.freedom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .78rem;
+  font-weight: 700;
+  color: rgba(126,184,255,.9);
+  background: rgba(11,61,145,.3);
+  border: 1px solid rgba(100,160,255,.2);
+  border-radius: 30px;
+  padding: 6px 16px;
+}
+@media(max-width:768px) {
+  .pkg-grid { grid-template-columns: 1fr !important; }
+  .preview-grid { grid-template-columns: 1fr 1fr !important; }
+  .simulator { padding: 0 !important; }
+  .simulator-box { padding: 24px 18px !important; }
+  .select-group { flex-direction: column; gap: 10px; }
+  .result-sim { grid-template-columns: 1fr !important; }
+  .freedom-banner { padding: 22px 18px; }
+  .freedom-banner-tagline { gap: 10px; }
+  .freedom-tag { font-size: .72rem; padding: 5px 12px; }
+}
+@media(max-width:480px) {
+  .preview-grid { grid-template-columns: 1fr !important; }
+  .section { padding: 50px 0 !important; }
+  h2 { font-size: 1.6rem !important; }
+}
+</style>
+            <link rel="preload" as="image" href="images/arraial-farol.webp" type="image/webp">
+    <link rel="canonical" href="https://www.luazul.com/ofertas.html">
+    <meta name="description" content="Paquetes de viaje a Brasil en cuotas. Cabo Frío, Búzios y Arraial do Cabo para 2, 4 y 6 personas. Precios en dólares, sin sorpresas. Luazul Smart Travel.">
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="Luazul Smart Travel">
+    <meta property="og:title"       content="Paquetes y Ofertas — Luazul Smart Travel">
+    <meta property="og:description" content="Paquetes de viaje a Brasil en cuotas. Cabo Frío, Búzios y Arraial do Cabo para 2, 4 y 6 personas. Precios en dólares, sin sorpresas. Luazul Smart Travel.">
+    <meta property="og:image"       content="https://www.luazul.com/images/arraial-farol.webp">
+    <meta property="og:url"         content="https://www.luazul.com/ofertas.html">
+    <meta name="twitter:card"       content="summary_large_image">
+    <meta name="twitter:title"      content="Paquetes y Ofertas — Luazul Smart Travel">
+    <meta name="twitter:description" content="Paquetes de viaje a Brasil en cuotas. Cabo Frío, Búzios y Arraial do Cabo para 2, 4 y 6 personas. Precios en dólares, sin sorpresas. Luazul Smart Travel.">
+    <meta name="twitter:image"      content="https://www.luazul.com/images/arraial-farol.webp">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="navbar-logo" style="text-decoration:none;color:inherit;">
+        <img src="images/logo-nav.png" alt="Luazul Smart Travel" / loading="lazy">
+        <div class="navbar-brand">
+            <span class="name">LUAZUL</span>
+            <span class="tagline">Smart Travel</span>
+        </div>
+    </a>
+    <div class="navbar-flags" style="display:flex;align-items:center;gap:6px;margin-right:12px;">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjUwNCIgZmlsbD0iIzAwOWMzYiIvPjxwb2x5Z29uIHBvaW50cz0iMzYwLDM2IDY4NCwyNTIgMzYwLDQ2OCAzNiwyNTIiIGZpbGw9IiNmZmRmMDAiLz48Y2lyY2xlIGN4PSIzNjAiIGN5PSIyNTIiIHI9IjEwOCIgZmlsbD0iIzAwMjc3NiIvPjxwYXRoIGQ9Ik0yNTIsMjE2IFEzNjAsMzI0IDQ2OCwyMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMTIiIGZpbGw9Im5vbmUiLz48dGV4dCB4PSIzNjAiIHk9IjI1OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMjgiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iYm9sZCI+T1JERU0gRSBQUk9HUkVTU088L3RleHQ+PC9zdmc+" alt="Brasil" title="Brasil" style="width:36px;height:auto;border-radius:4px;box-shadow:0 0 8px rgba(34,197,94,.55),0 2px 6px rgba(0,0,0,.4);border:1.5px solid rgba(34,197,94,.4);cursor:default;" / loading="lazy">
+        <span style="width:1px;height:22px;background:rgba(255,255,255,.18);display:inline-block;margin:0 2px;vertical-align:middle;"></span>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjUwNCIgZmlsbD0iIzc0YWNkZiIvPjxyZWN0IHk9IjE2OCIgd2lkdGg9IjcyMCIgaGVpZ2h0PSIxNjgiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iMzYwIiBjeT0iMjUyIiByPSI0MiIgZmlsbD0iI2Y2YjQwZSIvPjxsaW5lIHgxPSIzNjAiIHkxPSIxOTYiIHgyPSIzNjAiIHkyPSIzMDgiIHN0cm9rZT0iIzg0MzUxMSIgc3Ryb2tlLXdpZHRoPSI4Ii8+PGxpbmUgeDE9IjMwNCIgeTE9IjI1MiIgeDI9IjQxNiIgeTI9IjI1MiIgc3Ryb2tlPSIjODQzNTExIiBzdHJva2Utd2lkdGg9IjgiLz48bGluZSB4MT0iMzIwIiB5MT0iMjEyIiB4Mj0iNDAwIiB5Mj0iMjkyIiBzdHJva2U9IiM4NDM1MTEiIHN0cm9rZS13aWR0aD0iOCIvPjxsaW5lIHgxPSI0MDAiIHkxPSIyMTIiIHgyPSIzMjAiIHkyPSIyOTIiIHN0cm9rZT0iIzg0MzUxMSIgc3Ryb2tlLXdpZHRoPSI4Ii8+PC9zdmc+" alt="Argentina" title="Argentina" style="width:26px;height:auto;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);cursor:default;opacity:.9;" / loading="lazy">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjE2OCIgZmlsbD0iI2Q1MmIxZSIvPjxyZWN0IHk9IjE2OCIgd2lkdGg9IjcyMCIgaGVpZ2h0PSIxNjgiIGZpbGw9IndoaXRlIi8+PHJlY3QgeT0iMzM2IiB3aWR0aD0iNzIwIiBoZWlnaHQ9IjE2OCIgZmlsbD0iIzAwMzhhOCIvPjxjaXJjbGUgY3g9IjM2MCIgY3k9IjI1MiIgcj0iNTYiIGZpbGw9IiNmZmQ3MDAiLz48Y2lyY2xlIGN4PSIzNjAiIGN5PSIyNTIiIHI9IjQ0IiBmaWxsPSIjMDA5YjNhIi8+PGNpcmNsZSBjeD0iMzYwIiBjeT0iMjUyIiByPSIyMCIgZmlsbD0iI2ZmZDcwMCIvPjwvc3ZnPg==" alt="Paraguay" title="Paraguay" style="width:26px;height:auto;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);cursor:default;opacity:.9;" / loading="lazy">
+    </div>
+    <div class="navbar-links">
+        <a href="ofertas.html" class="active">Paquetes</a>
+        <a href="empresa.html">Método</a>
+        <a href="simulador.html">Simulador</a>
+        <a href="tours.html">Tours</a>
+        <a href="destinos.html">Destinos</a>
+        <a href="panel_cliente_luazul.html" style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:30px;border:1px solid rgba(100,160,255,.25);transition:all .2s;">👤 Mi panel</a>
+        <a href="#" onclick="openAgents();return false;" class="navbar-cta">Reservar ahora</a>
+    </div>
+    <button class="navbar-burger" id="navBurger" aria-label="Menú" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+<!-- MOBILE NAV DRAWER -->
+<nav class="navbar-mobile" id="mobileNav">
+    <a href="ofertas.html" onclick="closeMobileNav()">Paquetes</a>
+    <a href="empresa.html" onclick="closeMobileNav()">Método</a>
+    <a href="simulador.html" onclick="closeMobileNav()">Simulador</a>
+    <a href="tours.html" onclick="closeMobileNav()">Tours</a>
+    <a href="destinos.html" onclick="closeMobileNav()">Destinos</a>
+    <a href="panel_cliente_luazul.html" onclick="closeMobileNav()">👤 Mi Panel</a>
+    <a href="#" class="mobile-cta" onclick="openAgents();closeMobileNav();return false;">🔵 Reservar ahora</a>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+    <div class="container">
+        <h1>🏖️ Paquetes <span>Diciembre 2026</span></h1>
+        <p>Cabo Frío · 7 noches frente al mar · Traslados privados · Tour en Río · Paseo de Barco en Arraial do Cabo con almuerzo incluido.</p>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- PAQUETES GRID -->
+    <section class="section" id="paquetes">
+        <p class="section-desc" style="margin-top:14px;font-size:1.05rem;max-width:780px;background:rgba(11,61,145,.25);border:1px solid rgba(100,160,255,.2);border-radius:16px;padding:18px 24px;line-height:1.8;">
+            <span style="color:#7eb8ff;font-weight:700;">Hacé click en el paquete que elijas</span> y nuestro asesor turístico se comunicará con vos para que comiences a disfrutar de nuestros beneficios. <span style="color:white;font-weight:600;">Te daremos un usuario para que puedas dar seguimiento al avance de tus futuras vacaciones con Luazul Smart Travel.</span>
+        </p>
+        <div class="packages-grid">
+            <a href="#" onclick="openAgents();return false;" target="_blank" class="package-card" style="display:block;text-decoration:none;cursor:pointer;" title="Consultar Escapada en Pareja">
+                <img src="images/package-pareja.webp" alt="Escapada en pareja" / loading="lazy">
+                <div class="pkg-overlay"><span>💬 Consultar por este paquete</span></div>
+            </a>
+            <a href="#" onclick="openAgents();return false;" target="_blank" class="package-card" style="display:block;text-decoration:none;cursor:pointer;" title="Consultar Paquete 4 Amigos">
+                <img src="images/package-4amigos.webp" alt="Paquete 4 amigos" / loading="lazy">
+                <div class="pkg-overlay"><span>💬 Consultar por este paquete</span></div>
+            </a>
+            <a href="#" onclick="openAgents();return false;" target="_blank" class="package-card" style="display:block;text-decoration:none;cursor:pointer;" title="Consultar Paquete 6 Amigos">
+                <img src="images/package-6amigos.webp" alt="Paquete 6 amigos" / loading="lazy">
+                <div class="pkg-overlay"><span>💬 Consultar por este paquete</span></div>
+            </a>
+        </div>
+    </section>
+
+    <!-- QUÉ INCLUYE -->
+    <section class="section" id="incluye">
+        <h2>✅ ¿Qué <span>incluye</span> tu paquete?</h2>
+        <p class="section-desc">Todos los paquetes de Cabo Frío incluyen:</p>
+        <div class="preview-grid" style="margin-top:32px;">
+            <div class="preview-mini">
+                <div style="font-size:2rem;margin-bottom:10px;">🌊</div>
+                <h3>7 noches frente al mar</h3>
+                <p>Alojamiento seleccionado con vista al mar en Cabo Frío.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:2rem;margin-bottom:10px;">🚐</div>
+                <h3>Traslados privados</h3>
+                <p>Traslados de llegada y salida totalmente privados.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:2rem;margin-bottom:10px;">🌆</div>
+                <h3>Tour en Río de Janeiro</h3>
+                <p>Recorrido por los íconos más emblemáticos de la ciudad.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:2rem;margin-bottom:10px;">⛵</div>
+                <h3>Paseo de Barco en Arraial</h3>
+                <p>Recorrido marítimo con almuerzo incluido a bordo.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:2rem;margin-bottom:10px;">🧭</div>
+                <h3>Asesoramiento personalizado</h3>
+                <p>Antes y durante el viaje, un asesor Luazul disponible para vos.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:2rem;margin-bottom:10px;">💱</div>
+                <h3>Exchange con la mejor tasa</h3>
+                <p>Pagá en moneda local al tipo de cambio más conveniente del mercado.</p>
+            </div>
+        </div>
+
+        <!-- NO INCLUYE -->
+        <div style="margin-top:28px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:18px;padding:20px 28px;max-width:520px;">
+            <p style="color:#fca5a5;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🚫 No incluye</p>
+            <p style="color:rgba(255,210,210,.85);font-size:.95rem;line-height:1.7;">Vuelos — vos elegís cómo llegar. Nosotros nos ocupamos de todo lo demás.</p>
+        </div>
+
+    </section>
+
+    <!-- LIBERTAD DE VIAJE -->
+    <section class="section" style="padding:0 0 60px;">
+        <div class="container">
+        <!-- LIBERTAD DE VIAJE -->
+        <div class="freedom-banner">
+            <div class="freedom-banner-title">🌴 Sobre los vuelos</div>
+            <p class="freedom-banner-text">
+                Cada viajero tiene su propia manera de comenzar la aventura.<br>
+                Nuestros paquetes están diseñados para <strong>recibirte directamente en destino</strong>, dándote total libertad para elegir cómo llegar — cuando quieras, desde donde quieras.<br>
+                Los vuelos no están incluidos, y eso es una ventaja: podés elegir la opción que mejor se adapte a tus fechas, tu ciudad de origen y tu presupuesto.
+            </p>
+            <div class="freedom-banner-tagline">
+                <span class="freedom-tag">🌴 Vos elegís cómo llegar</span>
+                <span class="freedom-tag">🌴 Nosotros garantizamos la experiencia</span>
+                <span class="freedom-tag" style="cursor:pointer;" onclick="openAgents()">💬 ¿Necesitás orientación? Escribinos</span>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- APP EXCLUSIVA -->
+    <section class="section">
+        <h2>📲 Tu viaje, en la <span>palma de tu mano</span></h2>
+        <p class="section-desc">Al contratar tu paquete accedés a nuestra app exclusiva del viajero — gestionás todo desde el celular, sin llamadas ni papeles.</p>
+        <div class="preview-grid" style="margin-top:32px;">
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">🏠</div>
+                <h3>Dashboard</h3>
+                <p>Resumen completo de tu plan y el estado de tus cuotas en tiempo real.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">💳</div>
+                <h3>Mis Cuotas</h3>
+                <p>Seguimiento de pagos, carga de comprobantes y conversión de moneda al día.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">🎫</div>
+                <h3>Voucher + Contrato</h3>
+                <p>Tus documentos de viaje disponibles en todo momento con código QR.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">📦</div>
+                <h3>Mi Paquete</h3>
+                <p>Detalles del viaje e información inspiradora del destino para mantener la emoción.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">📝</div>
+                <h3>Solicitudes</h3>
+                <p>Pedí cambios o extensiones sin llamadas — directo desde la app.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">🌟</div>
+                <h3>Comunidad Luazul</h3>
+                <p>Conectate con otros viajeros y compartí la experiencia.</p>
+            </div>
+        </div>
+        <div style="margin-top:32px;background:rgba(11,61,145,.25);border:1px solid rgba(100,160,255,.2);border-radius:20px;padding:24px 32px;max-width:680px;">
+            <p style="color:#7eb8ff;font-size:.9rem;font-weight:700;margin-bottom:6px;">💡 Transparencia total</p>
+            <p style="color:rgba(200,220,255,.85);font-size:.97rem;line-height:1.7;">Sabés exactamente qué estás pagando, cuánto falta y cómo avanza tu viaje — en todo momento, desde cualquier dispositivo.</p>
+        </div>
+        <a href="panel_cliente_luazul.html" class="view-all-btn" style="margin-top:28px;">👤 Ver demo del panel →</a>
+    </section>
+
+    <!-- POR QUÉ ELEGIRNOS -->
+    <section class="section">
+        <h2>✨ ¿Por qué elegir <span>Luazul Smart Travel?</span></h2>
+        <p class="section-desc">Porque no solo comprás un paquete — comprás tranquilidad, organización y la emoción de saber que tu viaje ya está en marcha.</p>
+        <div class="preview-grid" style="margin-top:32px;">
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">📅</div>
+                <h3>Asegurá hoy, pagá a tu ritmo</h3>
+                <p>Bloqueás tu lugar con la primera cuota y pagás el resto sin presiones, a tu tiempo.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">💵</div>
+                <h3>En dólares, sin letra chica</h3>
+                <p>Precio fijo en USD desde el día uno. Sin sorpresas, sin cambios de último momento.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">🤝</div>
+                <h3>Asesor personal incluido</h3>
+                <p>Un asesor Luazul te acompaña antes y durante el viaje. No estás solo en ningún momento.</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">📲</div>
+                <h3>Todo en una app</h3>
+                <p>Panel exclusivo del viajero con cuotas, voucher, contrato y más. Sin papeles ni llamadas.</p>
+            </div>
+        </div>
+        <div style="margin-top:36px;text-align:center;">
+            <p style="font-size:1.2rem;color:rgba(200,220,255,.9);font-style:italic;line-height:1.7;max-width:600px;margin:0 auto;">
+                "Tu viaje empieza hoy...<br>lo pagás en partes y lo vivís completo."
+            </p>
+            <p style="margin-top:8px;font-size:.82rem;font-weight:700;color:#7eb8ff;letter-spacing:2px;text-transform:uppercase;">🦋 Luazul Smart Travel</p>
+        </div>
+    </section>
+
+</div>
+    <section class="section" id="simular">
+        <h2>📊 Calculá tu <span>cuota</span></h2>
+        <p class="section-desc">Usá nuestro simulador para ver exactamente cuánto pagarías por mes.</p>
+        <div class="simulator" style="margin-top:28px;">
+            <div class="simulator-box">
+                <div class="select-group">
+                    <select id="destinoSim" onchange="calcular()">
+                        <option value="cabofrio2_2">Cabo Frío – 2 personas</option>
+                        <option value="cabofrio4_4" selected>Cabo Frío – 4 personas</option>
+                        <option value="cabofrio6_6">Cabo Frío – 6 personas</option>
+                        <option value="arraial2_2">Arraial – 2 personas</option>
+                        <option value="arraial4_4">Arraial – 4 personas</option>
+                        <option value="buzios2_2">Búzios – 2 personas</option>
+                        <option value="buzios4_4">Búzios – 4 personas</option>
+                        <option value="rio2_2">Copacabana – 2 personas</option>
+                        <option value="rio4_4">Copacabana – 4 personas</option>
+                    </select>
+                    <select id="cuotasSim" onchange="calcular()">
+                        <option value="6">6 cuotas</option>
+                        <option value="10" selected>10 cuotas</option>
+                        <option value="12">12 cuotas</option>
+                        <option value="18">18 cuotas</option>
+                    </select>
+                </div>
+                <div class="result-sim">
+                    <div class="result-item">
+                        <span class="result-label">Por persona / mes</span>
+                        <span class="result-value" id="cuotaMensual">USD 37.99</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Por día / persona ☕</span>
+                        <span class="result-value" id="porDia" style="font-size:1.1rem;color:rgba(200,220,255,.8);">USD 1.26</span>
+                    </div>
+                </div>
+                <p id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;margin-top:8px;">4 personas · 10 cuotas</p>
+                <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="text-align:center;border-radius:14px;">🔵 Quiero este plan</a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+    <div class="container">
+        <h2>¿Cuál es tu <span>grupo ideal</span>?</h2>
+        <p>Hablá con uno de nuestros asesores y te ayudamos a elegir el mejor paquete.</p>
+        <p style="margin-bottom:36px;">Reservas limitadas para diciembre 2026.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">
+            <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="font-size:1.1rem;padding:17px 44px;">🔵 Reservar mi lugar ahora</a>
+            <a href="simulador.html" class="btn-hero btn-glass" style="font-size:1.1rem;padding:17px 44px;">📊 Simular mi plan</a>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="images/logo-footer.png" alt="Luazul Smart Travel" / loading="lazy">
+                <div class="name">LUAZUL</div>
+                <div class="sub">Smart Travel · Travel Planning System™</div>
+            </div>
+            <div class="footer-info">
+                📍 Atención personalizada<br>
+                📱 WhatsApp Business<br>
+                📧 <a href="mailto:info@luazul.travel">info@luazul.travel</a><br>
+                🌐 @luazul.travel
+            </div>
+            <div class="footer-legal">
+                Planificación en dólares estadounidenses (USD).<br>
+                Contrato de adhesión disponible.<br>
+                Condiciones sujetas a disponibilidad.
+            </div>
+        </div>
+        <div class="footer-bottom">🔵 Begin your journey today · LUAZUL SMART TRAVEL</div>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="mariposa-chat.js"></script>
+
+<!-- AGENT SELECTOR MODAL -->
+<div class="agent-overlay" id="agentOverlay" onclick="closeAgentsOutside(event)">
+    <div class="agent-modal" id="agentModal">
+        <div style="font-size:2rem;margin-bottom:12px;">👋</div>
+        <h3>Seleccioná tu asesora</h3>
+        <p>Contactate directo por WhatsApp — te responden en minutos.</p>
+        <div class="agent-cards">
+            <a class="agent-card" id="agentLuci" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">🦋</div>
+                <div class="agent-name">Lucía</div>
+                <div class="agent-role">Asesora · Brasil 🇧🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+            <a class="agent-card" id="agentAle" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">✨</div>
+                <div class="agent-name">Ale</div>
+                <div class="agent-role">Asesora · Argentina 🇦🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+        </div>
+        <div class="agent-close" onclick="closeAgents()">✕ Cerrar</div>
+    </div>
+</div>
+
+<script>
+
+/* ── AGENT MODAL ── */
+var LZ_AGENTS = {
+  luci: { wa: "5522998977213", nombre: "Lucía" },
+  ale:  { wa: "5492974726449",  nombre: "Ale"   }
+};
+var LZ_PAGE_CONTEXT = "los paquetes disponibles";
+
+function openAgents(context) {
+  var ctx = context || LZ_PAGE_CONTEXT;
+  var msg = encodeURIComponent("¡Hola! Me gustaría recibir información sobre " + ctx + " con Luazul Smart Travel.");
+  document.getElementById("agentLuci").href = "https://wa.me/" + LZ_AGENTS.luci.wa + "?text=" + msg;
+  document.getElementById("agentAle").href  = "https://wa.me/" + LZ_AGENTS.ale.wa  + "?text=" + msg;
+  document.getElementById("agentOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeAgents() {
+  document.getElementById("agentOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function closeAgentsOutside(e) {
+  if (e.target === document.getElementById("agentOverlay")) closeAgents();
+}
+
+</script>
+
+<script>
+function toggleMobileNav() {
+    var nav = document.getElementById('mobileNav');
+    var btn = document.getElementById('navBurger');
+    nav.classList.toggle('open');
+    btn.classList.toggle('open');
+    document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+}
+function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+    document.getElementById('navBurger').classList.remove('open');
+    document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

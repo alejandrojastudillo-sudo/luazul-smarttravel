@@ -1,0 +1,81 @@
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[redirects]]
+  from = "/destinos/cabo-frio"
+  to = "/destinos/cabo-frio.html"
+  status = 200
+
+[[redirects]]
+  from = "/destinos/buzios"
+  to = "/destinos/buzios.html"
+  status = 200
+
+[[redirects]]
+  from = "/tour-buggy"
+  to = "/tour-buggy.html"
+  status = 200
+
+[[redirects]]
+  from = "/tour-mambo"
+  to = "/tour-mambo.html"
+  status = 200
+
+[[redirects]]
+  from = "/tour-barco-buzios"
+  to = "/tour-barco-buzios.html"
+  status = 200
+
+[[redirects]]
+  from = "/tour-cristo-redentor"
+  to = "/tour-cristo-redentor.html"
+  status = 200
+
+[[redirects]]
+  from = "/tour-floresta-tijuca"
+  to = "/tour-floresta-tijuca.html"
+  status = 200
+
+[[redirects]]
+  from = "/tour-ilha-grande"
+  to = "/tour-ilha-grande.html"
+  status = 200
+
+[[redirects]]
+  from = "/tour-maracana"
+  to = "/tour-maracana.html"
+  status = 200
+
+[[redirects]]
+  from = "/tour-rio-familia"
+  to = "/tour-rio-familia.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.open-meteo.com; frame-ancestors 'none';"

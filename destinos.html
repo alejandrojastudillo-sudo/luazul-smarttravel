@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Destinos · Luazul Smart Travel</title>
+    <link rel="stylesheet" href="css/style.css">
+
+<style>
+
+/* ══════════════════════════════════════════════════════════
+   LUAZUL · Clima Widget CSS
+   ══════════════════════════════════════════════════════════ */
+
+/* Loading */
+.clima-loading {
+  display:flex;align-items:center;gap:10px;
+  padding:20px;font-size:.78rem;color:rgba(200,220,255,.6);
+}
+.clima-spinner {
+  width:16px;height:16px;
+  border:2px solid rgba(126,184,255,.2);
+  border-top-color:rgba(126,184,255,.7);
+  border-radius:50%;animation:cspin .8s linear infinite;
+}
+@keyframes cspin { to { transform:rotate(360deg); } }
+
+/* Full Widget */
+.clima-widget {
+  background:rgba(5,20,60,.65);
+  border:1px solid rgba(100,160,255,.2);
+  border-radius:20px;padding:20px;
+  animation:cfadeIn .5s ease both;
+}
+@keyframes cfadeIn { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+
+.clima-header {
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:16px;
+}
+.clima-dest {
+  font-size:.9rem;font-weight:800;letter-spacing:.5px;
+}
+.clima-now-label {
+  font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(126,184,255,.6);
+}
+
+.clima-main {
+  display:flex;align-items:center;gap:14px;margin-bottom:16px;
+}
+.clima-icon-main { font-size:2.8rem;line-height:1; }
+.clima-temp-main {
+  font-size:3rem;font-weight:900;line-height:1;
+  color:#7eb8ff;letter-spacing:-1px;
+}
+.clima-temp-main span { font-size:1.4rem;font-weight:600;color:rgba(126,184,255,.7); }
+.clima-desc-main {
+  font-size:.82rem;font-weight:600;color:rgba(200,220,255,.75);margin-top:4px;
+}
+
+.clima-stats {
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;
+}
+.cs-item {
+  background:rgba(11,61,145,.25);border:1px solid rgba(100,160,255,.12);
+  border-radius:10px;padding:8px;text-align:center;
+}
+.cs-val { display:block;font-size:.9rem;font-weight:800;color:#7eb8ff; }
+.cs-lbl { display:block;font-size:.6rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(150,190,255,.5);margin-top:2px; }
+
+.clima-comfort {
+  font-size:.75rem;font-weight:700;
+  background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);
+  border-radius:8px;padding:7px 12px;margin-bottom:14px;
+  color:#6ee7b7;
+}
+
+/* 7-day forecast */
+.forecast {
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px;
+}
+.fc-day {
+  background:rgba(11,61,145,.2);border:1px solid rgba(100,160,255,.1);
+  border-radius:10px;padding:8px 4px;text-align:center;
+}
+.fc-day.fc-today {
+  background:rgba(26,91,181,.35);border-color:rgba(126,184,255,.3);
+}
+.fc-name { font-size:.58rem;font-weight:800;letter-spacing:.05em;
+  text-transform:uppercase;color:rgba(150,190,255,.7);margin-bottom:4px; }
+.fc-icon { font-size:1.1rem;margin-bottom:3px; }
+.fc-temps { display:flex;flex-direction:column;gap:1px; }
+.fc-max { font-size:.72rem;font-weight:800;color:#7eb8ff; }
+.fc-min { font-size:.62rem;color:rgba(150,190,255,.5); }
+.fc-rain { font-size:.55rem;color:#60a5fa;margin-top:2px; }
+
+.clima-footer {
+  font-size:.6rem;color:rgba(150,190,255,.3);text-align:right;
+}
+
+/* Compact version (hero) */
+.clima-compact {
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.clima-icon-big { font-size:2rem; }
+.clima-info-main {}
+.clima-temp-big { font-size:1.6rem;font-weight:900;color:#7eb8ff;line-height:1; }
+.clima-desc-short { font-size:.72rem;color:rgba(200,220,255,.7);margin-top:2px; }
+.clima-location { font-size:.65rem;color:rgba(150,190,255,.5);margin-top:2px; }
+.clima-details-mini {
+  display:flex;gap:10px;font-size:.65rem;font-weight:600;
+  color:rgba(150,190,255,.6);flex-wrap:wrap;margin-top:4px;
+}
+
+/* Tabs selector */
+.clima-tabs {
+  display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;
+}
+.clima-tab {
+  padding:6px 14px;border-radius:20px;font-size:.72rem;font-weight:700;
+  border:1px solid rgba(100,160,255,.2);background:rgba(5,18,55,.5);
+  color:rgba(150,190,255,.7);cursor:pointer;transition:all .2s;
+}
+.clima-tab:hover { background:rgba(26,91,181,.3);color:#7eb8ff; }
+.clima-tab.active {
+  background:rgba(26,91,181,.4);border-color:rgba(126,184,255,.4);color:#7eb8ff;
+}
+
+/* vs banner */
+.clima-vs-banner {
+  background:linear-gradient(135deg,rgba(2,10,30,.85),rgba(5,18,50,.8));
+  border:1px solid rgba(100,160,255,.18);border-radius:20px;padding:24px;
+  margin-bottom:24px;
+}
+.clima-vs-title {
+  font-size:.7rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(126,184,255,.6);margin-bottom:16px;text-align:center;
+}
+.clima-vs-grid {
+  display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;
+}
+.clima-vs-sep {
+  text-align:center;font-size:1.2rem;
+  color:rgba(126,184,255,.4);font-weight:900;
+}
+.clima-cta-weather {
+  margin-top:16px;text-align:center;padding-top:14px;
+  border-top:1px solid rgba(100,160,255,.1);
+  font-size:.78rem;font-weight:700;color:#34d399;
+}
+
+@media(max-width:600px){
+  .forecast { grid-template-columns:repeat(4,1fr); }
+  .forecast .fc-day:nth-child(n+5) { display:none; }
+  .clima-vs-grid { grid-template-columns:1fr;gap:10px; }
+  .clima-vs-sep { display:none; }
+}
+
+
+/* Agent selector modal */
+.agent-overlay {
+  display:none;position:fixed;inset:0;
+  background:rgba(2,8,25,.82);backdrop-filter:blur(12px);
+  z-index:500;align-items:center;justify-content:center;
+}
+.agent-overlay.open { display:flex; }
+.agent-modal {
+  background:rgba(5,18,55,.95);
+  border:1px solid rgba(100,160,255,.28);
+  border-radius:28px;padding:44px 40px;
+  width:min(480px,90vw);
+  text-align:center;
+  animation:modalIn .3s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(.92) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.agent-modal h3 { font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:6px; }
+.agent-modal p { font-size:.88rem;color:rgba(150,190,255,.7);margin-bottom:32px; }
+.agent-cards { display:flex;gap:16px;justify-content:center; }
+.agent-card {
+  flex:1;max-width:180px;
+  background:rgba(11,30,80,.6);
+  border:1.5px solid rgba(100,160,255,.2);
+  border-radius:20px;padding:28px 16px;
+  text-decoration:none;color:#fff;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+  cursor:pointer;
+}
+.agent-card:hover {
+  transform:translateY(-5px);
+  border-color:rgba(126,184,255,.5);
+  box-shadow:0 14px 40px rgba(11,61,145,.5);
+}
+.agent-avatar {
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#1a5bb5,#0B3D91);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;margin:0 auto 14px;
+  border:2px solid rgba(126,184,255,.3);
+}
+.agent-name { font-size:1.1rem;font-weight:800;margin-bottom:4px; }
+.agent-role { font-size:.72rem;color:rgba(126,184,255,.7);font-weight:600;letter-spacing:.1em;text-transform:uppercase; }
+.agent-wa-badge {
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:12px;padding:5px 12px;
+  background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.25);
+  border-radius:20px;font-size:.68rem;font-weight:700;color:#25d366;
+}
+.agent-close { margin-top:24px;font-size:.78rem;color:rgba(150,190,255,.5);cursor:pointer;text-decoration:underline; }
+.agent-close:hover { color:rgba(150,190,255,.8); }
+@media(max-width:500px){ .agent-cards { flex-direction:column;align-items:center; } }
+
+
+@media(max-width:480px) {
+  .dest-cards-grid { grid-template-columns: 1fr !important; }
+  .dest-card-img { height: 180px !important; }
+  .vs-comodoro-panel { flex-direction: column !important; }
+  .vs-comodoro-panel .vs-stat { flex: 1 1 45% !important; }
+}
+</style>
+            <link rel="preload" as="image" href="images/buzios-orla-bardot-hero.webp" type="image/webp">
+    <link rel="canonical" href="https://www.luazul.com/destinos.html">
+    <meta name="description" content="Explorá los destinos de Brasil con Luazul Smart Travel: Cabo Frío, Búzios, Arraial do Cabo y Copacabana. Paquetes en cuotas, sin estrés, con todo organizado.">
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="Luazul Smart Travel">
+    <meta property="og:title"       content="Destinos — Luazul Smart Travel">
+    <meta property="og:description" content="Explorá los destinos de Brasil con Luazul Smart Travel: Cabo Frío, Búzios, Arraial do Cabo y Copacabana. Paquetes en cuotas, sin estrés, con todo organizado.">
+    <meta property="og:image"       content="https://www.luazul.com/images/buzios-orla-bardot-hero.webp">
+    <meta property="og:url"         content="https://www.luazul.com/destinos.html">
+    <meta name="twitter:card"       content="summary_large_image">
+    <meta name="twitter:title"      content="Destinos — Luazul Smart Travel">
+    <meta name="twitter:description" content="Explorá los destinos de Brasil con Luazul Smart Travel: Cabo Frío, Búzios, Arraial do Cabo y Copacabana. Paquetes en cuotas, sin estrés, con todo organizado.">
+    <meta name="twitter:image"      content="https://www.luazul.com/images/buzios-orla-bardot-hero.webp">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="navbar-logo" style="text-decoration:none;color:inherit;">
+        <img src="images/logo-nav.png" alt="Luazul Smart Travel" / loading="lazy">
+        <div class="navbar-brand">
+            <span class="name">LUAZUL</span>
+            <span class="tagline">Smart Travel</span>
+        </div>
+    </a>
+    <div class="navbar-flags" style="display:flex;align-items:center;gap:6px;margin-right:12px;">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjUwNCIgZmlsbD0iIzAwOWMzYiIvPjxwb2x5Z29uIHBvaW50cz0iMzYwLDM2IDY4NCwyNTIgMzYwLDQ2OCAzNiwyNTIiIGZpbGw9IiNmZmRmMDAiLz48Y2lyY2xlIGN4PSIzNjAiIGN5PSIyNTIiIHI9IjEwOCIgZmlsbD0iIzAwMjc3NiIvPjxwYXRoIGQ9Ik0yNTIsMjE2IFEzNjAsMzI0IDQ2OCwyMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMTIiIGZpbGw9Im5vbmUiLz48dGV4dCB4PSIzNjAiIHk9IjI1OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMjgiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iYm9sZCI+T1JERU0gRSBQUk9HUkVTU088L3RleHQ+PC9zdmc+" alt="Brasil" title="Brasil" style="width:36px;height:auto;border-radius:4px;box-shadow:0 0 8px rgba(34,197,94,.55),0 2px 6px rgba(0,0,0,.4);border:1.5px solid rgba(34,197,94,.4);cursor:default;" / loading="lazy">
+        <span style="width:1px;height:22px;background:rgba(255,255,255,.18);display:inline-block;margin:0 2px;vertical-align:middle;"></span>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjUwNCIgZmlsbD0iIzc0YWNkZiIvPjxyZWN0IHk9IjE2OCIgd2lkdGg9IjcyMCIgaGVpZ2h0PSIxNjgiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iMzYwIiBjeT0iMjUyIiByPSI0MiIgZmlsbD0iI2Y2YjQwZSIvPjxsaW5lIHgxPSIzNjAiIHkxPSIxOTYiIHgyPSIzNjAiIHkyPSIzMDgiIHN0cm9rZT0iIzg0MzUxMSIgc3Ryb2tlLXdpZHRoPSI4Ii8+PGxpbmUgeDE9IjMwNCIgeTE9IjI1MiIgeDI9IjQxNiIgeTI9IjI1MiIgc3Ryb2tlPSIjODQzNTExIiBzdHJva2Utd2lkdGg9IjgiLz48bGluZSB4MT0iMzIwIiB5MT0iMjEyIiB4Mj0iNDAwIiB5Mj0iMjkyIiBzdHJva2U9IiM4NDM1MTEiIHN0cm9rZS13aWR0aD0iOCIvPjxsaW5lIHgxPSI0MDAiIHkxPSIyMTIiIHgyPSIzMjAiIHkyPSIyOTIiIHN0cm9rZT0iIzg0MzUxMSIgc3Ryb2tlLXdpZHRoPSI4Ii8+PC9zdmc+" alt="Argentina" title="Argentina" style="width:26px;height:auto;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);cursor:default;opacity:.9;" / loading="lazy">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjE2OCIgZmlsbD0iI2Q1MmIxZSIvPjxyZWN0IHk9IjE2OCIgd2lkdGg9IjcyMCIgaGVpZ2h0PSIxNjgiIGZpbGw9IndoaXRlIi8+PHJlY3QgeT0iMzM2IiB3aWR0aD0iNzIwIiBoZWlnaHQ9IjE2OCIgZmlsbD0iIzAwMzhhOCIvPjxjaXJjbGUgY3g9IjM2MCIgY3k9IjI1MiIgcj0iNTYiIGZpbGw9IiNmZmQ3MDAiLz48Y2lyY2xlIGN4PSIzNjAiIGN5PSIyNTIiIHI9IjQ0IiBmaWxsPSIjMDA5YjNhIi8+PGNpcmNsZSBjeD0iMzYwIiBjeT0iMjUyIiByPSIyMCIgZmlsbD0iI2ZmZDcwMCIvPjwvc3ZnPg==" alt="Paraguay" title="Paraguay" style="width:26px;height:auto;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);cursor:default;opacity:.9;" / loading="lazy">
+    </div>
+    <div class="navbar-links">
+        <a href="ofertas.html">Paquetes</a>
+        <a href="empresa.html">Método</a>
+        <a href="simulador.html">Simulador</a>
+        <a href="tours.html">Tours</a>
+        <a href="destinos.html" class="active">Destinos</a>
+        <a href="panel_cliente_luazul.html" style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:30px;border:1px solid rgba(100,160,255,.25);transition:all .2s;">👤 Mi panel</a>
+        <a href="#" onclick="openAgents();return false;" class="navbar-cta">Reservar ahora</a>
+    </div>
+    <button class="navbar-burger" id="navBurger" aria-label="Menú" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+<!-- MOBILE NAV DRAWER -->
+<nav class="navbar-mobile" id="mobileNav">
+    <a href="ofertas.html" onclick="closeMobileNav()">Paquetes</a>
+    <a href="empresa.html" onclick="closeMobileNav()">Método</a>
+    <a href="simulador.html" onclick="closeMobileNav()">Simulador</a>
+    <a href="tours.html" onclick="closeMobileNav()">Tours</a>
+    <a href="destinos.html" onclick="closeMobileNav()">Destinos</a>
+    <a href="panel_cliente_luazul.html" onclick="closeMobileNav()">👤 Mi Panel</a>
+    <a href="#" class="mobile-cta" onclick="openAgents();closeMobileNav();return false;">🔵 Reservar ahora</a>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+    <div class="container">
+        <h1>🗺️ Destinos <span>Destacados</span></h1>
+        <p>Brasil en su máxima expresión — naturaleza, cultura y mar en un solo viaje cuidadosamente planificado con el Método LUAZUL.</p>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- DESTINOS CARDS -->
+    <section class="section" id="destinos">
+        <div class="cards-grid">
+            <div class="glass-card">
+                <div class="card-image-placeholder">🏖️</div>
+                <div class="card-content">
+                    <h3>Cabo Frío</h3>
+                    <h4>El equilibrio perfecto entre naturaleza y elegancia</h4>
+                    <p>Aguas cristalinas. Arena blanca. Atardeceres dorados. Un destino exclusivo del litoral brasileño.</p>
+                    <ul style="margin:14px 0;">
+                        <li style="padding:4px 0;">✔ 7 noches frente al mar</li>
+                        <li style="padding:4px 0;">✔ Traslados privados</li>
+                        <li style="padding:4px 0;">✔ Tour Río + Arraial con almuerzo</li>
+                    </ul>
+                    <a href="destinos/cabo-frio.html" class="btn-hero btn-secondary" style="margin-top:12px;display:block;text-align:center;border-radius:14px;">🌊 Conocer este destino</a>
+                    <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="margin-top:10px;display:block;text-align:center;border-radius:14px;">🔵 Reservar Cabo Frío</a>
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="card-image-placeholder">🌊</div>
+                <div class="card-content">
+                    <h3>Arraial do Cabo</h3>
+                    <h4>El Caribe brasileño — aguas únicas en el mundo</h4>
+                    <p>Turquesa imposible. Islas vírgenes. El destino de buceo y snorkeling más increíble de la Costa do Sol.</p>
+                    <ul style="margin:14px 0;">
+                        <li style="padding:4px 0;">✔ Playas de agua transparente</li>
+                        <li style="padding:4px 0;">✔ Paseos en barco incluidos</li>
+                        <li style="padding:4px 0;">✔ Traslados privados</li>
+                    </ul>
+                    <a href="destinos/arraial-do-cabo.html" class="btn-hero btn-secondary" style="margin-top:12px;display:block;text-align:center;border-radius:14px;">🌊 Conocer este destino</a>
+                    <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="margin-top:10px;display:block;text-align:center;border-radius:14px;">🔵 Reservar Arraial</a>
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="card-image-placeholder">⛵</div>
+                <div class="card-content">
+                    <h3>Búzios</h3>
+                    <h4>La perla de la Costa — elegancia y 23 playas</h4>
+                    <p>El destino que conquistó a Brigitte Bardot. Rua das Pedras, noches incomparables y el mejor snorkeling del Estado.</p>
+                    <ul style="margin:14px 0;">
+                        <li style="padding:4px 0;">✔ 23 playas en una península</li>
+                        <li style="padding:4px 0;">✔ Vida nocturna de primer nivel</li>
+                        <li style="padding:4px 0;">✔ Gastronomía de autor</li>
+                    </ul>
+                    <a href="destinos/buzios.html" class="btn-hero btn-secondary" style="margin-top:12px;display:block;text-align:center;border-radius:14px;">🌊 Conocer este destino</a>
+                    <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="margin-top:10px;display:block;text-align:center;border-radius:14px;">🔵 Reservar Búzios</a>
+                </div>
+            </div>
+            <div class="glass-card">
+                <img src="images/copacabana.webp" alt="Copacabana" style="width:100%;height:200px;object-fit:cover;display:block;" loading="lazy" />
+                <div class="card-content">
+                    <h3>Copacabana</h3>
+                    <h4>Energía, cultura y mar en su máxima expresión</h4>
+                    <p>Cristo Redentor. Pan de Azúcar. Copacabana. Río no se visita. Se vive.</p>
+                    <ul style="margin:14px 0;">
+                        <li style="padding:4px 0;">✔ Paquetes organizados</li>
+                        <li style="padding:4px 0;">✔ Fechas programadas</li>
+                        <li style="padding:4px 0;">✔ Planificación en USD</li>
+                    </ul>
+                    <a href="destinos/rio-copacabana.html" class="btn-hero btn-secondary" style="margin-top:12px;display:block;text-align:center;border-radius:14px;">🌊 Conocer este destino</a>
+                    <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="margin-top:10px;display:block;text-align:center;border-radius:14px;">🔵 Reservar Copacabana</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ CLIMA EN TIEMPO REAL ══ -->
+    <section class="section" id="clima-brasil">
+      <h2>🌤️ Clima en tiempo real en <span>Brasil</span></h2>
+      <p class="section-desc">Mirá el clima actual en cada destino. Actualizado en tiempo real antes de que reserves.</p>
+
+      <!-- VS Banner: Comodoro vs Destino -->
+      <div class="clima-vs-banner" style="margin-top:28px;">
+        <div class="clima-vs-title">📍 Tu ciudad vs Brasil ahora mismo</div>
+        <div class="clima-vs-grid">
+          <div>
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(150,190,255,.4);margin-bottom:8px;text-align:center;">🏔️ Comodoro Rivadavia</div>
+            <div id="climaComodoro" style="min-height:60px;"></div>
+          </div>
+          <div class="clima-vs-sep">VS</div>
+          <div>
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(150,190,255,.4);margin-bottom:8px;text-align:center;">🏖️ Cabo Frío, Brasil</div>
+            <div id="climaCaboVs" style="min-height:60px;"></div>
+          </div>
+        </div>
+        <div class="clima-cta-weather" id="climaCtaText">Cargando comparativa...</div>
+      </div>
+
+      <!-- Full forecasts -->
+      <div class="clima-tabs" style="margin-top:24px;">
+        <div class="clima-tab active" onclick="switchClimaFull('cabo',this)">🏖️ Cabo Frío</div>
+        <div class="clima-tab" onclick="switchClimaFull('rio',this)">🌊 Copacabana</div>
+        <div class="clima-tab" onclick="switchClimaFull('buzios',this)">⛵ Búzios</div>
+      </div>
+
+      <div id="climaFullWidget" style="margin-top:8px;"></div>
+
+      <div style="margin-top:16px;text-align:center;">
+        <a href="ofertas.html" class="btn-hero btn-primary">🏖️ Reservar ahora que el clima es ideal →</a>
+      </div>
+    </section>
+    <!-- RIO GALLERY -->
+    <section class="section" id="iconos">
+        <h2>🌟 Íconos de <span>Río de Janeiro</span></h2>
+        <p class="section-desc">Los lugares más emblemáticos de la ciudad maravillosa te esperan en diciembre.</p>
+        <div class="rio-gallery">
+            <div class="tall" style="background-image:url('images/copacabana.webp');"></div>
+            <div style="background-image:url('images/rio-2.webp');"></div>
+            <div style="background-image:url('images/rio-3.webp');"></div>
+            <div style="background-image:url('images/rio-4.webp');"></div>
+            <div style="background-image:url('images/rio-5.webp');"></div>
+        </div>
+        <div style="margin-top:36px;text-align:center;">
+            <a href="tours.html" class="view-all-btn">🚙 Descubrir tours en Río →</a>
+        </div>
+    </section>
+
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+    <div class="container">
+        <h2>¿Listo para <span>explorar Brasil</span>?</h2>
+        <p>Nuestros asesores te acompañan en cada paso del proceso.</p>
+        <p style="margin-bottom:36px;">Reservá hoy y comenzá a construir tu viaje.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">
+            <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="font-size:1.1rem;padding:17px 44px;">🔵 Hablar con un asesor</a>
+            <a href="ofertas.html" class="btn-hero btn-glass" style="font-size:1.1rem;padding:17px 44px;">🏖️ Ver paquetes</a>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="images/logo-footer.png" alt="Luazul Smart Travel" / loading="lazy">
+                <div class="name">LUAZUL</div>
+                <div class="sub">Smart Travel · Travel Planning System™</div>
+            </div>
+            <div class="footer-info">
+                📍 Atención personalizada<br>
+                📱 WhatsApp Business<br>
+                📧 <a href="mailto:info@luazul.travel">info@luazul.travel</a><br>
+                🌐 @luazul.travel
+            </div>
+            <div class="footer-legal">
+                Planificación en dólares estadounidenses (USD).<br>
+                Contrato de adhesión disponible.<br>
+                Condiciones sujetas a disponibilidad.
+            </div>
+        </div>
+        <div class="footer-bottom">🔵 Begin your journey today · LUAZUL SMART TRAVEL</div>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="mariposa-chat.js"></script>
+
+<script>
+
+/* ══════════════════════════════════════════════════════════
+   LUAZUL · Clima en Tiempo Real — Open-Meteo API (gratuita)
+   Coordenadas:
+     Cabo Frío:        lat -22.88, lon -42.03
+     Río de Janeiro:   lat -22.90, lon -43.17
+     Búzios:           lat -22.75, lon -41.88
+     Comodoro Riv.:    lat -45.87, lon -67.49
+   ══════════════════════════════════════════════════════════ */
+
+var DESTINOS_CLIMA = {
+  'cabo':  { lat: -22.88, lon: -42.03, nombre: 'Cabo Frío',       tz: 'America/Sao_Paulo', emoji: '🏖️' },
+  'rio':   { lat: -22.90, lon: -43.17, nombre: 'Río de Janeiro',  tz: 'America/Sao_Paulo', emoji: '🌆' },
+  'buzios':{ lat: -22.75, lon: -41.88, nombre: 'Búzios',          tz: 'America/Sao_Paulo', emoji: '⛵' },
+  'como':  { lat: -45.87, lon: -67.49, nombre: 'Comodoro Rivadavia', tz: 'America/Argentina/Buenos_Aires', emoji: '🏔️' }
+};
+
+var WMO_CODES = {
+  0:'☀️ Despejado', 1:'🌤️ Mayormente despejado', 2:'⛅ Parcialmente nublado',
+  3:'☁️ Cubierto', 45:'🌫️ Neblina', 48:'🌫️ Neblina con hielo',
+  51:'🌦️ Llovizna leve', 53:'🌦️ Llovizna', 55:'🌧️ Llovizna intensa',
+  61:'🌧️ Lluvia leve', 63:'🌧️ Lluvia', 65:'🌧️ Lluvia intensa',
+  71:'🌨️ Nieve leve', 73:'🌨️ Nieve', 75:'❄️ Nevada intensa',
+  80:'🌦️ Chubascos', 81:'🌧️ Lluvias', 82:'⛈️ Lluvias fuertes',
+  95:'⛈️ Tormenta', 96:'⛈️ Tormenta con granizo', 99:'⛈️ Tormenta fuerte'
+};
+
+var WMO_ICONS_DAY = {
+  0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️', 45:'🌫️', 48:'🌫️',
+  51:'🌦️', 53:'🌦️', 55:'🌧️', 61:'🌧️', 63:'🌧️', 65:'🌧️',
+  71:'🌨️', 73:'🌨️', 75:'❄️', 80:'🌦️', 81:'🌧️', 82:'⛈️',
+  95:'⛈️', 96:'⛈️', 99:'⛈️'
+};
+
+var DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+var MESES_CORTO = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+async function fetchClima(destKey) {
+  var d = DESTINOS_CLIMA[destKey];
+  if (!d) return null;
+  var url = 'https://api.open-meteo.com/v1/forecast?'
+    + 'latitude=' + d.lat + '&longitude=' + d.lon
+    + '&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relativehumidity_2m,precipitation'
+    + '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,windspeed_10m_max'
+    + '&timezone=' + encodeURIComponent(d.tz)
+    + '&forecast_days=7';
+  try {
+    var r = await fetch(url);
+    var data = await r.json();
+    return { destino: d, data: data };
+  } catch(e) {
+    return null;
+  }
+}
+
+function buildClimaWidget(result, compact) {
+  if (!result) return '<div style="padding:20px;text-align:center;font-size:.8rem;color:rgba(200,220,255,.5);">🌐 Conectando con datos del clima...</div>';
+  
+  var c = result.data.current;
+  var daily = result.data.daily;
+  var d = result.destino;
+  
+  var temp = Math.round(c.temperature_2m);
+  var feels = Math.round(c.apparent_temperature);
+  var code = c.weathercode;
+  var desc = WMO_CODES[code] || '🌤️ Variable';
+  var icon = desc.split(' ')[0];
+  var wind = Math.round(c.windspeed_10m);
+  var hum  = c.relativehumidity_2m;
+
+  // Comfort message
+  var comfort = '';
+  if (temp >= 28) comfort = '🔥 Clima ideal para la playa';
+  else if (temp >= 24) comfort = '✅ Temperatura agradable';
+  else if (temp >= 18) comfort = '🌤️ Fresco y agradable';
+  else comfort = '🧥 Llevar algo de abrigo';
+
+  if (compact) {
+    // Compact version for hero/inline
+    return '<div class="clima-compact">'
+      + '<div class="clima-icon-big">' + icon + '</div>'
+      + '<div class="clima-info-main">'
+      + '<div class="clima-temp-big">' + temp + '°C</div>'
+      + '<div class="clima-desc-short">' + desc.replace(/^[^\s]+ /,'') + '</div>'
+      + '<div class="clima-location">📍 ' + d.nombre + '</div>'
+      + '</div>'
+      + '<div class="clima-details-mini">'
+      + '<span>💧 ' + hum + '%</span>'
+      + '<span>💨 ' + wind + ' km/h</span>'
+      + '<span>🌡️ Sensación ' + feels + '°C</span>'
+      + '</div>'
+      + '</div>';
+  }
+
+  // Full widget with 7-day forecast
+  var forecastHTML = '';
+  if (daily && daily.time) {
+    for (var i = 0; i < Math.min(7, daily.time.length); i++) {
+      var date = new Date(daily.time[i] + 'T12:00:00');
+      var dayName = i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : DIAS[date.getDay()];
+      var dayIcon = WMO_ICONS_DAY[daily.weathercode[i]] || '🌤️';
+      var maxT = Math.round(daily.temperature_2m_max[i]);
+      var minT = Math.round(daily.temperature_2m_min[i]);
+      var rain = daily.precipitation_sum[i];
+      forecastHTML += '<div class="fc-day' + (i===0?' fc-today':'') + '">'
+        + '<div class="fc-name">' + dayName + '</div>'
+        + '<div class="fc-icon">' + dayIcon + '</div>'
+        + '<div class="fc-temps"><span class="fc-max">' + maxT + '°</span><span class="fc-min">' + minT + '°</span></div>'
+        + (rain > 0 ? '<div class="fc-rain">💧' + rain.toFixed(1) + 'mm</div>' : '')
+        + '</div>';
+    }
+  }
+
+  return '<div class="clima-widget">'
+    + '<div class="clima-header">'
+    + '<div class="clima-dest"><span>' + d.emoji + '</span> ' + d.nombre + '</div>'
+    + '<div class="clima-now-label">AHORA · ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'}) + '</div>'
+    + '</div>'
+    + '<div class="clima-main">'
+    + '<div class="clima-icon-main">' + icon + '</div>'
+    + '<div class="clima-temp-main">' + temp + '°<span>C</span></div>'
+    + '<div class="clima-desc-main">' + desc.replace(/^[^\s]+ /,'') + '</div>'
+    + '</div>'
+    + '<div class="clima-stats">'
+    + '<div class="cs-item"><span class="cs-val">' + feels + '°C</span><span class="cs-lbl">Sensación</span></div>'
+    + '<div class="cs-item"><span class="cs-val">' + hum + '%</span><span class="cs-lbl">Humedad</span></div>'
+    + '<div class="cs-item"><span class="cs-val">' + wind + ' km/h</span><span class="cs-lbl">Viento</span></div>'
+    + '</div>'
+    + '<div class="clima-comfort">' + comfort + '</div>'
+    + '<div class="forecast">' + forecastHTML + '</div>'
+    + '<div class="clima-footer">Datos en tiempo real · <a href="https://open-meteo.com" target="_blank" rel="noopener" style="color:rgba(126,184,255,.5);text-decoration:none;">Open-Meteo</a></div>'
+    + '</div>';
+}
+
+// Load multiple destinations
+async function loadClimaMultiple(destKeys, containerIds, compact) {
+  for (var i = 0; i < destKeys.length; i++) {
+    var key = destKeys[i];
+    var cid = containerIds[i];
+    var el = document.getElementById(cid);
+    if (!el) continue;
+    el.innerHTML = '<div class="clima-loading"><div class="clima-spinner"></div> Obteniendo clima en tiempo real...</div>';
+    var result = await fetchClima(key);
+    el.innerHTML = buildClimaWidget(result, compact || false);
+  }
+}
+
+
+// ── DESTINOS PAGE ───────────────────────────────────────────
+var _climaCache = {};
+
+async function switchClimaFull(key, el) {
+  document.querySelectorAll('.clima-tab').forEach(function(t){ t.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  var container = document.getElementById('climaFullWidget');
+  if (_climaCache[key]) {
+    container.innerHTML = buildClimaWidget(_climaCache[key], false);
+    return;
+  }
+  container.innerHTML = '<div class="clima-loading"><div class="clima-spinner"></div> Cargando pronóstico 7 días...</div>';
+  var r = await fetchClima(key);
+  _climaCache[key] = r;
+  container.innerHTML = buildClimaWidget(r, false);
+}
+
+async function loadVsBanner() {
+  // Load Comodoro compact
+  var cc = document.getElementById('climaComodoro');
+  var cv = document.getElementById('climaCaboVs');
+  if (cc) {
+    cc.innerHTML = '<div class="clima-loading"><div class="clima-spinner"></div></div>';
+    var rComo = await fetchClima('como');
+    _climaCache['como'] = rComo;
+    cc.innerHTML = buildClimaWidget(rComo, true);
+  }
+  if (cv) {
+    cv.innerHTML = '<div class="clima-loading"><div class="clima-spinner"></div></div>';
+    var rCabo = await fetchClima('cabo');
+    _climaCache['cabo'] = rCabo;
+    cv.innerHTML = buildClimaWidget(rCabo, true);
+
+    // CTA text comparison
+    var ctaEl = document.getElementById('climaCtaText');
+    if (ctaEl && rComo && rCabo) {
+      var tComo = Math.round(rComo.data.current.temperature_2m);
+      var tCabo = Math.round(rCabo.data.current.temperature_2m);
+      var diff = tCabo - tComo;
+      ctaEl.textContent = diff > 0
+        ? '🌡️ En Cabo Frío está ' + diff + '°C más cálido que en Comodoro ahora mismo 🏖️'
+        : '🌡️ Las temperaturas son similares — ¡pero el mar de Cabo Frío no tiene comparación!';
+    }
+  }
+}
+
+// Load full forecast for Cabo Frío by default + VS banner
+loadVsBanner();
+switchClimaFull('cabo', null);
+</script>
+
+
+<!-- AGENT SELECTOR MODAL -->
+<div class="agent-overlay" id="agentOverlay" onclick="closeAgentsOutside(event)">
+    <div class="agent-modal" id="agentModal">
+        <div style="font-size:2rem;margin-bottom:12px;">👋</div>
+        <h3>Seleccioná tu asesora</h3>
+        <p>Contactate directo por WhatsApp — te responden en minutos.</p>
+        <div class="agent-cards">
+            <a class="agent-card" id="agentLuci" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">🦋</div>
+                <div class="agent-name">Lucía</div>
+                <div class="agent-role">Asesora · Brasil 🇧🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+            <a class="agent-card" id="agentAle" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">✨</div>
+                <div class="agent-name">Ale</div>
+                <div class="agent-role">Asesora · Argentina 🇦🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+        </div>
+        <div class="agent-close" onclick="closeAgents()">✕ Cerrar</div>
+    </div>
+</div>
+
+<script>
+
+/* ── AGENT MODAL ── */
+var LZ_AGENTS = {
+  luci: { wa: "5522998977213", nombre: "Lucía" },
+  ale:  { wa: "5492974726449",  nombre: "Ale"   }
+};
+var LZ_PAGE_CONTEXT = "el viaje a Brasil";
+
+function openAgents(context) {
+  var ctx = context || LZ_PAGE_CONTEXT;
+  var msg = encodeURIComponent("¡Hola! Me gustaría recibir información sobre " + ctx + " con Luazul Smart Travel.");
+  document.getElementById("agentLuci").href = "https://wa.me/" + LZ_AGENTS.luci.wa + "?text=" + msg;
+  document.getElementById("agentAle").href  = "https://wa.me/" + LZ_AGENTS.ale.wa  + "?text=" + msg;
+  document.getElementById("agentOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeAgents() {
+  document.getElementById("agentOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function closeAgentsOutside(e) {
+  if (e.target === document.getElementById("agentOverlay")) closeAgents();
+}
+
+</script>
+
+<script>
+function toggleMobileNav() {
+    var nav = document.getElementById('mobileNav');
+    var btn = document.getElementById('navBurger');
+    nav.classList.toggle('open');
+    btn.classList.toggle('open');
+    document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+}
+function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+    document.getElementById('navBurger').classList.remove('open');
+    document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

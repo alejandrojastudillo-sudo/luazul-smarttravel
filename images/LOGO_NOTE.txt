@@ -1,0 +1,11 @@
+LOGO CONSOLIDATION NOTE (Phase 2 task)
+=====================================
+logo-hero.png, logo-nav.png, logo-footer.png, logo-watermark.png
+are ALL IDENTICAL (MD5: 659a69ff70c0c34dcce485c10768a144).
+Combined size: ~1.08 MB
+
+Phase 2 action:
+  1. Convert to SVG (target: <10 KB)
+  2. Use single logo.svg across all pages
+  3. Update CSS for proper sizing per context
+  Estimated savings: ~1.07 MB

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="../images/favicon-64.png">
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Arraial do Cabo · LUAZUL Smart Travel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/destinos-shared.css">
+    
+            <link rel="preload" as="image" href="../images/arraial-hero.webp" type="image/webp">
+    <link rel="canonical" href="https://www.luazul.com/destinos/arraial-do-cabo.html">
+    <meta name="description" content="Arraial do Cabo, el Caribe Brasileño. Aguas de hasta 40m de visibilidad, Praia do Farol y la Gruta Azul. A 160 km de Río de Janeiro. Luazul Smart Travel.">
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="Luazul Smart Travel">
+    <meta property="og:title"       content="Arraial do Cabo — Luazul Smart Travel">
+    <meta property="og:description" content="Arraial do Cabo, el Caribe Brasileño. Aguas de hasta 40m de visibilidad, Praia do Farol y la Gruta Azul. A 160 km de Río de Janeiro. Luazul Smart Travel.">
+    <meta property="og:image"       content="https://www.luazul.com/images/arraial-hero.webp">
+    <meta property="og:url"         content="https://www.luazul.com/destinos/arraial-do-cabo.html">
+    <meta name="twitter:card"       content="summary_large_image">
+    <meta name="twitter:title"      content="Arraial do Cabo — Luazul Smart Travel">
+    <meta name="twitter:description" content="Arraial do Cabo, el Caribe Brasileño. Aguas de hasta 40m de visibilidad, Praia do Farol y la Gruta Azul. A 160 km de Río de Janeiro. Luazul Smart Travel.">
+    <meta name="twitter:image"      content="https://www.luazul.com/images/arraial-hero.webp">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="../index.html" class="navbar-logo" style="text-decoration:none;color:inherit;">
+        <img src="../images/logo-nav.png" alt="Luazul Smart Travel" / loading="lazy">
+        <div class="navbar-brand">
+            <span class="name">LUAZUL</span>
+            <span class="tagline">Smart Travel</span>
+        </div>
+    </a>
+    <div class="navbar-links">
+        <a href="../ofertas.html">Paquetes</a>
+        <a href="../empresa.html">Método</a>
+        <a href="../simulador.html">Simulador</a>
+        <a href="../tours.html">Tours</a>
+        <a href="../index.html#destinos" class="active">Destinos</a>
+        <a href="../panel_cliente_luazul.html" style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:30px;border:1px solid rgba(100,160,255,.25);transition:all .2s;">👤 Mi panel</a>
+        <a href="#reservar" onclick="openAgents()" class="navbar-cta" style="text-decoration:none;">Reservar</a>
+    </div>
+    <button class="navbar-burger" id="navBurger" aria-label="Menú" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+<!-- MOBILE NAV DRAWER -->
+<nav class="navbar-mobile" id="mobileNav">
+    <a href="../ofertas.html" onclick="closeMobileNav()">Paquetes</a>
+    <a href="../empresa.html" onclick="closeMobileNav()">Método</a>
+    <a href="../simulador.html" onclick="closeMobileNav()">Simulador</a>
+    <a href="../tours.html" onclick="closeMobileNav()">Tours</a>
+    <a href="../destinos.html" onclick="closeMobileNav()">Destinos</a>
+    <a href="../panel_cliente_luazul.html" onclick="closeMobileNav()">👤 Mi Panel</a>
+    <a href="#" class="mobile-cta" onclick="openAgents();closeMobileNav();return false;">🔵 Reservar ahora</a>
+</nav>
+
+<!-- HERO -->
+<section class="dest-hero">
+    <img class="dest-hero-img" src="../images/arraial-hero.webp" alt="Praia do Farol, Arraial do Cabo" />
+    <div class="dest-hero-overlay"></div>
+    <div class="dest-hero-content container">
+        <div class="dest-hero-tag">🌊 Costa do Sol · Río de Janeiro</div>
+        <h1 class="dest-hero-title">Arraial do Cabo</h1>
+        <p class="dest-hero-sub">El Caribe que no sabías que existía en Brasil. Aguas tan transparentes que el fondo parece un sueño.</p>
+        <button class="dest-hero-reserve-btn" onclick="openAgents()">
+            🌴 Reservar este viaje
+        </button>
+    </div>
+</section>
+
+<div class="container">
+
+    <!-- BREADCRUMB -->
+    <div class="dest-breadcrumb">
+        <a href="../index.html">Inicio</a>
+        <span>/</span>
+        <a href="../index.html#destinos">Destinos</a>
+        <span>/</span>
+        Arraial do Cabo
+    </div>
+
+    <!-- INTRODUCCIÓN -->
+    <section class="dest-section">
+        <div class="dest-section-sub">🌴 La experiencia</div>
+        <h2 class="dest-section-title">Un viaje que <span>cambia todo</span></h2>
+        <div class="dest-intro-text">
+            <p>Si existiera un ranking mundial de transparencia del agua, <strong>Arraial do Cabo estaría en el podio</strong>. Conocida como el <strong>"Caribe Brasileño"</strong>, esta pequeña ciudad a solo 160 km de Río de Janeiro guarda uno de los mayores tesoros naturales de toda Sudamérica: mares de un azul eléctrico que se vuelven verdes, turquesas, celestes — todo en la misma playa, según de dónde mire el sol. El INPE (Instituto Nacional de Pesquisas Espaciais) la catalogó como la playa más perfecta de Brasil.</p>
+            <p style="margin-top:1.4rem;">No es marketing turístico. Es la confluencia de corrientes frías del sur con las cálidas tropicales — el fenómeno de <strong>surgencia ("upwelling")</strong> — lo que sube nutrientes del fondo marino y crea ese color único. Junto a este afloramiento costero que convierte sus aguas en un acuario natural, <strong>Arraial do Cabo es el destino de buceo más importante de Río de Janeiro</strong>, con visibilidades de hasta 30–40 metros y arrecifes habitados por tortugas, rayas y cardúmenes de peces tropicales — incluyendo 4 de las 10 especies de peces loro de todo Brasil.</p>
+            <p style="margin-top:1.4rem;">Sus calles tranquilas, el centro histórico con una iglesia de 1506 (sede de la primera misa en el interior de Brasil), el monumento a Américo Vespucio y la Praia do Forno forman el backdrop perfecto para desaparecer del mundo por una semana. Los mejores meses para visitar son <strong>abril–mayo y septiembre</strong>: agua tibia y cristalina, playas sin multitudes y avistaje de ballenas jorobadas entre junio y septiembre. Luazul Smart Travel te lleva con todo organizado, en cuotas que se acomodan a tu realidad.</p>
+        </div>
+    </section>
+<!-- HIGHLIGHTS -->
+    <section class="dest-section">
+        <div class="dest-section-sub">🌟 Por qué este destino</div>
+        <h2 class="dest-section-title">Lo que hace <span>especial</span> este lugar</h2>
+        <div class="dest-highlights">
+                    <div class="dest-highlight"><span class="dh-icon">💎</span><div><strong>El Caribe Brasileño</strong><p>Arena blanca fina, aguas que van del turquesa al azul cobalto y visibilidad de hasta 40 metros. Una rareza natural que no existe en ninguna otra costa sudamericana.</p></div></div>
+                    <div class="dest-highlight"><span class="dh-icon">🤿</span><div><strong>Buceo y snorkeling de élite</strong><p>Reserva Marina con arrecifes de coral, tortugas, rayas y cardúmenes de peces tropicales. Visibilidades de 30–40 m hacen de Arraial el mejor destino de buceo de Río de Janeiro.</p></div></div>
+                    <div class="dest-highlight"><span class="dh-icon">⛵</span><div><strong>Tours náuticos inolvidables</strong><p>Paseos en escuna con paradas en la Gruta Azul, Praia do Farol e islas vírgenes. La forma perfecta de descubrir el destino desde el mar.</p></div></div>
+                    <div class="dest-highlight"><span class="dh-icon">🐋</span><div><strong>Avistaje de ballenas</strong><p>Entre junio y septiembre, las ballenas jorobadas migran por la costa de Arraial. Una experiencia única que convierte la temporada baja en algo extraordinario.</p></div></div>
+        </div>
+    </section>
+
+    <!-- ATRACCIONES -->
+    <section class="dest-section">
+        <div class="dest-section-sub">📍 Lugares imperdibles</div>
+        <h2 class="dest-section-title">Qué vas a <span>descubrir</span></h2>
+        <div class="dest-attr-grid">
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🏖️</div>
+                        <div class="dac-name">Praia do Farol</div>
+                        <div class="dac-desc">Catalogada como la playa más perfecta de Brasil por el INPE. Solo accesible en barco, con acceso regulado para preservar su estado prístino. Arena blanca pura y aguas de un azul imposible.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🌊</div>
+                        <div class="dac-name">Prainhas do Atalaia</div>
+                        <div class="dac-desc">Dos calas paradisíacas rodeadas de acantilados, accesibles por una caminata de 300 escalones. Agua turquesa cristalina, tortugas marinas y vistas panorámicas que quitan el aliento.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🤿</div>
+                        <div class="dac-name">Gruta Azul</div>
+                        <div class="dac-desc">Una grieta submarina de aguas azul cobalto accesible solo en días de calma total. El punto más fotogénico de todos los tours náuticos — una experiencia que no existe en ningún otro lugar de Brasil.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🌿</div>
+                        <div class="dac-name">Praia do Forno</div>
+                        <div class="dac-desc">La playa icónica de Arraial: aguas calmas y cristalinas, arrecifes cercanos y arena blanca rodeada de vegetación atlántica. Ideal para snorkel y kayak, accesible a pie en 15 minutos desde Praia dos Anjos.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">🏔️</div>
+                        <div class="dac-name">Miradores y senderos</div>
+                        <div class="dac-desc">El Mirante do Atalaia y el Mirante do Pontal ofrecen vistas de 360° sobre las calas y el Atlántico. El sendero Ruta Naufrágios (7 km) conecta ruinas históricas, un naufragio real e islotes vírgenes.</div>
+                    </div>
+                    <div class="dest-attr-card">
+                        <div class="dac-icon">⛪</div>
+                        <div class="dac-name">Centro histórico</div>
+                        <div class="dac-desc">La Iglesia Nossa Senhora dos Remédios (1506) fue sede de la primera misa en el interior de Brasil. El monumento a Américo Vespucio en Praia dos Anjos recuerda el paso del explorador por estas costas más de 500 años atrás.</div>
+                    </div>
+        </div>
+    </section>
+
+    <!-- GALERÍA -->
+    <section class="dest-section">
+        <div class="dest-section-sub">📸 Galería</div>
+        <h2 class="dest-section-title">Tu <span>galería</span></h2>
+        <div class="dest-gallery dest-gallery--small">
+            <div class="gallery-item"><img src="../images/arraial-farol.webp" alt="Praia do Farol — aguas cristalinas y faro" loading="lazy" /></div>
+            <div class="gallery-item"><img src="../images/arraial-gruta-azul.webp" alt="Gruta Azul — cueva submarina con barco" loading="lazy" /></div>
+            <div class="gallery-item"><img src="../images/arraial-prainhas.webp" alt="Prainhas do Atalaia — calas paradisíacas" loading="lazy" /></div>
+            <div class="gallery-item"><img src="../images/arraial-farol.webp" alt="Praia do Farol — arrecifes y aguas turquesas" loading="lazy" /></div>
+        </div>
+    </section>
+
+    <!-- CLIMA -->
+    <section class="dest-section">
+        <div class="dest-section-sub">🌤️ Clima ahora mismo</div>
+        <h2 class="dest-section-title">Arraial do Cabo — <span>Tiempo actual</span></h2>
+        <div id="climaWidget" style="margin-top:28px;">
+            <div class="clima-loading"><div class="clima-spinner"></div> Conectando con datos del clima...</div>
+        </div>
+    </section>
+
+
+    <!-- QUÉ INCLUYE -->
+    <section class="dest-section">
+        <div class="dest-section-sub">✅ Tu paquete</div>
+        <h2 class="dest-section-title">¿Qué <span>incluye</span> tu viaje?</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:28px;">
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🏨</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">7 noches seleccionadas</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Hoteles cuidadosamente elegidos, frente al mar o en ubicación privilegiada.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🚐</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Traslados privados</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Llegada y salida organizadas. Te esperamos en destino desde el primer momento.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🗺️</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">2 tours incluidos</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Tour en Río de Janeiro + Paseo de Barco en Arraial do Cabo con almuerzo a bordo.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🤝</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Asesoramiento personalizado</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Un asesor Luazul disponible antes y durante el viaje para lo que necesitás.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">💱</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Exchange inteligente</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Pagá en moneda local con una de las mejores tasas del mercado.</div>
+                </div>
+            </div>
+            <div style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">📲</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">App exclusiva del viajero</div>
+                    <div style="font-size:.82rem;color:rgba(200,240,220,.8);line-height:1.5;">Panel personal con cuotas, voucher, contrato y seguimiento de tu plan.</div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top:20px;display:inline-flex;align-items:center;gap:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:12px 20px;">
+            <span style="font-size:1.1rem;">🚫</span>
+            <span style="font-size:.88rem;color:rgba(255,200,200,.85);"><strong style="color:#fca5a5;">No incluye vuelos</strong> — vos elegís cómo llegar. Nosotros nos ocupamos de todo lo demás.</span>
+        </div>
+        <div style="margin-top:20px;">
+            <a href="../ofertas.html" class="view-all-btn">🏖️ Ver todos los paquetes →</a>
+        </div>
+    </section>
+
+    <section class="dest-section">
+        <div class="dest-section-sub">📊 Simulador de cuotas</div>
+        <h2 class="dest-section-title">Calculá <span>tu plan</span></h2>
+        <div class="dest-simulator">
+            <div class="sim-controls">
+                <div class="sim-field">
+                    <label>Personas</label>
+                    <select id="dSimPersonas" onchange="dCalcSim()">
+                            <option value="arraial2_2">2 personas</option>
+                            <option value="arraial4_4">4 personas</option>
+                    </select>
+                </div>
+                <div class="sim-field">
+                    <label>Cuotas</label>
+                    <select id="dSimCuotas" onchange="dCalcSim()">
+                        <option value="6">6 cuotas</option>
+                        <option value="10" selected>10 cuotas</option>
+                        <option value="12">12 cuotas</option>
+                        <option value="18">18 cuotas</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sim-result">
+                <div class="sim-result-box highlight" style="flex:1;">
+                    <span class="sim-val" id="dSimCuota">USD 37.99</span>
+                    <span class="sim-label">Por persona / mes</span>
+                </div>
+                <div class="sim-result-box" style="flex:1;">
+                    <span class="sim-val" id="dSimDia" style="font-size:1.3rem;">USD 1.26</span>
+                    <span class="sim-label">Por día / persona ☕</span>
+                </div>
+            </div>
+            <p id="dSimSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;margin-top:8px;">2 personas · 10 cuotas</p>
+            <p class="sim-note">Precios en dólares (USD) · Sin costos ocultos</p>
+            <a href="../simulador.html" class="view-all-btn" style="margin-top:20px;display:inline-block;">📊 Ver simulador completo →</a>
+        </div>
+        <script>
+        (function(){
+            var TOTALES = {'arraial2':1300,'arraial4':2100};
+            var INTERESES = {'6':0,'10':0,'12':0.02,'18':0.05};
+            window.dCalcSim = function() {
+                var p = document.getElementById('dSimPersonas');
+                var c = document.getElementById('dSimCuotas');
+                if (!p || !c) return;
+                var parts = p.value.split('_');
+                var key   = parts[0];
+                var pax   = parseInt(parts[1]) || 1;
+                var nc    = parseInt(c.value);
+                var tasa  = INTERESES[c.value] || 0;
+                var base  = TOTALES[key] || 1300;
+                var total = Math.round(base * (1 + tasa));
+                var cuotaTot   = Math.round(total / nc);
+                var porPersona = cuotaTot / pax;
+                var mostrar    = (Math.floor(porPersona * 100 - 1) / 100).toFixed(2);
+                var porDia     = (porPersona / 30).toFixed(2);
+                document.getElementById('dSimCuota').textContent = 'USD ' + mostrar;
+                document.getElementById('dSimDia').textContent   = 'USD ' + porDia;
+                document.getElementById('dSimSubLabel').textContent = pax + ' persona' + (pax > 1 ? 's' : '') + ' · ' + nc + ' cuotas';
+            };
+            dCalcSim();
+        })();
+        </script>
+    </section>
+
+</div><!-- /container -->
+
+<!-- CTA RESERVA -->
+<div class="dest-cta-section" id="reservar">
+    <div class="container">
+        <div class="dest-cta-box">
+            <div style="font-size:3rem;margin-bottom:16px;">🌊</div>
+            <h2>¿Listo para viajar a <span>Arraial do Cabo</span>?</h2>
+            <p>Hablá directamente con tu asesora de viajes y comenzá hoy tu plan en cuotas. Sin complicaciones, sin sorpresas.</p>
+            <button class="dest-hero-reserve-btn" onclick="openAgents()" style="font-size:1.05rem;padding:18px 48px;">
+                🌴 Quiero reservar este viaje
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="../images/logo-footer.png" alt="Luazul Smart Travel" / loading="lazy">
+                <div class="name">LUAZUL</div>
+                <div class="sub">Smart Travel · Travel Planning System™</div>
+            </div>
+            <div class="footer-info">
+                📍 Atención personalizada<br>
+                📱 WhatsApp Business<br>
+                📧 <a href="mailto:info@luazul.travel">info@luazul.travel</a><br>
+                🌐 @luazul.travel
+            </div>
+            <div class="footer-legal">
+                Planificación en dólares estadounidenses (USD).<br>
+                Contrato de adhesión disponible.<br>
+                Condiciones sujetas a disponibilidad.
+            </div>
+        </div>
+        <div class="footer-bottom">🔵 Begin your journey today · LUAZUL SMART TRAVEL</div>
+    </div>
+</footer>
+
+<!-- AGENT SELECTOR MODAL -->
+<div class="agent-overlay" id="agentOverlay" onclick="closeAgentsOutside(event)">
+    <div class="agent-modal" id="agentModal">
+        <div style="font-size:2rem;margin-bottom:12px;">👋</div>
+        <h3>Seleccioná tu asesora</h3>
+        <p>Contactate directo por WhatsApp — te responden en minutos.</p>
+        <div class="agent-cards">
+            <a class="agent-card" id="agentLuci" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">🦋</div>
+                <div class="agent-name">Lucía</div>
+                <div class="agent-role">Asesora · Brasil 🇧🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+            <a class="agent-card" id="agentAle" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">✨</div>
+                <div class="agent-name">Ale</div>
+                <div class="agent-role">Asesora · Argentina 🇦🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+        </div>
+        <div class="agent-close" onclick="closeAgents()">✕ Cerrar</div>
+    </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../mariposa-chat.js"></script>
+<script>
+/* ── AGENT MODAL ── */
+var LZ_AGENTS = {
+  luci: { wa: "5522998977213", nombre: "Lucía" },
+  ale:  { wa: "5492974726449",  nombre: "Ale" }
+};
+var LZ_PAGE_CONTEXT = "el viaje a Arraial do Cabo";
+
+function openAgents(context) {
+  var ctx = context || LZ_PAGE_CONTEXT;
+  var msg = encodeURIComponent("¡Hola! Me gustaría recibir información sobre " + ctx + " con Luazul Smart Travel.");
+  document.getElementById("agentLuci").href = "https://wa.me/" + LZ_AGENTS.luci.wa + "?text=" + msg;
+  document.getElementById("agentAle").href  = "https://wa.me/" + LZ_AGENTS.ale.wa  + "?text=" + msg;
+  document.getElementById("agentOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeAgents() {
+  document.getElementById("agentOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function closeAgentsOutside(e) {
+  if (e.target === document.getElementById("agentOverlay")) closeAgents();
+}
+</script>
+
+<script>
+function toggleMobileNav() {
+    var nav = document.getElementById('mobileNav');
+    var btn = document.getElementById('navBurger');
+    nav.classList.toggle('open');
+    btn.classList.toggle('open');
+    document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+}
+function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+    document.getElementById('navBurger').classList.remove('open');
+    document.body.style.overflow = '';
+}
+</script>
+
+<script>
+/* ── WIDGET DE CLIMA — open-meteo.com (gratuito, sin API key) ── */
+(function() {
+  var LAT = -22.97;
+  var LON = -42.03;
+  var DESTINO = "Arraial do Cabo";
+
+  var WMO_DESC = {
+    0:'Despejado ☀️', 1:'Mayormente despejado 🌤️', 2:'Parcialmente nublado ⛅',
+    3:'Nublado ☁️', 45:'Neblina 🌫️', 48:'Neblina con hielo 🌫️',
+    51:'Llovizna ligera 🌦️', 53:'Llovizna 🌧️', 55:'Llovizna intensa 🌧️',
+    61:'Lluvia ligera 🌦️', 63:'Lluvia 🌧️', 65:'Lluvia intensa 🌧️',
+    80:'Lluvia breve 🌦️', 81:'Chubascos 🌧️', 82:'Chubascos fuertes ⛈️',
+    95:'Tormenta ⛈️', 96:'Tormenta con granizo ⛈️', 99:'Tormenta fuerte ⛈️'
+  };
+
+  function wmoDesc(code) {
+    return WMO_DESC[code] || 'Condición desconocida';
+  }
+
+  function renderClima(data) {
+    var cur = data.current;
+    var daily = data.daily;
+    var temp   = Math.round(cur.temperature_2m);
+    var feels  = Math.round(cur.apparent_temperature);
+    var hum    = cur.relative_humidity_2m;
+    var wind   = Math.round(cur.wind_speed_10m);
+    var desc   = wmoDesc(cur.weather_code);
+    var uv     = cur.uv_index !== undefined ? cur.uv_index.toFixed(1) : '—';
+
+    // Pronóstico 4 días
+    var forecastHTML = '';
+    var days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    for (var i = 1; i < Math.min(5, daily.time.length); i++) {
+      var d = new Date(daily.time[i] + 'T12:00:00');
+      var dayName = days[d.getDay()];
+      var hi = Math.round(daily.temperature_2m_max[i]);
+      var lo = Math.round(daily.temperature_2m_min[i]);
+      var icon = wmoDesc(daily.weather_code[i]).split(' ').pop();
+      forecastHTML += '<div class="clima-day">'
+        + '<div class="clima-day-name">' + dayName + '</div>'
+        + '<div class="clima-day-icon">' + icon + '</div>'
+        + '<div class="clima-day-temps"><span class="hi">' + hi + '°</span> <span class="lo">' + lo + '°</span></div>'
+        + '</div>';
+    }
+
+    var html = '<div class="clima-card">'
+      + '<div class="clima-main">'
+      +   '<div class="clima-temp">' + temp + '<span class="clima-unit">°C</span></div>'
+      +   '<div class="clima-info">'
+      +     '<div class="clima-desc">' + desc + '</div>'
+      +     '<div class="clima-place">📍 ' + DESTINO + '</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="clima-details">'
+      +   '<div class="clima-detail"><span class="lbl">Sensación</span><span class="val">' + feels + '°C</span></div>'
+      +   '<div class="clima-detail"><span class="lbl">Humedad</span><span class="val">' + hum + '%</span></div>'
+      +   '<div class="clima-detail"><span class="lbl">Viento</span><span class="val">' + wind + ' km/h</span></div>'
+      +   '<div class="clima-detail"><span class="lbl">UV</span><span class="val">' + uv + '</span></div>'
+      + '</div>'
+      + '<div class="clima-forecast">' + forecastHTML + '</div>'
+      + '<div class="clima-footer">Datos: <a href="https://open-meteo.com" target="_blank" rel="noopener" style="color:rgba(126,184,255,.6);">Open-Meteo</a> · Actualizado ahora</div>'
+      + '</div>';
+
+    document.getElementById('climaWidget').innerHTML = html;
+  }
+
+  function loadClima() {
+    var url = 'https://api.open-meteo.com/v1/forecast'
+      + '?latitude=' + LAT + '&longitude=' + LON
+      + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,uv_index'
+      + '&daily=temperature_2m_max,temperature_2m_min,weather_code'
+      + '&timezone=America%2FSao_Paulo'
+      + '&forecast_days=5';
+
+    fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(renderClima)
+      .catch(function() {
+        document.getElementById('climaWidget').innerHTML =
+          '<div class="clima-loading" style="color:rgba(200,180,100,.7);">⚠️ No se pudo cargar el clima. Intentá recargar la página.</div>';
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadClima);
+  } else {
+    loadClima();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="preload" as="image" href="images/bg-ocean.webp" type="image/webp">
+    <link rel="canonical" href="https://www.luazul.com/">
+    <meta name="description" content="Luazul Smart Travel — Viajá a Brasil en cuotas desde Argentina. Cabo Frío, Búzios, Arraial do Cabo y Copacabana. Planificación inteligente en dólares, sin costos ocultos.">
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="Luazul Smart Travel">
+    <meta property="og:title"       content="Luazul Smart Travel — Viajá a Brasil en cuotas">
+    <meta property="og:description" content="Luazul Smart Travel — Viajá a Brasil en cuotas desde Argentina. Cabo Frío, Búzios, Arraial do Cabo y Copacabana. Planificación inteligente en dólares, sin costos ocultos.">
+    <meta property="og:image"       content="https://www.luazul.com/images/cabo-frio-hero.webp">
+    <meta property="og:url"         content="https://www.luazul.com/">
+    <meta name="twitter:card"       content="summary_large_image">
+    <meta name="twitter:title"      content="Luazul Smart Travel — Viajá a Brasil en cuotas">
+    <meta name="twitter:description" content="Luazul Smart Travel — Viajá a Brasil en cuotas desde Argentina. Cabo Frío, Búzios, Arraial do Cabo y Copacabana. Planificación inteligente en dólares, sin costos ocultos.">
+    <meta name="twitter:image"      content="https://www.luazul.com/images/cabo-frio-hero.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Luazul Smart Travel · Pequeños pagos, recuerdos globales</title>
+    <link rel="stylesheet" href="css/style.css">
+
+<style>
+
+/* ── DESTINATION CARDS ── */
+.dest-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px;
+  margin-top:40px;
+}
+.dest-card {
+  position:relative;
+  border-radius:20px;
+  overflow:hidden;
+  aspect-ratio:3/4;
+  cursor:pointer;
+  text-decoration:none;
+  display:block;
+  transition:transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  border:1px solid rgba(100,160,255,.15);
+}
+.dest-card:hover {
+  transform:translateY(-10px) scale(1.02);
+  box-shadow:0 24px 60px rgba(11,61,145,.5);
+  border-color:rgba(126,184,255,.4);
+}
+.dest-card-img {
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .6s ease;
+}
+.dest-card:hover .dest-card-img { transform:scale(1.08); }
+.dest-card-overlay {
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(2,8,25,.05) 0%,rgba(2,8,25,.1) 40%,rgba(2,8,25,.7) 70%,rgba(5,15,50,.92) 100%);
+  transition:background .35s ease;
+}
+.dest-card:hover .dest-card-overlay {
+  background:linear-gradient(to bottom,rgba(2,8,25,.1) 0%,rgba(2,8,25,.15) 35%,rgba(11,30,80,.75) 65%,rgba(11,45,120,.95) 100%);
+}
+.dest-card-body {
+  position:absolute;bottom:0;left:0;right:0;
+  padding:24px 20px;
+}
+.dest-card-tag {
+  display:inline-block;
+  font-size:.6rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:#7eb8ff;background:rgba(11,61,145,.5);
+  border:1px solid rgba(126,184,255,.3);
+  border-radius:30px;padding:4px 12px;
+  margin-bottom:10px;backdrop-filter:blur(8px);
+}
+.dest-card-name {
+  font-size:1.45rem;font-weight:900;color:#fff;
+  line-height:1.1;margin-bottom:6px;
+  text-shadow:0 2px 12px rgba(0,0,0,.5);
+}
+.dest-card-desc {
+  font-size:.78rem;color:rgba(200,220,255,.8);
+  line-height:1.5;margin-bottom:14px;
+}
+.dest-card-cta {
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.72rem;font-weight:800;letter-spacing:.08em;
+  color:#7eb8ff;text-transform:uppercase;
+  transition:gap .25s ease;
+}
+.dest-card:hover .dest-card-cta { gap:10px; }
+.dest-card-cta::after { content:"→"; }
+
+@media(max-width:1024px){ .dest-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:600px){ .dest-grid { grid-template-columns:1fr; }
+  .dest-card { aspect-ratio:16/9; } }
+
+
+/* Agent selector modal */
+.agent-overlay {
+  display:none;position:fixed;inset:0;
+  background:rgba(2,8,25,.82);backdrop-filter:blur(12px);
+  z-index:500;align-items:center;justify-content:center;
+}
+.agent-overlay.open { display:flex; }
+.agent-modal {
+  background:rgba(5,18,55,.95);
+  border:1px solid rgba(100,160,255,.28);
+  border-radius:28px;padding:44px 40px;
+  width:min(480px,90vw);
+  text-align:center;
+  animation:modalIn .3s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(.92) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.agent-modal h3 { font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:6px; }
+.agent-modal p { font-size:.88rem;color:rgba(150,190,255,.7);margin-bottom:32px; }
+.agent-cards { display:flex;gap:16px;justify-content:center; }
+.agent-card {
+  flex:1;max-width:180px;
+  background:rgba(11,30,80,.6);
+  border:1.5px solid rgba(100,160,255,.2);
+  border-radius:20px;padding:28px 16px;
+  text-decoration:none;color:#fff;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+  cursor:pointer;
+}
+.agent-card:hover {
+  transform:translateY(-5px);
+  border-color:rgba(126,184,255,.5);
+  box-shadow:0 14px 40px rgba(11,61,145,.5);
+}
+.agent-avatar {
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#1a5bb5,#0B3D91);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;margin:0 auto 14px;
+  border:2px solid rgba(126,184,255,.3);
+}
+.agent-name { font-size:1.1rem;font-weight:800;margin-bottom:4px; }
+.agent-role { font-size:.72rem;color:rgba(126,184,255,.7);font-weight:600;letter-spacing:.1em;text-transform:uppercase; }
+.agent-wa-badge {
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:12px;padding:5px 12px;
+  background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.25);
+  border-radius:20px;font-size:.68rem;font-weight:700;color:#25d366;
+}
+.agent-close { margin-top:24px;font-size:.78rem;color:rgba(150,190,255,.5);cursor:pointer;text-decoration:underline; }
+.agent-close:hover { color:rgba(150,190,255,.8); }
+@media(max-width:500px){ .agent-cards { flex-direction:column;align-items:center; } }
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="navbar-logo" style="text-decoration:none;color:inherit;">
+        <img src="images/logo-nav.png" alt="Luazul Smart Travel" / loading="lazy">
+        <div class="navbar-brand">
+            <span class="name">LUAZUL</span>
+            <span class="tagline">Smart Travel</span>
+        </div>
+    </a>
+    <div class="navbar-flags" style="display:flex;align-items:center;gap:6px;margin-right:12px;">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjUwNCIgZmlsbD0iIzAwOWMzYiIvPjxwb2x5Z29uIHBvaW50cz0iMzYwLDM2IDY4NCwyNTIgMzYwLDQ2OCAzNiwyNTIiIGZpbGw9IiNmZmRmMDAiLz48Y2lyY2xlIGN4PSIzNjAiIGN5PSIyNTIiIHI9IjEwOCIgZmlsbD0iIzAwMjc3NiIvPjxwYXRoIGQ9Ik0yNTIsMjE2IFEzNjAsMzI0IDQ2OCwyMTYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMTIiIGZpbGw9Im5vbmUiLz48dGV4dCB4PSIzNjAiIHk9IjI1OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMjgiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iYm9sZCI+T1JERU0gRSBQUk9HUkVTU088L3RleHQ+PC9zdmc+" alt="Brasil" title="Brasil"
+             style="width:36px;height:auto;border-radius:4px;box-shadow:0 0 8px rgba(34,197,94,.55),0 2px 6px rgba(0,0,0,.4);border:1.5px solid rgba(34,197,94,.4);cursor:default;" / loading="lazy">
+        <span style="width:1px;height:22px;background:rgba(255,255,255,.18);display:inline-block;margin:0 2px;vertical-align:middle;"></span>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjUwNCIgZmlsbD0iIzc0YWNkZiIvPjxyZWN0IHk9IjE2OCIgd2lkdGg9IjcyMCIgaGVpZ2h0PSIxNjgiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iMzYwIiBjeT0iMjUyIiByPSI0MiIgZmlsbD0iI2Y2YjQwZSIvPjxsaW5lIHgxPSIzNjAiIHkxPSIxOTYiIHgyPSIzNjAiIHkyPSIzMDgiIHN0cm9rZT0iIzg0MzUxMSIgc3Ryb2tlLXdpZHRoPSI4Ii8+PGxpbmUgeDE9IjMwNCIgeTE9IjI1MiIgeDI9IjQxNiIgeTI9IjI1MiIgc3Ryb2tlPSIjODQzNTExIiBzdHJva2Utd2lkdGg9IjgiLz48bGluZSB4MT0iMzIwIiB5MT0iMjEyIiB4Mj0iNDAwIiB5Mj0iMjkyIiBzdHJva2U9IiM4NDM1MTEiIHN0cm9rZS13aWR0aD0iOCIvPjxsaW5lIHgxPSI0MDAiIHkxPSIyMTIiIHgyPSIzMjAiIHkyPSIyOTIiIHN0cm9rZT0iIzg0MzUxMSIgc3Ryb2tlLXdpZHRoPSI4Ii8+PC9zdmc+" alt="Argentina" title="Argentina"
+             style="width:26px;height:auto;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);cursor:default;opacity:.9;" / loading="lazy">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjI1MiIgZmlsbD0id2hpdGUiLz48cmVjdCB5PSIyNTIiIHdpZHRoPSI3MjAiIGhlaWdodD0iMjUyIiBmaWxsPSIjZDUyYjFlIi8+PHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIyNTIiIGZpbGw9IiMwMDM5YTYiLz48cG9seWdvbiBwb2ludHM9IjkwLDYwIDEwMywxMDMgMTQ4LDEwMyAxMTIsMTI5IDEyNCwxNzIgOTAsMTQ2IDU2LDE3MiA2OCwxMjkgMzIsMTAzIDc3LDEwMyIgZmlsbD0id2hpdGUiLz48L3N2Zz4=" alt="Chile" title="Chile"
+             style="width:26px;height:auto;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);cursor:default;opacity:.9;" / loading="lazy">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjUwNCIgZmlsbD0id2hpdGUiLz48cmVjdCB5PSI1NiIgd2lkdGg9IjcyMCIgaGVpZ2h0PSI1NiIgZmlsbD0iIzAwMzhhOCIvPjxyZWN0IHk9IjE2OCIgd2lkdGg9IjcyMCIgaGVpZ2h0PSI1NiIgZmlsbD0iIzAwMzhhOCIvPjxyZWN0IHk9IjI4MCIgd2lkdGg9IjcyMCIgaGVpZ2h0PSI1NiIgZmlsbD0iIzAwMzhhOCIvPjxyZWN0IHk9IjM5MiIgd2lkdGg9IjcyMCIgaGVpZ2h0PSI1NiIgZmlsbD0iIzAwMzhhOCIvPjxyZWN0IHdpZHRoPSIyNzAiIGhlaWdodD0iMjI0IiBmaWxsPSJ3aGl0ZSIvPjxjaXJjbGUgY3g9IjEzNSIgY3k9IjExMiIgcj0iNTIiIGZpbGw9IiNmZmQ3MDAiLz48bGluZSB4MT0iMTM1IiB5MT0iNTIiIHgyPSIxMzUiIHkyPSIxNzIiIHN0cm9rZT0iI2ZmZDcwMCIgc3Ryb2tlLXdpZHRoPSIxMCIvPjxsaW5lIHgxPSI3NSIgeTE9IjExMiIgeDI9IjE5NSIgeTI9IjExMiIgc3Ryb2tlPSIjZmZkNzAwIiBzdHJva2Utd2lkdGg9IjEwIi8+PGxpbmUgeDE9IjkzIiB5MT0iNzAiIHgyPSIxNzciIHkyPSIxNTQiIHN0cm9rZT0iI2ZmZDcwMCIgc3Ryb2tlLXdpZHRoPSIxMCIvPjxsaW5lIHgxPSIxNzciIHkxPSI3MCIgeDI9IjkzIiB5Mj0iMTU0IiBzdHJva2U9IiNmZmQ3MDAiIHN0cm9rZS13aWR0aD0iMTAiLz48L3N2Zz4=" alt="Uruguay" title="Uruguay"
+             style="width:26px;height:auto;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);cursor:default;opacity:.9;" / loading="lazy">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNTA0Ij48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjE2OCIgZmlsbD0iI2Q1MmIxZSIvPjxyZWN0IHk9IjE2OCIgd2lkdGg9IjcyMCIgaGVpZ2h0PSIxNjgiIGZpbGw9IndoaXRlIi8+PHJlY3QgeT0iMzM2IiB3aWR0aD0iNzIwIiBoZWlnaHQ9IjE2OCIgZmlsbD0iIzAwMzhhOCIvPjxjaXJjbGUgY3g9IjM2MCIgY3k9IjI1MiIgcj0iNTYiIGZpbGw9IiNmZmQ3MDAiLz48Y2lyY2xlIGN4PSIzNjAiIGN5PSIyNTIiIHI9IjQ0IiBmaWxsPSIjMDA5YjNhIi8+PGNpcmNsZSBjeD0iMzYwIiBjeT0iMjUyIiByPSIyMCIgZmlsbD0iI2ZmZDcwMCIvPjwvc3ZnPg==" alt="Paraguay" title="Paraguay"
+             style="width:26px;height:auto;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);cursor:default;opacity:.9;" / loading="lazy">
+    </div>
+    <div class="navbar-links">
+        <a href="ofertas.html">Paquetes</a>
+        <a href="empresa.html">Método</a>
+        <a href="simulador.html">Simulador</a>
+        <a href="tours.html">Tours</a>
+        <a href="destinos.html">Destinos</a>
+        <a href="panel_cliente_luazul.html" style="color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:30px;border:1px solid rgba(100,160,255,.25);transition:all .2s;">👤 Mi panel</a>
+        <a href="#" onclick="openAgents();return false;" class="navbar-cta">Reservar ahora</a>
+    </div>
+    <button class="navbar-burger" id="navBurger" aria-label="Menú" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- MOBILE NAV DRAWER -->
+<nav class="navbar-mobile" id="mobileNav">
+    <a href="ofertas.html" onclick="closeMobileNav()">Paquetes</a>
+    <a href="empresa.html" onclick="closeMobileNav()">Método</a>
+    <a href="simulador.html" onclick="closeMobileNav()">Simulador</a>
+    <a href="tours.html" onclick="closeMobileNav()">Tours</a>
+    <a href="destinos.html" onclick="closeMobileNav()">Destinos</a>
+    <a href="panel_cliente_luazul.html" onclick="closeMobileNav()">👤 Mi Panel</a>
+    <a href="#" class="mobile-cta" onclick="openAgents();closeMobileNav();return false;">🔵 Reservar ahora</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-watermark"><img src="images/logo-watermark.png" alt="" / loading="lazy"></div>
+    <div class="hero-inner">
+        <div class="hero-logo-badge"><img src="images/logo-hero.png" alt="Luazul Smart Travel Turismo" /></div>
+        <h1>Donde tu viaje<br><span>comienza antes de viajar</span></h1>
+        <p>Descubrí Cabo Frío y Río de Janeiro con planificación inteligente en dólares. En Luazul Smart Travel no vendemos viajes. Creamos experiencias anticipadas.</p>
+        <div class="hero-buttons">
+            <a href="#destinos-destacados" class="btn-hero btn-primary">🗺️ ¿A dónde querés viajar?</a>
+            <a href="simulador.html" class="btn-hero btn-glass">📊 Simular mi plan</a>
+        </div>
+    </div>
+    <div class="hero-scroll">Descubrí más</div>
+</section>
+
+<div class="container">
+
+    <!-- ESENCIA -->
+    <section class="section">
+        <h2>Azul es calma. <span>Blanco es claridad.</span></h2>
+        <p class="section-desc" style="font-size:1.15rem;max-width:800px;">Luazul Smart Travel nace bajo un principio simple: viajar no debería ser una improvisación financiera. Debería ser una construcción consciente. Nuestra mariposa azul simboliza transformación: convertir pequeños pagos mensuales en grandes recuerdos internacionales.</p>
+        <p class="section-desc" style="font-size:1.15rem;max-width:800px;margin-top:1.4rem;">Durante más de tres años, hemos tenido el privilegio de acompañar a cientos de viajeros a descubrir Brasil con el corazón tranquilo. Detrás de cada reserva hay una historia, una ilusión cumplida, una familia que vivió momentos inolvidables frente al mar. Esa es nuestra mayor recompensa: saber que ayudamos a construir recuerdos que duran toda la vida.</p>
+
+        <!-- PROPUESTA DE VALOR -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:36px;max-width:900px;">
+            <div style="background:rgba(11,61,145,.25);border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">📅</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Asegurá hoy</div>
+                    <div style="font-size:.84rem;color:rgba(200,220,255,.75);line-height:1.5;">Bloqueá tu lugar con la primera cuota y pagá el resto a tu ritmo, sin presiones.</div>
+                </div>
+            </div>
+            <div style="background:rgba(11,61,145,.25);border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">💱</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Exchange inteligente</div>
+                    <div style="font-size:.84rem;color:rgba(200,220,255,.75);line-height:1.5;">Pagá en moneda local con una de las mejores tasas del mercado.</div>
+                </div>
+            </div>
+            <div style="background:rgba(11,61,145,.25);border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">📲</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">App exclusiva</div>
+                    <div style="font-size:.84rem;color:rgba(200,220,255,.75);line-height:1.5;">Gestioná cuotas, voucher y contrato desde tu celular en todo momento.</div>
+                </div>
+            </div>
+            <div style="background:rgba(11,61,145,.25);border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:flex-start;">
+                <div style="font-size:1.6rem;flex-shrink:0;">🤝</div>
+                <div>
+                    <div style="font-weight:800;color:#fff;font-size:.95rem;margin-bottom:4px;">Asesor personal</div>
+                    <div style="font-size:.84rem;color:rgba(200,220,255,.75);line-height:1.5;">Te acompañamos antes y durante el viaje. No estás solo en ningún momento.</div>
+                </div>
+            </div>
+        </div>
+
+        <a href="empresa.html" class="view-all-btn" style="margin-top:32px;">🦋 Conocer el Método LUAZUL →</a>
+    </section>
+
+    <!-- DESTINOS DESTACADOS -->
+    <section class="section" id="destinos-destacados">
+        <h2>🗺️ ¿A dónde querés <span>viajar?</span></h2>
+        <p class="section-desc">Cuatro destinos únicos en Brasil — naturaleza, cultura y mar para vivir en cuotas accesibles.</p>
+
+        <div class="dest-grid">
+
+            <!-- CABO FRÍO -->
+            <a href="destinos/cabo-frio.html" class="dest-card">
+                <img class="dest-card-img" src="images/cabo-frio-pero.webp" alt="Cabo Frío" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🏖️ Río de Janeiro · Brasil</div>
+                    <div class="dest-card-name">Cabo Frío</div>
+                    <div class="dest-card-desc">Aguas cristalinas y arena blanca bajo el sol de Brasil</div>
+                    <div class="dest-card-cta">Explorar destino</div>
+                </div>
+            </a>
+
+            <!-- ARRAIAL DO CABO -->
+            <a href="destinos/arraial-do-cabo.html" class="dest-card">
+                <img class="dest-card-img" src="images/arraial-farol.webp" alt="Arraial do Cabo" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🌊 Costa del Sol · Brasil</div>
+                    <div class="dest-card-name">Arraial do Cabo</div>
+                    <div class="dest-card-desc">El Caribe brasileño — transparencia infinita y vida marina</div>
+                    <div class="dest-card-cta">Explorar destino</div>
+                </div>
+            </a>
+
+            <!-- BÚZIOS -->
+            <a href="destinos/buzios.html" class="dest-card">
+                <img class="dest-card-img" src="images/buzios-3.webp" alt="Búzios" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">⛵ Armação dos Búzios · Brasil</div>
+                    <div class="dest-card-name">Búzios</div>
+                    <div class="dest-card-desc">Seducción y sofisticación entre 23 playas paradisíacas</div>
+                    <div class="dest-card-cta">Explorar destino</div>
+                </div>
+            </a>
+
+            <!-- RÍO DE JANEIRO -->
+            <a href="destinos/rio-copacabana.html" class="dest-card">
+                <img class="dest-card-img" src="images/copacabana.webp" alt="Copacabana" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🌊 Copacabana · Río de Janeiro</div>
+                    <div class="dest-card-name">Copacabana</div>
+                    <div class="dest-card-desc">Arena blanca, mosaico icónico y la energía que no duerme</div>
+                    <div class="dest-card-cta">Explorar destino</div>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- PREVIEW TOURS -->
+    <section class="section">
+        <h2>🚙 Nuestros <span>Tours</span></h2>
+        <p class="section-desc">Experiencias exclusivas diseñadas para descubrir lo mejor de Brasil más allá de los circuitos habituales.</p>
+
+        <div class="dest-grid">
+
+            <!-- TOUR 1 — Cristo Redentor + City Tour -->
+            <a href="tour-cristo-redentor.html" class="dest-card">
+                <img class="dest-card-img" src="images/tour-cristo-redentor.webp" alt="Cristo Redentor + City Tour" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🗿 Río de Janeiro · 5 hs</div>
+                    <div class="dest-card-name">Cristo Redentor + City Tour</div>
+                    <div class="dest-card-desc">Corcovado · Maracaná · Sambódromo · Catedral · Selaron</div>
+                    <div class="dest-card-cta">Ver tour</div>
+                </div>
+            </a>
+
+            <!-- TOUR 2 — Paseo de Barco -->
+            <a href="tour-barco-buzios.html" class="dest-card">
+                <img class="dest-card-img" src="images/buzios-escuna.webp" alt="Barco en Búzios" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">⛵ Búzios · 12 playas</div>
+                    <div class="dest-card-name">Paseo de Barco</div>
+                    <div class="dest-card-desc">3 islas · Bar y barbacoa a bordo</div>
+                    <div class="dest-card-cta">Ver tour</div>
+                </div>
+            </a>
+
+            <!-- TOUR 3 — Floresta da Tijuca -->
+            <a href="tour-floresta-tijuca.html" class="dest-card">
+                <img class="dest-card-img" src="images/tour-tijuca-jeep.webp" alt="Floresta da Tijuca" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🌿 Río de Janeiro · Jeep · 4 hs</div>
+                    <div class="dest-card-name">Floresta da Tijuca</div>
+                    <div class="dest-card-desc">El bosque urbano más grande del mundo — cascadas, senderos y fauna única</div>
+                    <div class="dest-card-cta">Ver tour</div>
+                </div>
+            </a>
+
+            <!-- TOUR 4 — Mambo Beach -->
+            <a href="tour-mambo.html" class="dest-card">
+                <img class="dest-card-img" src="images/rio-copacabana-paseo.webp" alt="Tour Mambo Beach" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🌊 Río de Janeiro · Jeep 4x4</div>
+                    <div class="dest-card-name">Tour Mambo Beach</div>
+                    <div class="dest-card-desc">Playas secretas de Río — ~4 horas de aventura</div>
+                    <div class="dest-card-cta">Ver tour</div>
+                </div>
+            </a>
+
+            <!-- TOUR 5 — Ilha Grande -->
+            <a href="tour-ilha-grande.html" class="dest-card">
+                <img class="dest-card-img" src="images/tour-ilha-grande-aerea.webp" alt="Ilha Grande - Angra" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🏝️ Angra dos Reis · Full day</div>
+                    <div class="dest-card-name">Ilha Grande</div>
+                    <div class="dest-card-desc">Lagoa Azul · Mata Atlântica · el mayor acuario natural de Brasil</div>
+                    <div class="dest-card-cta">Ver tour</div>
+                </div>
+            </a>
+
+            <!-- TOUR 6 — Río en Familia -->
+            <a href="tour-rio-familia.html" class="dest-card">
+                <img class="dest-card-img" src="images/tour-rio-familia-pan-azucar.webp" alt="Pan de Azúcar · Acuario · Zoológico" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🎡 Río de Janeiro · 7 hs</div>
+                    <div class="dest-card-name">Un día en Río en Familia</div>
+                    <div class="dest-card-desc">Pan de Azúcar · Acuario Marino · Bio Parque — aventura para toda la familia</div>
+                    <div class="dest-card-cta">Ver tour</div>
+                </div>
+            </a>
+
+            <!-- TOUR 7 — Maracaná -->
+            <a href="tour-maracana.html" class="dest-card">
+                <img class="dest-card-img" src="images/tour-maracana-aerea.webp" alt="Tour Maracaná" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">⚽ Río de Janeiro · 4 hs</div>
+                    <div class="dest-card-name">Tour Maracaná</div>
+                    <div class="dest-card-desc">El templo del fútbol mundial — museo, vestuarios y el banco de las leyendas</div>
+                    <div class="dest-card-cta">Ver tour</div>
+                </div>
+            </a>
+
+            <!-- TOUR 8 — Paseo en Buggy -->
+            <a href="tour-buggy.html" class="dest-card">
+                <img class="dest-card-img" src="images/buggy-1.webp" alt="Paseo en Buggy" loading="lazy" />
+                <div class="dest-card-overlay"></div>
+                <div class="dest-card-body">
+                    <div class="dest-card-tag">🚙 Arraial do Cabo · 4 hs</div>
+                    <div class="dest-card-name">Paseo en Buggy</div>
+                    <div class="dest-card-desc">Playas escondidas a las que los barcos no llegan</div>
+                    <div class="dest-card-cta">Ver tour</div>
+                </div>
+            </a>
+
+        </div>
+        <a href="tours.html" class="view-all-btn">🌟 Ver todos los tours →</a>
+    </section>
+
+    <!-- PREVIEW OFERTAS -->
+    <section class="section">
+        <h2>🏖️ Paquetes <span>Diciembre 2026</span></h2>
+        <p class="section-desc">Cabo Frío · 7 noches frente al mar · Traslados privados · Tour en Río incluido.</p>
+        <div class="preview-grid" style="margin-top:28px;">
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">💑</div>
+                <h3>Escapada en Pareja</h3>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;">USD 870 · 10 cuotas</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">👫</div>
+                <h3>4 Amigos</h3>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;">USD 1.450 · 10 cuotas</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">👥</div>
+                <h3>6 Amigos</h3>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;">USD 1.740 · 10 cuotas</p>
+            </div>
+        </div>
+        <a href="ofertas.html" class="view-all-btn">🏖️ Ver todos los paquetes →</a>
+    </section>
+
+    <!-- PREVIEW SIMULADOR -->
+    <section class="section" id="simulador-preview">
+        <h2>📊 Simulá tu <span>Plan</span></h2>
+        <p class="section-desc" style="font-size:1.2rem;color:#7eb8ff;font-style:italic;">"USD 3 por día pueden transformarse en el mar de Cabo Frío."</p>
+        <div style="background:rgba(5,18,50,.6);backdrop-filter:blur(20px);border:1px solid rgba(100,160,255,.2);border-radius:32px;padding:40px;margin-top:28px;max-width:680px;">
+            <p style="color:rgba(200,220,255,.85);font-size:1rem;margin-bottom:24px;">Calculá cuánto pagarías por mes según el destino y la cantidad de cuotas que prefieras. Sin compromisos.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px;">
+                <div style="background:rgba(11,61,145,.3);border:1px solid rgba(100,160,255,.2);border-radius:16px;padding:18px;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;">USD 87</div>
+                    <div style="font-size:.78rem;color:rgba(200,220,255,.7);margin-top:4px;">por mes · 2 personas</div>
+                </div>
+                <div style="background:rgba(11,61,145,.3);border:1px solid rgba(100,160,255,.2);border-radius:16px;padding:18px;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;">USD 145</div>
+                    <div style="font-size:.78rem;color:rgba(200,220,255,.7);margin-top:4px;">por mes · 4 personas</div>
+                </div>
+                <div style="background:rgba(11,61,145,.3);border:1px solid rgba(100,160,255,.2);border-radius:16px;padding:18px;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;">USD 174</div>
+                    <div style="font-size:.78rem;color:rgba(200,220,255,.7);margin-top:4px;">por mes · 6 personas</div>
+                </div>
+            </div>
+            <a href="simulador.html" class="view-all-btn" style="width:100%;justify-content:center;">📊 Abrir simulador completo →</a>
+        </div>
+    </section>
+
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+    <div class="container">
+        <h2>🌟 Más que turismo.<br><span>Más que cuotas.</span></h2>
+        <p>Es el equilibrio entre emoción y estrategia.</p>
+        <p style="margin-bottom:36px;">Mientras otros esperan "algún día", nuestros clientes comienzan hoy.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:48px;">
+            <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="font-size:1.1rem;padding:17px 44px;">🔵 Quiero mi lugar en diciembre</a>
+            <a href="panel_cliente_luazul.html" class="btn-hero btn-glass" style="font-size:1.1rem;padding:17px 44px;">👤 Iniciar sesión</a>
+        </div>
+        <div style="max-width:560px;margin:0 auto;background:rgba(5,20,60,.55);backdrop-filter:blur(20px);border:1px solid rgba(100,160,255,.2);border-radius:28px;padding:36px 40px;text-align:center;">
+            <div style="font-size:.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(126,184,255,.7);margin-bottom:14px;">Panel exclusivo de clientes</div>
+            <div style="margin-bottom:16px;"><img src="images/logo-hero.png" alt="Luazul Smart Travel" style="width:120px;height:120px;object-fit:contain;border-radius:50%;"></div>
+            <h3 style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:6px;">Luazul Smart Travel</h3>
+            <p style="color:rgba(200,220,255,.75);font-size:.9rem;margin-bottom:24px;line-height:1.6;">¿Ya tenés tu plan activo? Accedé a tu panel para ver tus cuotas, voucher y contrato.</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                <a href="panel_cliente_luazul.html" class="btn-hero btn-primary" style="border-radius:14px;padding:13px 30px;">🔐 Ingresar al panel</a>
+                <a href="#" onclick="openAgents();return false;" class="btn-hero btn-glass" style="border-radius:14px;padding:13px 30px;">💬 ¿No tenés cuenta?</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="images/logo-footer.png" alt="Luazul Smart Travel" / loading="lazy">
+                <div class="name">LUAZUL</div>
+                <div class="sub">Smart Travel · Travel Planning System™</div>
+            </div>
+            <div class="footer-info">
+                📍 Atención personalizada<br>
+                📱 WhatsApp Business<br>
+                📧 <a href="mailto:info@luazul.travel">info@luazul.travel</a><br>
+                🌐 @luazul.travel
+            </div>
+            <div class="footer-legal">
+                Planificación en dólares estadounidenses (USD).<br>
+                Contrato de adhesión disponible.<br>
+                Condiciones sujetas a disponibilidad.
+            </div>
+        </div>
+        <div class="footer-bottom">🔵 Begin your journey today · LUAZUL SMART TRAVEL</div>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script src="mariposa-chat.js"></script>
+
+
+<!-- AGENT SELECTOR MODAL -->
+<div class="agent-overlay" id="agentOverlay" onclick="closeAgentsOutside(event)">
+    <div class="agent-modal" id="agentModal">
+        <div style="font-size:2rem;margin-bottom:12px;">👋</div>
+        <h3>Seleccioná tu asesora</h3>
+        <p>Contactate directo por WhatsApp — te responden en minutos.</p>
+        <div class="agent-cards">
+            <a class="agent-card" id="agentLuci" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">🦋</div>
+                <div class="agent-name">Lucía</div>
+                <div class="agent-role">Asesora · Brasil 🇧🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+            <a class="agent-card" id="agentAle" href="#" target="_blank" rel="noopener">
+                <div class="agent-avatar">✨</div>
+                <div class="agent-name">Ale</div>
+                <div class="agent-role">Asesora · Argentina 🇦🇷</div>
+                <div class="agent-wa-badge">💬 WhatsApp</div>
+            </a>
+        </div>
+        <div class="agent-close" onclick="closeAgents()">✕ Cerrar</div>
+    </div>
+</div>
+
+<script>
+
+/* ── AGENT MODAL ── */
+var LZ_AGENTS = {
+  luci: { wa: "5522998977213", nombre: "Lucía" },
+  ale:  { wa: "5492974726449",  nombre: "Ale"   }
+};
+var LZ_PAGE_CONTEXT = "el viaje a Brasil";
+
+function openAgents(context) {
+  var ctx = context || LZ_PAGE_CONTEXT;
+  var msg = encodeURIComponent("¡Hola! Me gustaría recibir información sobre " + ctx + " con Luazul Smart Travel.");
+  document.getElementById("agentLuci").href = "https://wa.me/" + LZ_AGENTS.luci.wa + "?text=" + msg;
+  document.getElementById("agentAle").href  = "https://wa.me/" + LZ_AGENTS.ale.wa  + "?text=" + msg;
+  document.getElementById("agentOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeAgents() {
+  document.getElementById("agentOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function closeAgentsOutside(e) {
+  if (e.target === document.getElementById("agentOverlay")) closeAgents();
+}
+
+</script>
+
+<script>
+function toggleMobileNav() {
+    var nav = document.getElementById('mobileNav');
+    var btn = document.getElementById('navBurger');
+    nav.classList.toggle('open');
+    btn.classList.toggle('open');
+    document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+}
+function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+    document.getElementById('navBurger').classList.remove('open');
+    document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>
