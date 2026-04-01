@@ -702,7 +702,14 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabaseClient.js"></script>
+<script>
+  // Supabase init inline (reemplaza js/supabaseClient.js)
+  var SUPABASE_URL = 'https://yunvqgaljopirzyjrntc.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB';
+  var supabaseClient = (typeof supabase !== 'undefined')
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    : null;
+</script>
 </head>
 <body>
 
@@ -1286,19 +1293,55 @@ var currentUser = null;
 //  INIT
 // ══════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
+  setTimeout(async function() {
     document.getElementById('loadingScreen').style.display = 'none';
+
+    // [SUPABASE] Verificar sesión activa primero
+    if (supabaseClient) {
+      try {
+        var sessionResult = await supabaseClient.auth.getSession();
+        var session = sessionResult.data && sessionResult.data.session;
+        if (session && session.user) {
+          // Buscar datos frescos en tabla clientes
+          var r = await supabaseClient.from('clientes')
+            .select('*')
+            .eq('email', session.user.email.toLowerCase())
+            .single();
+          if (r.data) {
+            currentUser = r.data;
+          } else {
+            var meta = session.user.user_metadata || {};
+            currentUser = {
+              email:          session.user.email,
+              nombre:         meta.nombre || session.user.email.split('@')[0],
+              apellido:       meta.apellido || '',
+              destino:        meta.destino || '—',
+              plan:           meta.plan || 'Plan Luazul Smart Travel',
+              paquete:        meta.paquete || '—',
+              total_usd:      meta.total_usd || 0,
+              cuotas_total:   meta.cuotas_total || 10,
+              cuotas_pagadas: meta.cuotas_pagadas || 0,
+              monto_cuota:    meta.monto_cuota || 0,
+              estado:         'activo'
+            };
+          }
+          sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
+          showApp();
+          return;
+        }
+      } catch(e) { console.warn('[SB] session check:', e.message); }
+    }
+
+    // Respaldo: sessionStorage local
     var saved = sessionStorage.getItem('luazul_session');
     if (saved) {
       var sessionUser = JSON.parse(saved);
-      // Refresh from shared DB in case admin updated data
       var fresh = dbFindUser(sessionUser.email, sessionUser.password);
       currentUser = fresh || sessionUser;
       sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
       showApp();
     } else {
       document.getElementById('loginScreen').style.display = 'flex';
-      // Setup guide available via button only — never auto-blocks login
     }
   }, 1200);
 
@@ -1435,36 +1478,47 @@ function doLogin() {
     return;
   }
 
-  // ── 2. [SUPABASE] → autenticación real ──────────────────────────────────
-  if (typeof supabaseClient !== 'undefined') {
+  // ── 2. [SUPABASE] → autenticación real + datos de tabla clientes ─────────
+  if (supabaseClient) {
     var btn2 = document.querySelector('.login-btn');
     if (btn2) { btn2.textContent = 'Verificando...'; btn2.disabled = true; }
     supabaseClient.auth.signInWithPassword({ email: email, password: pass })
       .then(function(result) {
-        if (btn2) { btn2.textContent = 'Ingresar al panel'; btn2.disabled = false; }
-        if (result.error) {
-          showError('Email o contraseña incorrectos.');
-          return;
-        }
-        var u = result.data.user;
-        var userData = {
-          email:         u.email,
-          nombre:        u.user_metadata.nombre || u.email.split('@')[0],
-          apellido:      u.user_metadata.apellido || '',
-          destino:       u.user_metadata.destino || 'Brasil',
-          plan:          u.user_metadata.plan || 'Plan Luazul Smart Travel',
-          paquete:       u.user_metadata.paquete || 'Paquete Luazul',
-          total_usd:     u.user_metadata.total_usd || 0,
-          cuotas_total:  u.user_metadata.cuotas_total || 10,
-          cuotas_pagadas:u.user_metadata.cuotas_pagadas || 0,
-          monto_cuota:   u.user_metadata.monto_cuota || 0,
-          estado:        'activo',
-        };
-        loginSuccess(userData);
+        if (result.error) throw result.error;
+        // Buscar datos del cliente en la tabla clientes
+        return supabaseClient.from('clientes')
+          .select('*')
+          .eq('email', result.data.user.email.toLowerCase())
+          .single()
+          .then(function(r2) {
+            if (btn2) { btn2.textContent = 'Ingresar al panel'; btn2.disabled = false; }
+            if (r2.error || !r2.data) {
+              // Si no está en la tabla, usar user_metadata como respaldo
+              var u = result.data.user;
+              var meta = u.user_metadata || {};
+              loginSuccess({
+                email:          u.email,
+                nombre:         meta.nombre || u.email.split('@')[0],
+                apellido:       meta.apellido || '',
+                destino:        meta.destino || '—',
+                plan:           meta.plan || 'Plan Luazul Smart Travel',
+                paquete:        meta.paquete || '—',
+                total_usd:      meta.total_usd || 0,
+                cuotas_total:   meta.cuotas_total || 10,
+                cuotas_pagadas: meta.cuotas_pagadas || 0,
+                monto_cuota:    meta.monto_cuota || 0,
+                estado:         'activo'
+              });
+            } else {
+              loginSuccess(r2.data);
+            }
+          });
       })
-      .catch(function() {
+      .catch(function(err) {
         if (btn2) { btn2.textContent = 'Ingresar al panel'; btn2.disabled = false; }
-        showError('Error de conexión. Verificá tu internet.');
+        showError((err && err.message === 'Invalid login credentials')
+          ? 'Email o contraseña incorrectos.'
+          : 'Error de conexión. Verificá tu internet.');
       });
     return;
   }
@@ -1511,7 +1565,8 @@ function loginSuccess(user) {
   showApp();
 }
 
-function doLogout() {
+async function doLogout() {
+  if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch(e){} }
   sessionStorage.removeItem('luazul_session');
   currentUser = null;
   document.getElementById('app').style.display = 'none';
