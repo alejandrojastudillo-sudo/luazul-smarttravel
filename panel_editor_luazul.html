@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Luazul · Panel Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #020a1e;
+  --blue-mid:    #0B3D91;
+  --blue-light:  #7eb8ff;
+  --blue-glass:  rgba(11,61,145,.35);
+  --border:      rgba(100,160,255,.18);
+  --text:        #ffffff;
+  --muted:       rgba(200,220,255,.7);
+  --green:       #10b981;
+  --green-glass: rgba(16,185,129,.15);
+  --red:         #ef4444;
+  --red-glass:   rgba(239,68,68,.12);
+  --yellow:      #f59e0b;
+  --yellow-glass:rgba(245,158,11,.15);
+  --purple:      #8b5cf6;
+  --purple-glass:rgba(139,92,246,.15);
+  --sidebar-w:   270px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(11,61,145,.45) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 85% 85%, rgba(5,30,90,.5) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(139,92,246,.08) 0%, transparent 70%);
+}
+.z1 { position:relative; z-index:1; }
+
+/* ── GLASS ── */
+.glass {
+  background: rgba(5,20,60,.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:10px 20px; border-radius:30px; font-weight:700; font-size:.85rem;
+  font-family:inherit; cursor:pointer; transition:all .2s; border:none;
+}
+.btn-primary   { background:linear-gradient(135deg,#1a5bb5,#0B3D91); color:#fff; box-shadow:0 4px 16px rgba(11,61,145,.45); }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(11,61,145,.55); }
+.btn-ghost     { background:var(--blue-glass); color:var(--blue-light); border:1px solid var(--border); }
+.btn-ghost:hover { background:rgba(11,61,145,.55); }
+.btn-success   { background:var(--green-glass); color:#6ee7b7; border:1px solid rgba(16,185,129,.3); }
+.btn-success:hover { background:rgba(16,185,129,.25); }
+.btn-danger    { background:var(--red-glass); color:#fca5a5; border:1px solid rgba(239,68,68,.25); }
+.btn-danger:hover  { background:rgba(239,68,68,.2); }
+.btn-yellow    { background:var(--yellow-glass); color:#fcd34d; border:1px solid rgba(245,158,11,.3); }
+.btn-yellow:hover  { background:rgba(245,158,11,.22); }
+.btn-purple    { background:var(--purple-glass); color:#c4b5fd; border:1px solid rgba(139,92,246,.3); }
+.btn-purple:hover  { background:rgba(139,92,246,.25); }
+.btn-sm { padding:6px 14px; font-size:.78rem; border-radius:20px; }
+.btn:disabled { opacity:.45; cursor:not-allowed; transform:none !important; }
+
+/* ── FORMS ── */
+.form-group { margin-bottom:16px; }
+.form-group label { display:block; font-size:.72rem; font-weight:700; color:var(--blue-light); text-transform:uppercase; letter-spacing:.8px; margin-bottom:7px; }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width:100%; padding:12px 16px;
+  background:rgba(5,20,60,.8); border:1px solid var(--border);
+  border-radius:11px; color:white; font-family:inherit; font-size:.9rem;
+  transition:border-color .2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { outline:none; border-color:var(--blue-light); box-shadow:0 0 0 3px rgba(126,184,255,.12); }
+.form-group input::placeholder,
+.form-group textarea::placeholder { color:rgba(200,220,255,.3); }
+.form-group select option { background:#0f1e45; color:white; }
+
+/* ── LOGIN ── */
+#loginScreen {
+  min-height:100vh; display:flex;
+  align-items:center; justify-content:center; padding:24px;
+}
+.login-box { width:100%; max-width:400px; padding:44px 36px; text-align:center; }
+.login-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--purple-glass); border:1px solid rgba(139,92,246,.3);
+  border-radius:30px; padding:5px 16px;
+  font-size:.7rem; font-weight:700; color:#c4b5fd;
+  text-transform:uppercase; letter-spacing:1.5px;
+  margin-bottom:20px;
+}
+.login-logo {
+  width:80px; height:80px; border-radius:50%;
+  background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(11,61,145,.4));
+  border:2px solid rgba(139,92,246,.3);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 20px;
+}
+.login-box h1 { font-size:1.7rem; font-weight:900; letter-spacing:2px; margin-bottom:4px; }
+.login-box .tagline { color:var(--blue-light); font-size:.72rem; letter-spacing:3px; text-transform:uppercase; margin-bottom:32px; }
+.login-error { background:var(--red-glass); border:1px solid rgba(239,68,68,.3); color:#fca5a5; border-radius:9px; padding:11px 15px; font-size:.83rem; margin-top:12px; display:none; }
+.login-footer { margin-top:20px; color:var(--muted); font-size:.78rem; }
+.lz-pass-wrap { position:relative; }
+.lz-pass-wrap input { padding-right:46px; }
+.lz-eye-btn { position:absolute; right:13px; top:50%; transform:translateY(-50%); background:none; border:none; color:rgba(126,184,255,.5); cursor:pointer; padding:4px; display:flex; align-items:center; transition:color .2s; }
+.lz-eye-btn:hover { color:var(--blue-light); }
+
+/* ── APP LAYOUT ── */
+#app { display:none; min-height:100vh; }
+.layout { display:flex; min-height:100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:var(--sidebar-w); flex-shrink:0;
+  background:rgba(2,8,25,.95);
+  backdrop-filter:blur(20px);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  position:fixed; top:0; left:0; height:100vh;
+  z-index:50; transition:transform .3s;
+}
+.sidebar-header { padding:24px 20px 18px; border-bottom:1px solid var(--border); }
+.sidebar-brand { font-size:1.2rem; font-weight:900; letter-spacing:2px; display:flex; align-items:center; gap:10px; }
+.sidebar-brand span { color:var(--blue-light); }
+.sidebar-sub { font-size:.6rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+.editor-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--purple-glass); border:1px solid rgba(139,92,246,.3);
+  border-radius:20px; padding:3px 12px; font-size:.68rem; font-weight:700;
+  color:#c4b5fd; margin-top:10px;
+}
+.sidebar-user { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:11px; }
+.user-avatar {
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),#6d28d9);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:.95rem; border:2px solid rgba(139,92,246,.3);
+  flex-shrink:0;
+}
+.user-name  { font-size:.88rem; font-weight:600; }
+.user-email { font-size:.68rem; color:var(--muted); }
+
+nav { padding:14px 10px; flex:1; overflow-y:auto; }
+.nav-section { font-size:.6rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(126,184,255,.45); padding:7px 12px 5px; margin-top:6px; }
+.nav-item {
+  display:flex; align-items:center; gap:11px;
+  padding:10px 13px; border-radius:11px;
+  color:var(--muted); font-size:.85rem; font-weight:500;
+  cursor:pointer; transition:all .15s; margin-bottom:2px;
+  border:1px solid transparent;
+}
+.nav-item:hover { background:var(--blue-glass); color:white; }
+.nav-item.active { background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(11,61,145,.35)); color:white; border-color:rgba(139,92,246,.2); }
+.nav-item .icon { font-size:1rem; flex-shrink:0; }
+.nav-badge { margin-left:auto; font-size:.68rem; font-weight:700; padding:2px 8px; border-radius:20px; }
+.nb-draft   { background:rgba(245,158,11,.2);  color:#fcd34d; }
+.nb-live    { background:rgba(16,185,129,.2);  color:#6ee7b7; }
+
+.sidebar-footer { padding:14px 10px; border-top:1px solid var(--border); }
+.logout-btn {
+  display:flex; align-items:center; gap:9px; width:100%;
+  padding:9px 13px; border-radius:9px; background:none;
+  border:1px solid rgba(239,68,68,.2); color:#fca5a5;
+  font-family:inherit; font-size:.83rem; font-weight:600; cursor:pointer; transition:background .2s;
+}
+.logout-btn:hover { background:var(--red-glass); }
+
+/* ── MAIN ── */
+.main { margin-left:var(--sidebar-w); flex:1; padding:28px; }
+.topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+.page-title { font-size:1.5rem; font-weight:800; }
+.menu-toggle {
+  display:none; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:9px;
+  background:var(--blue-glass); border:1px solid var(--border);
+  color:white; font-size:1.1rem; cursor:pointer;
+}
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:40; }
+.overlay.show { display:block; }
+
+/* ── PAGES ── */
+.page { display:none; animation:fadeIn .25s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+.status-dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; display:inline-block; }
+
+/* ── STATS ── */
+.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-bottom:24px; }
+.stat-card { padding:18px 20px; display:flex; flex-direction:column; gap:6px; }
+.stat-lbl { font-size:.7rem; color:var(--blue-light); text-transform:uppercase; letter-spacing:1px; font-weight:600; }
+.stat-val { font-size:1.9rem; font-weight:900; }
+.stat-sub { font-size:.76rem; color:var(--muted); }
+
+/* ── POST CARD ── */
+.posts-list { display:flex; flex-direction:column; gap:12px; }
+.post-card {
+  padding:18px 20px; border-radius:16px;
+  background:rgba(5,20,60,.5); border:1px solid var(--border);
+  transition:background .15s;
+}
+.post-card:hover { background:rgba(11,61,145,.2); }
+.post-card-top { display:flex; align-items:flex-start; gap:14px; }
+.post-emoji { font-size:2rem; flex-shrink:0; line-height:1; margin-top:2px; }
+.post-info { flex:1; min-width:0; }
+.post-title { font-size:.98rem; font-weight:700; color:#fff; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.post-meta { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.post-tipo { font-size:.68rem; font-weight:700; padding:2px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.5px; }
+.tipo-novedad  { background:rgba(11,61,145,.4);   color:#93c5fd; border:1px solid rgba(59,130,246,.3); }
+.tipo-tip      { background:rgba(16,185,129,.15);  color:#6ee7b7; border:1px solid rgba(16,185,129,.3); }
+.tipo-alerta   { background:rgba(239,68,68,.12);   color:#fca5a5; border:1px solid rgba(239,68,68,.25); }
+.tipo-promo    { background:rgba(245,158,11,.15);  color:#fcd34d; border:1px solid rgba(245,158,11,.3); }
+.tipo-logro    { background:rgba(139,92,246,.15);  color:#c4b5fd; border:1px solid rgba(139,92,246,.3); }
+.post-date { font-size:.7rem; color:var(--muted); }
+.post-preview { font-size:.82rem; color:rgba(190,215,255,.7); margin-top:8px; line-height:1.6; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.post-actions { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; padding-top:12px; border-top:1px solid rgba(100,160,255,.1); }
+.post-featured-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.25);
+  color:#fcd34d; font-size:.68rem; font-weight:700; padding:2px 10px; border-radius:20px;
+}
+.post-status-live   { background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.25); color:#6ee7b7; font-size:.68rem; font-weight:700; padding:2px 10px; border-radius:20px; }
+.post-status-draft  { background:rgba(100,160,255,.1);  border:1px solid var(--border); color:var(--muted); font-size:.68rem; font-weight:700; padding:2px 10px; border-radius:20px; }
+
+/* ── EDITOR FORM ── */
+.editor-wrap { max-width:760px; }
+.tipo-selector { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px; }
+.tipo-btn {
+  padding:7px 16px; border-radius:20px; font-size:.8rem; font-weight:700;
+  font-family:inherit; cursor:pointer; border:1px solid var(--border);
+  background:rgba(5,20,60,.5); color:var(--muted); transition:all .15s;
+}
+.tipo-btn.selected-novedad  { background:rgba(11,61,145,.5);   color:#93c5fd; border-color:rgba(59,130,246,.4); }
+.tipo-btn.selected-tip      { background:rgba(16,185,129,.2);  color:#6ee7b7; border-color:rgba(16,185,129,.4); }
+.tipo-btn.selected-alerta   { background:rgba(239,68,68,.15);  color:#fca5a5; border-color:rgba(239,68,68,.35); }
+.tipo-btn.selected-promo    { background:rgba(245,158,11,.2);  color:#fcd34d; border-color:rgba(245,158,11,.4); }
+.tipo-btn.selected-logro    { background:rgba(139,92,246,.2);  color:#c4b5fd; border-color:rgba(139,92,246,.4); }
+.emoji-grid { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:4px; }
+.emoji-btn {
+  width:38px; height:38px; border-radius:9px; font-size:1.2rem;
+  background:rgba(5,20,60,.5); border:1px solid var(--border);
+  cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center;
+}
+.emoji-btn:hover   { background:rgba(11,61,145,.4); border-color:var(--blue-light); }
+.emoji-btn.selected { background:rgba(11,61,145,.6); border-color:var(--blue-light); box-shadow:0 0 0 2px rgba(126,184,255,.25); }
+.char-count { font-size:.7rem; color:var(--muted); text-align:right; margin-top:4px; }
+.char-count.warn { color:#fcd34d; }
+
+/* ── PREVIEW CARD ── */
+.preview-card {
+  background:rgba(5,18,55,.6);
+  border:1px solid rgba(126,184,255,.2);
+  border-radius:14px; padding:20px 22px;
+  margin-top:8px;
+}
+.preview-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.preview-emoji-big { font-size:2rem; line-height:1; }
+.preview-title { font-size:1rem; font-weight:700; color:#fff; }
+.preview-body  { font-size:.85rem; color:rgba(190,215,255,.8); line-height:1.75; }
+
+/* ── TOGGLE SWITCH ── */
+.toggle-row { display:flex; align-items:center; gap:12px; padding:12px 0; }
+.toggle-label { font-size:.85rem; font-weight:600; color:var(--text); flex:1; }
+.toggle-sub   { font-size:.75rem; color:var(--muted); }
+.toggle {
+  position:relative; display:inline-block; width:46px; height:26px;
+}
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider {
+  position:absolute; cursor:pointer; inset:0;
+  background:rgba(100,160,255,.15); border:1px solid var(--border);
+  border-radius:26px; transition:.3s;
+}
+.toggle-slider:before {
+  position:absolute; content:""; height:18px; width:18px;
+  left:3px; bottom:3px;
+  background:rgba(200,220,255,.5); border-radius:50%; transition:.3s;
+}
+input:checked + .toggle-slider { background:rgba(16,185,129,.3); border-color:rgba(16,185,129,.4); }
+input:checked + .toggle-slider:before { transform:translateX(20px); background:#6ee7b7; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align:center; padding:48px 24px;
+  color:var(--muted);
+}
+.empty-state .big-icon { font-size:3rem; margin-bottom:12px; opacity:.5; }
+.empty-state p { font-size:.9rem; margin-bottom:16px; }
+
+/* ── DELETE CONFIRM ── */
+.delete-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:9999;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.delete-box { max-width:420px; width:100%; padding:32px; text-align:center; }
+.delete-box h3 { font-size:1.1rem; font-weight:800; margin-bottom:8px; }
+.delete-box p  { font-size:.88rem; color:var(--muted); margin-bottom:24px; line-height:1.6; }
+
+/* ── SECTION TITLE ── */
+.section-title { font-size:1rem; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+.section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── LOADING ── */
+#loadingScreen {
+  position:fixed; inset:0; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:999;
+}
+.loader-text { color:var(--blue-light); letter-spacing:3px; font-size:.78rem; text-transform:uppercase; margin-top:14px; }
+
+/* ── TOAST ── */
+#lzToast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(70px);
+  z-index:9998; padding:11px 20px; border-radius:11px; font-weight:700;
+  font-size:.85rem; transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap; pointer-events:none;
+}
+#lzToast.show { transform:translateX(-50%) translateY(0); }
+
+@media(max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .main { margin-left:0; padding:16px; }
+  .menu-toggle { display:flex !important; }
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  var SUPABASE_URL = 'https://yunvqgaljopirzvjrntc.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB';
+  var sbClient = (typeof supabase !== 'undefined')
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    : null;
+</script>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen">
+  <img src="images/mariposa-avatar.png" alt="" style="width:72px;height:72px;object-fit:contain;animation:pulse 1.4s ease-in-out infinite;">
+  <div class="loader-text">Cargando panel editor...</div>
+</div>
+
+<div id="lzToast"></div>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="loginScreen" class="z1" style="display:none;">
+  <div class="login-box glass">
+    <div class="login-badge">✏️ Acceso restringido</div>
+    <div class="login-logo">
+      <img src="images/mariposa-avatar.png" alt="Luazul" style="width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(139,92,246,.5));">
+    </div>
+    <h1>LUAZUL</h1>
+    <div class="tagline">Panel Editor · Comunidad</div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="editor@luazul.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <div class="lz-pass-wrap">
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        <button type="button" class="lz-eye-btn" onclick="lzToggle('loginPass',this)" tabindex="-1">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="loginBtn" onclick="doLogin()"
+            style="width:100%;padding:14px;font-size:.95rem;border-radius:11px;margin-top:4px;">
+      ✏️ Ingresar al panel
+    </button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-footer">Panel exclusivo para editores de contenido.<br>¿Problemas? Contactá al administrador del sistema.</div>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="app" class="z1">
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <img src="images/logo-nav.png" alt="Luazul" style="width:38px;height:38px;object-fit:contain;border-radius:50%;flex-shrink:0;">
+        <div>
+          <div>LUA<span>ZUL</span></div>
+          <div class="sidebar-sub">Smart Travel</div>
+        </div>
+      </div>
+      <div class="editor-badge">✏️ Editor de Comunidad</div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatar">E</div>
+      <div>
+        <div class="user-name" id="userName">—</div>
+        <div class="user-email" id="userEmail">—</div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-section">Contenido</div>
+      <div class="nav-item active" onclick="goPage('dashboard')">
+        <span class="icon">📊</span> Resumen
+      </div>
+      <div class="nav-item" onclick="goPage('nuevo')">
+        <span class="icon">✍️</span> Nuevo post
+      </div>
+      <div class="nav-item" onclick="goPage('publicados')">
+        <span class="icon">🟢</span> Publicados
+        <span class="nav-badge nb-live" id="badgeLive">0</span>
+      </div>
+      <div class="nav-item" onclick="goPage('borradores')">
+        <span class="icon">📝</span> Borradores
+        <span class="nav-badge nb-draft" id="badgeDraft">0</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div style="font-size:.68rem;color:rgba(150,190,255,.3);text-align:center;margin-bottom:10px;">
+        Los cambios se guardan en Supabase · RLS activo
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="page-title" id="pageTitle">Resumen</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:6px;background:var(--green-glass);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;font-size:.75rem;font-weight:600;padding:5px 13px;border-radius:25px;">
+          <span class="status-dot"></span> Conectado
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="goPage('nuevo')">✍️ Nuevo post</button>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-row">
+        <div class="stat-card glass">
+          <div class="stat-lbl">Posts publicados</div>
+          <div class="stat-val" id="st-live" style="color:#6ee7b7;">0</div>
+          <div class="stat-sub">Visibles para clientes</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="stat-lbl">Borradores</div>
+          <div class="stat-val" id="st-draft" style="color:#fcd34d;">0</div>
+          <div class="stat-sub">Sin publicar</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="stat-lbl">Destacados</div>
+          <div class="stat-val" id="st-featured" style="color:#c4b5fd;">0</div>
+          <div class="stat-sub">Aparecen primero</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="stat-lbl">Total posts</div>
+          <div class="stat-val" id="st-total">0</div>
+          <div class="stat-sub">Histórico</div>
+        </div>
+      </div>
+
+      <div class="glass" style="padding:22px;margin-bottom:20px;">
+        <div class="section-title">Publicados recientes</div>
+        <div id="dashRecentList">
+          <div class="empty-state"><div class="big-icon">📭</div><p>No hay posts publicados aún.</p></div>
+        </div>
+      </div>
+
+      <div class="glass" style="padding:22px;">
+        <div class="section-title">Borradores pendientes</div>
+        <div id="dashDraftList">
+          <div class="empty-state"><div class="big-icon">📝</div><p>No hay borradores.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NUEVO / EDITAR POST ── -->
+    <div class="page" id="page-nuevo">
+      <div class="editor-wrap">
+
+        <div class="glass" style="padding:24px;margin-bottom:20px;">
+          <div class="section-title" id="formSectionTitle">✍️ Redactar nuevo post</div>
+
+          <!-- Tipo -->
+          <div class="form-group">
+            <label>Tipo de contenido</label>
+            <div class="tipo-selector">
+              <button class="tipo-btn selected-novedad" data-tipo="novedad" onclick="selectTipo('novedad')">📣 Novedad</button>
+              <button class="tipo-btn" data-tipo="tip"     onclick="selectTipo('tip')">💡 Tip</button>
+              <button class="tipo-btn" data-tipo="alerta"  onclick="selectTipo('alerta')">⚠️ Alerta</button>
+              <button class="tipo-btn" data-tipo="promo"   onclick="selectTipo('promo')">🎁 Promo</button>
+              <button class="tipo-btn" data-tipo="logro"   onclick="selectTipo('logro')">🏆 Logro</button>
+            </div>
+          </div>
+
+          <!-- Emoji -->
+          <div class="form-group">
+            <label>Ícono del post</label>
+            <div class="emoji-grid" id="emojiGrid">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+          <!-- Título -->
+          <div class="form-group">
+            <label>Título <span style="color:rgba(239,68,68,.8);">*</span></label>
+            <input type="text" id="fTitulo" placeholder="Ej: Hotel confirmado en Búzios 🌴" maxlength="100"
+                   oninput="updateCharCount('fTitulo','ccTitulo',100); updatePreview()">
+            <div class="char-count" id="ccTitulo">0 / 100</div>
+          </div>
+
+          <!-- Cuerpo -->
+          <div class="form-group">
+            <label>Contenido <span style="color:rgba(239,68,68,.8);">*</span></label>
+            <textarea id="fCuerpo" rows="5" placeholder="Escribí el contenido del post aquí..." maxlength="800"
+                      oninput="updateCharCount('fCuerpo','ccCuerpo',800); updatePreview()"></textarea>
+            <div class="char-count" id="ccCuerpo">0 / 800</div>
+          </div>
+
+          <!-- Imagen URL (opcional) -->
+          <div class="form-group">
+            <label>URL de imagen <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(opcional)</span></label>
+            <input type="url" id="fImagen" placeholder="https://... (imagen de Supabase Storage o externa)">
+          </div>
+
+          <!-- Toggles -->
+          <div style="background:rgba(5,20,60,.4);border:1px solid var(--border);border-radius:13px;padding:4px 16px;margin-bottom:16px;">
+            <div class="toggle-row" style="border-bottom:1px solid var(--border);">
+              <div>
+                <div class="toggle-label">🟢 Publicar inmediatamente</div>
+                <div class="toggle-sub">Si está desactivado, se guarda como borrador</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="fPublicado" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">⭐ Marcar como destacado</div>
+                <div class="toggle-sub">Aparece primero en la sección Comunidad</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="fDestacado"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="btnGuardar" onclick="guardarPost()">💾 Guardar post</button>
+            <button class="btn btn-ghost" onclick="limpiarForm()">✕ Cancelar</button>
+          </div>
+          <div id="formMsg" style="margin-top:12px;display:none;"></div>
+        </div>
+
+        <!-- Preview -->
+        <div class="glass" style="padding:22px;">
+          <div class="section-title">👁️ Vista previa</div>
+          <div class="preview-card">
+            <div class="preview-header">
+              <div class="preview-emoji-big" id="prevEmoji">📣</div>
+              <div>
+                <div class="preview-title" id="prevTitulo">El título aparecerá aquí...</div>
+                <div style="display:flex;gap:6px;align-items:center;margin-top:4px;">
+                  <span class="post-tipo tipo-novedad" id="prevTipo">NOVEDAD</span>
+                  <span style="font-size:.68rem;color:var(--muted);" id="prevFecha"></span>
+                </div>
+              </div>
+            </div>
+            <div class="preview-body" id="prevCuerpo">El contenido del post aparecerá aquí. Escribí algo arriba para ver la vista previa en tiempo real.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PUBLICADOS ── -->
+    <div class="page" id="page-publicados">
+      <div class="glass" style="padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+          <div class="section-title" style="margin-bottom:0;flex:1;">🟢 Posts publicados</div>
+          <button class="btn btn-ghost btn-sm" onclick="loadPosts()">🔄 Actualizar</button>
+        </div>
+        <div id="listPublicados" class="posts-list">
+          <div class="empty-state"><div class="big-icon">⏳</div><p>Cargando...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BORRADORES ── -->
+    <div class="page" id="page-borradores">
+      <div class="glass" style="padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+          <div class="section-title" style="margin-bottom:0;flex:1;">📝 Borradores</div>
+          <button class="btn btn-ghost btn-sm" onclick="loadPosts()">🔄 Actualizar</button>
+        </div>
+        <div id="listBorradores" class="posts-list">
+          <div class="empty-state"><div class="big-icon">⏳</div><p>Cargando...</p></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+var currentEditor = null;   // registro en tabla editores
+var allPosts      = [];     // caché local de posts
+var editingPostId = null;   // null = nuevo post, uuid = editar existente
+var selectedTipo  = 'novedad';
+var selectedEmoji = '📣';
+
+var EMOJIS = ['📣','🏖️','✅','🌊','🎉','🚀','💡','⚠️','🎁','🏆','🌴','🛫','💳','🤿','⛵','🌅','🏨','🎶','📸','🤝'];
+
+var TIPO_CLASSES = {
+  novedad: 'tipo-novedad', tip: 'tipo-tip',
+  alerta: 'tipo-alerta',   promo: 'tipo-promo', logro: 'tipo-logro'
+};
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async function () {
+  setTimeout(async function () {
+    document.getElementById('loadingScreen').style.display = 'none';
+
+    if (!sbClient) {
+      showLoginScreen();
+      return;
+    }
+
+    try {
+      var { data: sd } = await sbClient.auth.getSession();
+      if (sd && sd.session) {
+        var ok = await loadEditorProfile(sd.session.user.email);
+        if (ok) { initApp(); return; }
+      }
+    } catch (e) { console.warn('[SB] session:', e.message); }
+
+    showLoginScreen();
+  }, 900);
+
+  document.getElementById('loginPass').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') doLogin();
+  });
+  document.getElementById('loginEmail').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') document.getElementById('loginPass').focus();
+  });
+
+  buildEmojiGrid();
+  updatePreview();
+});
+
+// ══════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════
+async function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  var pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) { showLoginError('Completá email y contraseña.'); return; }
+
+  var btn = document.getElementById('loginBtn');
+  btn.textContent = 'Verificando...'; btn.disabled = true;
+  document.getElementById('loginError').style.display = 'none';
+
+  try {
+    var { data, error } = await sbClient.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      btn.textContent = '✏️ Ingresar al panel'; btn.disabled = false;
+      showLoginError(error.message === 'Invalid login credentials'
+        ? 'Email o contraseña incorrectos.'
+        : 'Error de conexión. Verificá tu internet.');
+      return;
+    }
+
+    var ok = await loadEditorProfile(data.user.email);
+    btn.textContent = '✏️ Ingresar al panel'; btn.disabled = false;
+
+    if (!ok) {
+      showLoginError('Esta cuenta no tiene acceso al panel editor. Contactá al administrador.');
+      await sbClient.auth.signOut();
+      return;
+    }
+
+    document.getElementById('loginScreen').style.display = 'none';
+    initApp();
+
+  } catch (e) {
+    btn.textContent = '✏️ Ingresar al panel'; btn.disabled = false;
+    showLoginError('Error inesperado. Intentá de nuevo.');
+  }
+}
+
+async function loadEditorProfile(email) {
+  try {
+    var { data, error } = await sbClient
+      .from('editores')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .eq('activo', true)
+      .single();
+
+    if (error || !data) return false;
+    currentEditor = data;
+    return true;
+  } catch (e) {
+    console.warn('[SB] loadEditorProfile:', e.message);
+    return false;
+  }
+}
+
+async function doLogout() {
+  if (sbClient) { try { await sbClient.auth.signOut(); } catch (e) {} }
+  currentEditor = null; allPosts = [];
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value  = '';
+  showLoginScreen();
+}
+
+function showLoginScreen() { document.getElementById('loginScreen').style.display = 'flex'; }
+function showLoginError(msg) {
+  var el = document.getElementById('loginError');
+  el.textContent = '❌ ' + msg; el.style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════
+//  APP INIT
+// ══════════════════════════════════════════════════════
+function initApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  var e = currentEditor;
+  var initials = (e.nombre || 'E').split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userName').textContent   = e.nombre || e.email;
+  document.getElementById('userEmail').textContent  = e.email;
+
+  loadPosts();
+  goPage('dashboard');
+}
+
+// ══════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+  var target = document.getElementById('page-' + name);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
+  var navMap = { dashboard: 0, nuevo: 1, publicados: 2, borradores: 3 };
+  var navItems = document.querySelectorAll('.nav-item');
+  if (navMap[name] !== undefined && navItems[navMap[name]]) {
+    navItems[navMap[name]].classList.add('active');
+  }
+
+  var titles = { dashboard: 'Resumen', nuevo: editingPostId ? 'Editar post' : 'Nuevo post', publicados: 'Posts publicados', borradores: 'Borradores' };
+  document.getElementById('pageTitle').textContent = titles[name] || name;
+
+  if (name === 'nuevo' && !editingPostId) limpiarForm();
+  closeSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════════
+//  LOAD POSTS
+// ══════════════════════════════════════════════════════
+async function loadPosts() {
+  try {
+    var { data, error } = await sbClient
+      .from('posts_comunidad')
+      .select('*')
+      .eq('editor_id', currentEditor.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    allPosts = data || [];
+  } catch (e) {
+    console.warn('[SB] loadPosts:', e.message);
+    showToast('⚠️ No se pudieron cargar los posts.', 'warn');
+    allPosts = [];
+  }
+
+  renderAll();
+}
+
+// ══════════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════════
+function renderAll() {
+  var live     = allPosts.filter(function (p) { return p.publicado; });
+  var drafts   = allPosts.filter(function (p) { return !p.publicado; });
+  var featured = allPosts.filter(function (p) { return p.destacado && p.publicado; });
+
+  // Stats
+  document.getElementById('st-live').textContent     = live.length;
+  document.getElementById('st-draft').textContent    = drafts.length;
+  document.getElementById('st-featured').textContent = featured.length;
+  document.getElementById('st-total').textContent    = allPosts.length;
+  document.getElementById('badgeLive').textContent   = live.length;
+  document.getElementById('badgeDraft').textContent  = drafts.length;
+
+  // Dashboard recent
+  var dashR = document.getElementById('dashRecentList');
+  dashR.innerHTML = live.length ? renderPostCards(live.slice(0, 3), true) : '<div class="empty-state"><div class="big-icon">📭</div><p>No hay posts publicados aún.</p><button class="btn btn-primary btn-sm" onclick="goPage(\'nuevo\')">✍️ Crear primero post</button></div>';
+
+  var dashD = document.getElementById('dashDraftList');
+  dashD.innerHTML = drafts.length ? renderPostCards(drafts.slice(0, 3), true) : '<div class="empty-state"><div class="big-icon">✅</div><p>No hay borradores pendientes.</p></div>';
+
+  // Full lists
+  document.getElementById('listPublicados').innerHTML = live.length
+    ? renderPostCards(live, false)
+    : '<div class="empty-state"><div class="big-icon">📭</div><p>No hay posts publicados.</p><button class="btn btn-primary btn-sm" onclick="goPage(\'nuevo\')">✍️ Crear post</button></div>';
+
+  document.getElementById('listBorradores').innerHTML = drafts.length
+    ? renderPostCards(drafts, false)
+    : '<div class="empty-state"><div class="big-icon">📝</div><p>No hay borradores.</p></div>';
+}
+
+function renderPostCards(posts, compact) {
+  return posts.map(function (post) {
+    var tipoClass = TIPO_CLASSES[post.tipo] || 'tipo-novedad';
+    var fecha = post.created_at
+      ? new Date(post.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
+      : '—';
+
+    var actions = compact
+      ? '<button class="btn btn-ghost btn-sm" onclick="editarPost(\'' + post.id + '\')">✏️ Editar</button>'
+      : [
+          post.publicado
+            ? '<button class="btn btn-yellow btn-sm" onclick="togglePublicado(\'' + post.id + '\', false)">⏸ Despublicar</button>'
+            : '<button class="btn btn-success btn-sm" onclick="togglePublicado(\'' + post.id + '\', true)">🟢 Publicar</button>',
+          '<button class="btn btn-ghost btn-sm" onclick="editarPost(\'' + post.id + '\')">✏️ Editar</button>',
+          post.publicado
+            ? '<button class="btn btn-purple btn-sm" onclick="toggleDestacado(\'' + post.id + '\', ' + !post.destacado + ')">'
+              + (post.destacado ? '★ Quitar destacado' : '☆ Destacar') + '</button>'
+            : '',
+          '<button class="btn btn-danger btn-sm" onclick="confirmarEliminar(\'' + post.id + '\')">🗑 Eliminar</button>'
+        ].join('');
+
+    return '<div class="post-card" id="pc-' + post.id + '">'
+      + '<div class="post-card-top">'
+      +   '<div class="post-emoji">' + (post.emoji || '📣') + '</div>'
+      +   '<div class="post-info">'
+      +     '<div class="post-title">' + esc(post.titulo) + '</div>'
+      +     '<div class="post-meta">'
+      +       '<span class="post-tipo ' + tipoClass + '">' + post.tipo.toUpperCase() + '</span>'
+      +       (post.publicado ? '<span class="post-status-live">● Publicado</span>' : '<span class="post-status-draft">Borrador</span>')
+      +       (post.destacado && post.publicado ? '<span class="post-featured-badge">★ Destacado</span>' : '')
+      +       '<span class="post-date">' + fecha + '</span>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="post-preview">' + esc(post.cuerpo) + '</div>'
+      + '<div class="post-actions">' + actions + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  CREAR / EDITAR POST
+// ══════════════════════════════════════════════════════
+async function guardarPost() {
+  var titulo    = document.getElementById('fTitulo').value.trim();
+  var cuerpo    = document.getElementById('fCuerpo').value.trim();
+  var imagen    = document.getElementById('fImagen').value.trim();
+  var publicado = document.getElementById('fPublicado').checked;
+  var destacado = document.getElementById('fDestacado').checked;
+
+  if (!titulo) { showFormMsg('⚠️ El título es obligatorio.', 'warn'); return; }
+  if (!cuerpo) { showFormMsg('⚠️ El contenido es obligatorio.', 'warn'); return; }
+
+  var btn = document.getElementById('btnGuardar');
+  btn.textContent = 'Guardando...'; btn.disabled = true;
+
+  var payload = {
+    titulo,
+    cuerpo,
+    emoji:      selectedEmoji,
+    tipo:       selectedTipo,
+    imagen_url: imagen || null,
+    publicado,
+    destacado,
+    editor_id:  currentEditor.id
+  };
+
+  try {
+    var result;
+    if (editingPostId) {
+      result = await sbClient
+        .from('posts_comunidad')
+        .update(payload)
+        .eq('id', editingPostId)
+        .eq('editor_id', currentEditor.id);
+    } else {
+      result = await sbClient
+        .from('posts_comunidad')
+        .insert(payload);
+    }
+
+    if (result.error) throw result.error;
+
+    btn.textContent = '💾 Guardar post'; btn.disabled = false;
+    showToast(editingPostId ? '✅ Post actualizado.' : '✅ Post guardado' + (publicado ? ' y publicado.' : ' como borrador.'), 'ok');
+    editingPostId = null;
+    limpiarForm();
+    await loadPosts();
+    goPage('dashboard');
+
+  } catch (e) {
+    btn.textContent = '💾 Guardar post'; btn.disabled = false;
+    showFormMsg('❌ Error al guardar: ' + e.message, 'error');
+  }
+}
+
+function editarPost(id) {
+  var post = allPosts.find(function (p) { return p.id === id; });
+  if (!post) return;
+
+  editingPostId = id;
+  document.getElementById('fTitulo').value   = post.titulo || '';
+  document.getElementById('fCuerpo').value   = post.cuerpo || '';
+  document.getElementById('fImagen').value   = post.imagen_url || '';
+  document.getElementById('fPublicado').checked = post.publicado;
+  document.getElementById('fDestacado').checked = post.destacado;
+
+  selectTipo(post.tipo || 'novedad');
+  selectEmoji(post.emoji || '📣');
+  updateCharCount('fTitulo', 'ccTitulo', 100);
+  updateCharCount('fCuerpo', 'ccCuerpo', 800);
+
+  document.getElementById('formSectionTitle').textContent = '✏️ Editar post';
+  document.getElementById('btnGuardar').textContent = '💾 Actualizar post';
+  updatePreview();
+  goPage('nuevo');
+}
+
+function limpiarForm() {
+  editingPostId = null;
+  document.getElementById('fTitulo').value = '';
+  document.getElementById('fCuerpo').value = '';
+  document.getElementById('fImagen').value = '';
+  document.getElementById('fPublicado').checked = true;
+  document.getElementById('fDestacado').checked = false;
+  selectTipo('novedad');
+  selectEmoji('📣');
+  updateCharCount('fTitulo', 'ccTitulo', 100);
+  updateCharCount('fCuerpo', 'ccCuerpo', 800);
+  document.getElementById('formSectionTitle').textContent = '✍️ Redactar nuevo post';
+  document.getElementById('btnGuardar').textContent = '💾 Guardar post';
+  hideFormMsg();
+  updatePreview();
+}
+
+// ══════════════════════════════════════════════════════
+//  ACCIONES RÁPIDAS
+// ══════════════════════════════════════════════════════
+async function togglePublicado(id, valor) {
+  try {
+    var { error } = await sbClient
+      .from('posts_comunidad')
+      .update({ publicado: valor })
+      .eq('id', id)
+      .eq('editor_id', currentEditor.id);
+
+    if (error) throw error;
+    showToast(valor ? '🟢 Post publicado. Ya es visible para los clientes.' : '⏸ Post despublicado.', 'ok');
+    await loadPosts();
+  } catch (e) {
+    showToast('❌ Error: ' + e.message, 'warn');
+  }
+}
+
+async function toggleDestacado(id, valor) {
+  try {
+    var { error } = await sbClient
+      .from('posts_comunidad')
+      .update({ destacado: valor })
+      .eq('id', id)
+      .eq('editor_id', currentEditor.id);
+
+    if (error) throw error;
+    showToast(valor ? '★ Post marcado como destacado.' : 'Post ya no es destacado.', 'ok');
+    await loadPosts();
+  } catch (e) {
+    showToast('❌ Error: ' + e.message, 'warn');
+  }
+}
+
+// ── Eliminar con confirmación ───────────────────────
+var _deleteTargetId = null;
+
+function confirmarEliminar(id) {
+  _deleteTargetId = id;
+  var post = allPosts.find(function (p) { return p.id === id; });
+  var titulo = post ? post.titulo : 'este post';
+
+  var html = '<div class="delete-overlay" id="deleteOverlay" onclick="if(event.target===this)cancelarEliminar()">'
+    + '<div class="glass delete-box">'
+    +   '<div style="font-size:2.2rem;margin-bottom:12px;">🗑️</div>'
+    +   '<h3>¿Eliminar post?</h3>'
+    +   '<p>Vas a eliminar <strong>"' + esc(titulo) + '"</strong>.<br>Esta acción no se puede deshacer.</p>'
+    +   '<div style="display:flex;gap:10px;justify-content:center;">'
+    +     '<button class="btn btn-danger" onclick="ejecutarEliminar()">🗑 Sí, eliminar</button>'
+    +     '<button class="btn btn-ghost" onclick="cancelarEliminar()">Cancelar</button>'
+    +   '</div>'
+    + '</div></div>';
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function cancelarEliminar() {
+  var el = document.getElementById('deleteOverlay');
+  if (el) el.remove();
+  _deleteTargetId = null;
+}
+
+async function ejecutarEliminar() {
+  if (!_deleteTargetId) return;
+  var id = _deleteTargetId;
+  cancelarEliminar();
+
+  try {
+    var { error } = await sbClient
+      .from('posts_comunidad')
+      .delete()
+      .eq('id', id)
+      .eq('editor_id', currentEditor.id);
+
+    if (error) throw error;
+    showToast('🗑 Post eliminado.', 'ok');
+    await loadPosts();
+  } catch (e) {
+    showToast('❌ Error al eliminar: ' + e.message, 'warn');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  FORM HELPERS
+// ══════════════════════════════════════════════════════
+function selectTipo(tipo) {
+  selectedTipo = tipo;
+  document.querySelectorAll('.tipo-btn').forEach(function (btn) {
+    btn.className = 'tipo-btn';
+    if (btn.dataset.tipo === tipo) btn.classList.add('selected-' + tipo);
+  });
+  updatePreview();
+}
+
+function buildEmojiGrid() {
+  var grid = document.getElementById('emojiGrid');
+  grid.innerHTML = EMOJIS.map(function (em) {
+    return '<button class="emoji-btn' + (em === selectedEmoji ? ' selected' : '') + '" data-em="' + em + '" onclick="selectEmoji(\'' + em + '\')">' + em + '</button>';
+  }).join('');
+}
+
+function selectEmoji(em) {
+  selectedEmoji = em;
+  document.querySelectorAll('.emoji-btn').forEach(function (btn) {
+    btn.classList.toggle('selected', btn.dataset.em === em);
+  });
+  updatePreview();
+}
+
+function updateCharCount(fieldId, countId, max) {
+  var val = document.getElementById(fieldId).value.length;
+  var el  = document.getElementById(countId);
+  el.textContent = val + ' / ' + max;
+  el.classList.toggle('warn', val > max * 0.85);
+}
+
+function updatePreview() {
+  var titulo = document.getElementById('fTitulo').value.trim() || 'El título aparecerá aquí...';
+  var cuerpo = document.getElementById('fCuerpo').value.trim() || 'El contenido del post aparecerá aquí. Escribí algo arriba para ver la vista previa en tiempo real.';
+
+  document.getElementById('prevEmoji').textContent  = selectedEmoji;
+  document.getElementById('prevTitulo').textContent = titulo;
+  document.getElementById('prevCuerpo').textContent = cuerpo;
+
+  var tipoEl = document.getElementById('prevTipo');
+  tipoEl.textContent  = selectedTipo.toUpperCase();
+  tipoEl.className    = 'post-tipo ' + (TIPO_CLASSES[selectedTipo] || 'tipo-novedad');
+
+  var now = new Date();
+  document.getElementById('prevFecha').textContent = now.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function showFormMsg(msg, type) {
+  var el = document.getElementById('formMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background   = type === 'error' ? 'rgba(239,68,68,.12)'   : 'rgba(245,158,11,.12)';
+  el.style.border       = '1px solid ' + (type === 'error' ? 'rgba(239,68,68,.3)' : 'rgba(245,158,11,.3)');
+  el.style.color        = type === 'error' ? '#fca5a5' : '#fcd34d';
+  el.style.borderRadius = '9px';
+  el.style.padding      = '10px 14px';
+  el.style.fontSize     = '.85rem';
+}
+function hideFormMsg() {
+  document.getElementById('formMsg').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════
+function esc(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function lzToggle(inputId, btn) {
+  var inp = document.getElementById(inputId);
+  var svg = btn.querySelector('svg');
+  if (!inp || !svg) return;
+  var show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  svg.innerHTML = show
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+var _toastTimer = null;
+function showToast(msg, type) {
+  var el = document.getElementById('lzToast');
+  el.textContent = msg;
+  el.style.background = type === 'ok'
+    ? 'rgba(34,197,94,.2)'  : 'rgba(234,179,8,.2)';
+  el.style.border = '1px solid ' + (type === 'ok'
+    ? 'rgba(34,197,94,.4)' : 'rgba(234,179,8,.4)');
+  el.style.color = type === 'ok' ? '#6ee7b7' : '#fcd34d';
+  el.classList.add('show');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function () { el.classList.remove('show'); }, 4000);
+}
+</script>
+</body>
+</html>
