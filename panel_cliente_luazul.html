@@ -37,7 +37,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Animated background mesh */
 body::before {
   content:'';
   position: fixed;
@@ -50,7 +49,6 @@ body::before {
   pointer-events: none;
 }
 
-/* ── UTILS ── */
 .z1 { position: relative; z-index: 1; }
 .glass {
   background: rgba(5,20,60,.55);
@@ -102,9 +100,7 @@ body::before {
   text-align: center;
 }
 .login-logo {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
+  width: 90px; height: 90px; border-radius: 50%;
   background: linear-gradient(135deg, rgba(11,61,145,.6), rgba(30,80,180,.4));
   border: 2px solid var(--border);
   display: flex; align-items: center; justify-content: center;
@@ -125,6 +121,18 @@ body::before {
 }
 .form-group input:focus { outline: none; border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(126,184,255,.15); }
 .form-group input::placeholder { color: rgba(200,220,255,.3); }
+
+/* Password wrapper */
+.lz-pass-wrap { position: relative; }
+.lz-pass-wrap input { padding-right: 48px; }
+.lz-eye-btn {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: rgba(126,184,255,.5); cursor: pointer;
+  padding: 4px; display: flex; align-items: center;
+  transition: color .2s;
+}
+.lz-eye-btn:hover { color: var(--blue-light); }
+
 .login-btn { width: 100%; padding: 15px; font-size: 1rem; border-radius: 12px; margin-top: 8px; }
 .login-error {
   background: var(--red-glass); border: 1px solid rgba(239,68,68,.3);
@@ -137,11 +145,9 @@ body::before {
 /* ── MAIN APP ── */
 #app { display: none; min-height: 100vh; }
 
-/* Sidebar */
 .layout { display: flex; min-height: 100vh; }
 .sidebar {
-  width: 260px;
-  flex-shrink: 0;
+  width: 260px; flex-shrink: 0;
   background: rgba(2,10,30,.9);
   backdrop-filter: blur(20px);
   border-right: 1px solid var(--border);
@@ -150,16 +156,12 @@ body::before {
   z-index: 50;
   transition: transform .3s;
 }
-.sidebar-header {
-  padding: 28px 24px 20px;
-  border-bottom: 1px solid var(--border);
-}
+.sidebar-header { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
 .sidebar-brand { font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; }
 .sidebar-brand span { color: var(--blue-light); }
 .sidebar-sub { font-size: .65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
 .sidebar-user {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 24px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 12px;
 }
 .user-avatar {
@@ -167,8 +169,7 @@ body::before {
   background: linear-gradient(135deg, var(--blue-mid), #1a5bb5);
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: 1rem;
-  border: 2px solid var(--border);
-  flex-shrink: 0;
+  border: 2px solid var(--border); flex-shrink: 0;
 }
 .user-name { font-size: .9rem; font-weight: 600; }
 .user-email { font-size: .72rem; color: var(--text-muted); }
@@ -197,12 +198,8 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 }
 .logout-btn:hover { background: var(--red-glass); }
 
-/* Main content */
 .main { margin-left: 260px; flex: 1; padding: 32px; }
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 32px;
-}
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
 .page-title { font-size: 1.6rem; font-weight: 800; }
 .page-title span { color: var(--blue-light); }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
@@ -215,17 +212,13 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
 
-/* ── PAGES ── */
 .page { display: none; animation: fadeIn .3s ease; }
 .page.active { display: block; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
 
 /* ── DASHBOARD ── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 18px; margin-bottom: 28px; }
-.stat-card {
-  padding: 22px 24px;
-  display: flex; flex-direction: column; gap: 8px;
-}
+.stat-card { padding: 22px 24px; display: flex; flex-direction: column; gap: 8px; }
 .stat-label { font-size: .75rem; color: var(--blue-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 .stat-value { font-size: 2rem; font-weight: 900; }
 .stat-sub { font-size: .8rem; color: var(--text-muted); }
@@ -235,9 +228,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .progress-label span { font-size: .85rem; color: var(--text-muted); }
 .progress-label strong { color: white; font-size: 1rem; }
-.progress-track {
-  height: 10px; background: rgba(100,160,255,.12); border-radius: 10px; overflow: hidden;
-}
+.progress-track { height: 10px; background: rgba(100,160,255,.12); border-radius: 10px; overflow: hidden; }
 .progress-fill {
   height: 100%; background: linear-gradient(90deg, #1a5bb5, #7eb8ff);
   border-radius: 10px; transition: width 1s ease;
@@ -254,20 +245,20 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 }
 .cuota-row:hover { background: rgba(11,61,145,.25); }
 .cuota-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .9rem; flex-shrink: 0; }
-.cuota-num.paid { background: var(--green-glass); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
+.cuota-num.paid    { background: var(--green-glass); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
 .cuota-num.pending { background: var(--yellow-glass); color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
-.cuota-num.future { background: rgba(100,160,255,.1); color: var(--text-muted); border: 1px solid var(--border); }
+.cuota-num.future  { background: rgba(100,160,255,.1); color: var(--text-muted); border: 1px solid var(--border); }
 .cuota-info { flex: 1; }
 .cuota-desc { font-size: .9rem; font-weight: 600; }
 .cuota-date { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
 .cuota-amount { font-size: 1.1rem; font-weight: 800; }
-.cuota-amount.paid { color: #6ee7b7; }
+.cuota-amount.paid    { color: #6ee7b7; }
 .cuota-amount.pending { color: #fcd34d; }
-.cuota-amount.future { color: var(--text-muted); }
+.cuota-amount.future  { color: var(--text-muted); }
 .cuota-status { font-size: .75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
-.cuota-status.paid { background: var(--green-glass); color: #6ee7b7; }
+.cuota-status.paid    { background: var(--green-glass); color: #6ee7b7; }
 .cuota-status.pending { background: var(--yellow-glass); color: #fcd34d; }
-.cuota-status.future { background: rgba(100,160,255,.1); color: var(--text-muted); }
+.cuota-status.future  { background: rgba(100,160,255,.1); color: var(--text-muted); }
 
 /* ── PAQUETE ── */
 .paquete-hero {
@@ -275,8 +266,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   background: linear-gradient(135deg, rgba(11,61,145,.5), rgba(5,30,90,.6));
   border: 1px solid rgba(100,160,255,.25);
   border-radius: 20px;
-  display: flex; gap: 28px; align-items: flex-start;
-  flex-wrap: wrap;
+  display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap;
 }
 .paquete-icon { font-size: 4rem; }
 .paquete-details { flex: 1; min-width: 200px; }
@@ -289,34 +279,13 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   padding: 5px 14px; border-radius: 30px;
 }
 .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 14px; margin-bottom: 20px; }
-.info-item {
-  padding: 16px 18px;
-  border-radius: 14px;
-}
+.info-item { padding: 16px 18px; border-radius: 14px; }
 .info-item .ilabel { font-size: .72rem; color: var(--blue-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; }
 .info-item .ivalue { font-size: 1rem; font-weight: 600; }
 
-/* ── SOLICITUD ── */
-.request-form { max-width: 600px; }
-.request-form textarea {
-  width: 100%; background: rgba(5,20,60,.8); border: 1px solid var(--border);
-  border-radius: 12px; color: white; font-family: inherit; font-size: .9rem;
-  padding: 14px 18px; min-height: 120px; resize: vertical;
-  transition: border-color .2s;
-}
-.request-form textarea:focus { outline: none; border-color: var(--blue-light); }
-.request-form textarea::placeholder { color: rgba(200,220,255,.3); }
-.success-msg {
-  background: var(--green-glass); border: 1px solid rgba(16,185,129,.3);
-  color: #6ee7b7; border-radius: 12px; padding: 16px 20px;
-  font-size: .9rem; display: none; margin-top: 14px; align-items: center; gap: 10px;
-}
-
 /* ── VOUCHER ── */
 .voucher-card {
-  max-width: 560px;
-  padding: 36px;
-  text-align: center;
+  max-width: 560px; padding: 36px; text-align: center;
   border: 2px solid rgba(126,184,255,.3);
   background: linear-gradient(135deg, rgba(11,61,145,.4), rgba(5,30,90,.5));
 }
@@ -327,87 +296,22 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .voucher-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: .9rem; }
 .voucher-row span:first-child { color: var(--text-muted); }
 .voucher-row span:last-child { font-weight: 600; }
-.voucher-qr {
-  width: 100px; height: 100px; background: white; border-radius: 10px;
-  margin: 20px auto 0; display: flex; align-items: center; justify-content: center;
-  font-size: .65rem; color: #333; font-weight: 700;
-}
-.voucher-locked {
-  background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3);
-  border-radius: 16px; padding: 28px; text-align: center; color: #fcd34d;
-}
+.voucher-qr { width: 100px; height: 100px; background: white; border-radius: 10px; margin: 20px auto 0; display: flex; align-items: center; justify-content: center; font-size: .65rem; color: #333; font-weight: 700; }
+.voucher-locked { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3); border-radius: 16px; padding: 28px; text-align: center; color: #fcd34d; }
 
 /* ── CONTRATO ── */
 .contrato-wrap { max-width: 820px; }
-.contrato-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
-}
+.contrato-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
 .contrato-toolbar h2 { font-size: 1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px; }
-/* The contract document itself */
 .contrato-doc {
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 40px 44px;
-  font-size: .88rem;
-  color: rgba(220,235,255,.85);
-  line-height: 1.9;
-  max-height: 72vh;
-  overflow-y: auto;
-  scroll-behavior: smooth;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: 16px; padding: 40px 44px; font-size: .88rem;
+  color: rgba(220,235,255,.85); line-height: 1.9;
+  max-height: 72vh; overflow-y: auto; scroll-behavior: smooth;
 }
 .contrato-doc::-webkit-scrollbar { width: 6px; }
 .contrato-doc::-webkit-scrollbar-track { background: rgba(255,255,255,.04); border-radius:4px; }
 .contrato-doc::-webkit-scrollbar-thumb { background: rgba(126,184,255,.3); border-radius:4px; }
-.doc-title {
-  text-align: center; margin-bottom: 32px;
-  border-bottom: 1px solid var(--border); padding-bottom: 24px;
-}
-.doc-title h1 { font-size: 1.3rem; font-weight: 900; letter-spacing: 1px; color: #fff; margin-bottom: 4px; }
-.doc-title h2 { font-size: 1rem; font-weight: 600; color: var(--blue-light); margin-bottom: 4px; }
-.doc-title p  { font-size: .8rem; color: var(--text-muted); }
-.doc-section { margin-bottom: 26px; }
-.doc-section h3 {
-  font-size: .82rem; font-weight: 800; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--blue-light);
-  margin-bottom: 10px; padding-bottom: 6px;
-  border-bottom: 1px solid rgba(126,184,255,.15);
-}
-.doc-section p { margin-bottom: 8px; }
-.doc-section ul { padding-left: 18px; margin: 8px 0; }
-.doc-section ul li { margin-bottom: 4px; }
-.doc-field {
-  display: inline-block;
-  background: rgba(126,184,255,.12);
-  border: 1px solid rgba(126,184,255,.3);
-  border-radius: 6px; padding: 1px 10px;
-  color: #fff; font-weight: 700; font-size: .9rem;
-}
-.doc-field.empty {
-  background: rgba(245,158,11,.1);
-  border-color: rgba(245,158,11,.3);
-  color: #fcd34d;
-}
-.doc-parties {
-  background: rgba(11,61,145,.2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;
-}
-.doc-parties p { margin-bottom: 6px; }
-.doc-sign-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
-  margin-top: 32px; padding-top: 24px;
-  border-top: 1px solid var(--border);
-}
-.doc-sign-box {
-  border: 1px solid var(--border); border-radius: 12px;
-  padding: 20px; text-align: center;
-}
-.doc-sign-box .sign-line {
-  height: 1px; background: var(--border); margin: 20px 0 10px;
-}
-.doc-sign-box p { font-size: .82rem; color: var(--text-muted); margin: 4px 0; }
-.doc-sign-box strong { font-size: .9rem; color: white; }
 
 /* ── LOADING SCREEN ── */
 #loadingScreen {
@@ -415,32 +319,12 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   z-index: 999;
 }
-.loader-logo { font-size: 3rem; margin-bottom: 16px; animation: spin 2s linear infinite; }
-@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+.loader-logo { font-size: 3rem; margin-bottom: 16px; }
 .loader-text { color: var(--blue-light); letter-spacing: 3px; font-size: .8rem; text-transform: uppercase; }
 
 /* ── SECTION TITLE ── */
 .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
 .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
-
-/* ── SETUP GUIDE ── */
-.setup-step {
-  display: flex; gap: 16px; padding: 18px 20px;
-  background: rgba(5,20,60,.4); border: 1px solid var(--border);
-  border-radius: 14px; margin-bottom: 12px;
-}
-.step-num {
-  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, #1a5bb5, #0B3D91);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: .9rem;
-}
-.step-content h4 { font-size: .95rem; font-weight: 700; margin-bottom: 4px; }
-.step-content p { font-size: .83rem; color: var(--text-muted); line-height: 1.6; }
-.step-content code {
-  background: rgba(100,160,255,.15); border: 1px solid var(--border);
-  border-radius: 6px; padding: 2px 8px; font-size: .82rem; color: var(--blue-light);
-}
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
@@ -456,10 +340,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   background: var(--blue-glass); border: 1px solid var(--border);
   color: white; font-size: 1.2rem; cursor: pointer;
 }
-.overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.5); z-index: 40;
-}
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 40; }
 .overlay.show { display: block; }
 
 /* Sync badge */
@@ -478,92 +359,50 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   50%      { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
 }
 
-/* ── DESTINATION IMMERSIVE SECTION ── */
-.dest-immersive {
-  margin-top: 28px;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(100,160,255,.2);
-}
+/* ── DESTINATION IMMERSIVE ── */
+.dest-immersive { margin-top: 28px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(100,160,255,.2); }
 .dest-immersive-header {
   background: linear-gradient(135deg, rgba(11,45,120,.7) 0%, rgba(5,18,55,.8) 100%);
-  padding: 28px 30px 24px;
-  position: relative;
-  overflow: hidden;
+  padding: 28px 30px 24px; position: relative; overflow: hidden;
 }
 .dest-immersive-header::before {
-  content: attr(data-emoji);
-  position: absolute; right: -10px; top: -10px;
-  font-size: 8rem; opacity: .08; line-height: 1;
-  pointer-events: none;
+  content: attr(data-emoji); position: absolute; right: -10px; top: -10px;
+  font-size: 8rem; opacity: .08; line-height: 1; pointer-events: none;
 }
 .dest-tag {
   font-size: .6rem; font-weight: 800; letter-spacing: .22em;
   text-transform: uppercase; color: #7eb8ff;
-  background: rgba(11,61,145,.5);
-  border: 1px solid rgba(126,184,255,.3);
-  border-radius: 30px; padding: 4px 14px;
-  display: inline-block; margin-bottom: 14px;
+  background: rgba(11,61,145,.5); border: 1px solid rgba(126,184,255,.3);
+  border-radius: 30px; padding: 4px 14px; display: inline-block; margin-bottom: 14px;
 }
-.dest-immersive-title {
-  font-size: 1.6rem; font-weight: 900; color: #fff;
-  margin-bottom: 10px; line-height: 1.15;
-}
+.dest-immersive-title { font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 10px; line-height: 1.15; }
 .dest-immersive-title span { color: #7eb8ff; }
-.dest-emotional-text {
-  font-size: .92rem; color: rgba(210,228,255,.85);
-  line-height: 1.8; margin-bottom: 0;
-}
+.dest-emotional-text { font-size: .92rem; color: rgba(210,228,255,.85); line-height: 1.8; margin-bottom: 0; }
 .dest-emotional-text strong { color: #fff; }
-
-/* Highlights strip */
 .dest-highlights-strip {
-  display: flex; flex-wrap: wrap; gap: 10px;
-  padding: 20px 30px;
+  display: flex; flex-wrap: wrap; gap: 10px; padding: 20px 30px;
   background: rgba(5,18,55,.5);
-  border-top: 1px solid rgba(100,160,255,.12);
-  border-bottom: 1px solid rgba(100,160,255,.12);
+  border-top: 1px solid rgba(100,160,255,.12); border-bottom: 1px solid rgba(100,160,255,.12);
 }
 .dest-hl-chip {
-  display: inline-flex; align-items: center; gap: 7px;
-  font-size: .78rem; font-weight: 700;
-  background: rgba(11,61,145,.35);
-  border: 1px solid rgba(100,160,255,.18);
-  border-radius: 30px; padding: 7px 16px;
-  color: rgba(200,220,255,.9);
+  display: inline-flex; align-items: center; gap: 7px; font-size: .78rem; font-weight: 700;
+  background: rgba(11,61,145,.35); border: 1px solid rgba(100,160,255,.18);
+  border-radius: 30px; padding: 7px 16px; color: rgba(200,220,255,.9);
 }
-
-/* Attractions row */
-.dest-attr-row {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
-}
+.dest-attr-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
 .dest-attr-item {
-  padding: 18px 20px;
-  border-right: 1px solid rgba(100,160,255,.1);
-  border-top: 1px solid rgba(100,160,255,.1);
-  background: rgba(5,18,55,.4);
-  transition: background .2s;
+  padding: 18px 20px; border-right: 1px solid rgba(100,160,255,.1);
+  border-top: 1px solid rgba(100,160,255,.1); background: rgba(5,18,55,.4); transition: background .2s;
 }
 .dest-attr-item:hover { background: rgba(11,30,80,.55); }
 .dest-attr-item:nth-child(3n) { border-right: none; }
 .dest-attr-icon { font-size: 1.5rem; margin-bottom: 8px; }
 .dest-attr-name { font-size: .82rem; font-weight: 800; color: #fff; margin-bottom: 3px; }
 .dest-attr-desc { font-size: .73rem; color: rgba(170,200,255,.65); line-height: 1.5; }
-
-/* Weather widget inside panel */
-.dest-weather-wrap {
-  padding: 24px 30px;
-  background: rgba(2,10,30,.4);
-  border-top: 1px solid rgba(100,160,255,.12);
-}
-.dest-weather-title {
-  font-size: .65rem; font-weight: 800; letter-spacing: .2em;
-  text-transform: uppercase; color: rgba(126,184,255,.6);
-  margin-bottom: 14px;
-}
+.dest-weather-wrap { padding: 24px 30px; background: rgba(2,10,30,.4); border-top: 1px solid rgba(100,160,255,.12); }
+.dest-weather-title { font-size: .65rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: rgba(126,184,255,.6); margin-bottom: 14px; }
 .cli-weather-box {
-  background: rgba(5,20,60,.6);
-  border: 1px solid rgba(100,160,255,.18);
+  background: rgba(5,20,60,.6); border: 1px solid rgba(100,160,255,.18);
   border-radius: 16px; padding: 18px 20px;
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
 }
@@ -572,122 +411,42 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .cli-w-temp span { font-size: 1.1rem; font-weight: 600; color: rgba(126,184,255,.7); }
 .cli-w-desc { font-size: .82rem; color: rgba(200,220,255,.8); margin-top: 3px; }
 .cli-w-loc { font-size: .68rem; color: rgba(126,184,255,.5); margin-top: 2px; }
-.cli-w-stats {
-  display: flex; gap: 14px; flex-wrap: wrap;
-  margin-left: auto; font-size: .75rem;
-  color: rgba(150,190,255,.7); font-weight: 600;
-}
+.cli-w-stats { display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto; font-size: .75rem; color: rgba(150,190,255,.7); font-weight: 600; }
 .cli-w-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .cli-w-stat strong { font-size: .9rem; font-weight: 900; color: #7eb8ff; }
-
-/* Comfort badge */
 .dest-comfort {
-  margin-top: 10px; font-size: .78rem; font-weight: 700;
-  color: #6ee7b7;
-  background: rgba(52,211,153,.08);
-  border: 1px solid rgba(52,211,153,.2);
-  border-radius: 8px; padding: 7px 14px;
-  display: inline-block;
+  margin-top: 10px; font-size: .78rem; font-weight: 700; color: #6ee7b7;
+  background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.2);
+  border-radius: 8px; padding: 7px 14px; display: inline-block;
 }
-
-/* Loading spinner */
-.cli-w-loading {
-  display: flex; align-items: center; gap: 8px;
-  font-size: .8rem; color: rgba(150,190,255,.6); padding: 10px 0;
-}
-.cli-w-spinner {
-  width: 14px; height: 14px;
-  border: 2px solid rgba(126,184,255,.2);
-  border-top-color: #7eb8ff;
-  border-radius: 50%;
-  animation: wspin .8s linear infinite;
-}
-
-/* ── PACKAGE — Countdown & Progress ── */
-.pkg-countdown {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 20px;
-  background: rgba(126,184,255,.08);
-  border: 1px solid rgba(126,184,255,.18);
-  border-radius: 14px;
-  padding: 14px 18px;
-}
-.pkg-countdown-icon { font-size: 1.8rem; }
-.pkg-countdown-num {
-  font-size: 1.4rem;
-  font-weight: 900;
-  color: #7eb8ff;
-  line-height: 1.1;
-}
-.pkg-countdown-lbl {
-  font-size: .72rem;
-  color: rgba(150,190,255,.65);
-  margin-top: 3px;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-}
-.pkg-progress-wrap {
-  margin-top: 16px;
-  background: rgba(11,61,145,.2);
-  border: 1px solid rgba(100,160,255,.15);
-  border-radius: 14px;
-  padding: 14px 18px;
-}
-.pkg-progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.pkg-progress-lbl { font-size: .78rem; color: rgba(200,220,255,.8); font-weight: 600; }
-.pkg-progress-pct { font-size: 1rem; font-weight: 900; color: #7eb8ff; }
-.pkg-progress-bar {
-  height: 8px;
-  background: rgba(100,160,255,.12);
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-.pkg-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #1a5bb5, #7eb8ff);
-  border-radius: 8px;
-  transition: width 1s cubic-bezier(.22,1,.36,1);
-}
-.pkg-progress-sub { font-size: .72rem; color: rgba(150,190,255,.6); }
-
-/* ── WEATHER — 4-day forecast inside panel ── */
+.cli-w-loading { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: rgba(150,190,255,.6); padding: 10px 0; }
+.cli-w-spinner { width: 14px; height: 14px; border: 2px solid rgba(126,184,255,.2); border-top-color: #7eb8ff; border-radius: 50%; animation: wspin .8s linear infinite; }
 .cli-w-main { flex: 1; min-width: 0; }
-.cli-forecast {
-  display: flex;
-  gap: 8px;
-  justify-content: space-around;
-  background: rgba(11,61,145,.18);
-  border: 1px solid rgba(100,160,255,.1);
-  border-radius: 12px;
-  padding: 10px 14px;
-  margin-top: 10px;
-}
+.cli-forecast { display: flex; gap: 8px; justify-content: space-around; background: rgba(11,61,145,.18); border: 1px solid rgba(100,160,255,.1); border-radius: 12px; padding: 10px 14px; margin-top: 10px; }
 .cli-fc-day { text-align: center; flex: 1; }
-.cli-fc-name {
-  font-size: .65rem;
-  color: rgba(150,190,255,.6);
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  margin-bottom: 5px;
-}
+.cli-fc-name { font-size: .65rem; color: rgba(150,190,255,.6); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
 .cli-fc-icon { font-size: 1.2rem; margin-bottom: 5px; }
 .cli-fc-temps { font-size: .8rem; font-weight: 700; }
 .cli-fc-temps .hi { color: #fcd34d; }
 .cli-fc-temps .lo { color: rgba(150,190,255,.55); margin-left: 4px; }
-.cli-footer {
-  font-size: .6rem;
-  color: rgba(150,190,255,.3);
-  text-align: right;
-  margin-top: 8px;
+.cli-footer { font-size: .6rem; color: rgba(150,190,255,.3); text-align: right; margin-top: 8px; }
+
+/* ── PACKAGE — Countdown & Progress ── */
+.pkg-countdown {
+  display: flex; align-items: center; gap: 14px; margin-top: 20px;
+  background: rgba(126,184,255,.08); border: 1px solid rgba(126,184,255,.18);
+  border-radius: 14px; padding: 14px 18px;
 }
+.pkg-countdown-icon { font-size: 1.8rem; }
+.pkg-countdown-num { font-size: 1.4rem; font-weight: 900; color: #7eb8ff; line-height: 1.1; }
+.pkg-countdown-lbl { font-size: .72rem; color: rgba(150,190,255,.65); margin-top: 3px; text-transform: uppercase; letter-spacing: .05em; }
+.pkg-progress-wrap { margin-top: 16px; background: rgba(11,61,145,.2); border: 1px solid rgba(100,160,255,.15); border-radius: 14px; padding: 14px 18px; }
+.pkg-progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.pkg-progress-lbl { font-size: .78rem; color: rgba(200,220,255,.8); font-weight: 600; }
+.pkg-progress-pct { font-size: 1rem; font-weight: 900; color: #7eb8ff; }
+.pkg-progress-bar { height: 8px; background: rgba(100,160,255,.12); border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
+.pkg-progress-fill { height: 100%; background: linear-gradient(90deg, #1a5bb5, #7eb8ff); border-radius: 8px; transition: width 1s cubic-bezier(.22,1,.36,1); }
+.pkg-progress-sub { font-size: .72rem; color: rgba(150,190,255,.6); }
 
 @keyframes wspin { to { transform: rotate(360deg); } }
 
@@ -699,14 +458,13 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   .dest-highlights-strip, .dest-weather-wrap { padding: 16px 20px; }
   .dest-attr-item { padding: 14px 16px; }
 }
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Supabase init inline (reemplaza js/supabaseClient.js)
-  var SUPABASE_URL = 'https://yunvqgaljopirzyjrntc.supabase.co';
+  // ── SUPABASE CLIENT ─────────────────────────────────────────────────────
+  var SUPABASE_URL = 'https://yunvqgaljopirzvjrntc.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB';
-  var supabaseClient = (typeof supabase !== 'undefined')
+  var sbClient = (typeof supabase !== 'undefined')
     ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
     : null;
 </script>
@@ -715,15 +473,22 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 
 <!-- LOADING -->
 <div id="loadingScreen">
-  <div class="loader-logo"><img src="images/mariposa-avatar.png" alt="Mariposa Luazul" style="width:80px;height:80px;object-fit:contain;animation:pulse 1.5s ease-in-out infinite;"></div>
+  <div class="loader-logo">
+    <img src="images/mariposa-avatar.png" alt="Mariposa Luazul"
+         style="width:80px;height:80px;object-fit:contain;animation:pulse 1.5s ease-in-out infinite;">
+  </div>
   <div class="loader-text">Cargando tu panel...</div>
 </div>
 
-<!-- ══════════════ LOGIN ══════════════ -->
 <div id="syncBadge">🔄 Datos actualizados</div>
+
+<!-- ══════════════ LOGIN ══════════════ -->
 <div id="loginScreen" class="z1" style="display:none;">
   <div class="login-box glass">
-    <div class="login-logo" style="display:flex;align-items:center;justify-content:center;"><img src="images/mariposa-avatar.png" alt="Luazul Smart Travel" style="width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(126,184,255,.5));" /></div>
+    <div class="login-logo">
+      <img src="images/mariposa-avatar.png" alt="Luazul Smart Travel"
+           style="width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(126,184,255,.5));" />
+    </div>
     <h1>LUAZUL SMART TRAVEL</h1>
     <div class="tagline">Portal de Clientes</div>
 
@@ -733,13 +498,26 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
     </div>
     <div class="form-group">
       <label>Contraseña</label>
-      <div class="lz-pass-wrap"><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" /><button type="button" class="lz-eye-btn" onclick="lzToggle('loginPass', this)" title="Mostrar/ocultar contraseña" tabindex="-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lz-eye-loginPass"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+      <div class="lz-pass-wrap">
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
+        <button type="button" class="lz-eye-btn" onclick="lzToggle('loginPass',this)" tabindex="-1">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
     </div>
-    <button class="btn btn-primary login-btn" onclick="doLogin()">Ingresar al panel</button>
-    <div class="login-error" id="loginError">❌ Email o contraseña incorrectos</div>
+
+    <button class="btn btn-primary login-btn" id="loginBtn" onclick="doLogin()">
+      Ingresar al panel
+    </button>
+    <div class="login-error" id="loginError"></div>
 
     <div class="login-footer">
-      ¿Problemas para acceder? <a href="https://wa.me/5492974726449" target="_blank">Contactá a Luazul Smart Travel</a>
+      ¿Problemas para acceder?
+      <a href="https://wa.me/5492974726449" target="_blank">Contactá a Luazul Smart Travel</a>
     </div>
   </div>
 </div>
@@ -752,10 +530,15 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-brand" style="display:flex;align-items:center;gap:10px;">
-        <img src="images/logo-nav.png" alt="Luazul Smart Travel" style="width:42px;height:42px;object-fit:contain;border-radius:50%;flex-shrink:0;">
-        <div><div>LUA<span>ZUL</span></div><div class="sidebar-sub">Smart Travel</div></div>
+        <img src="images/logo-nav.png" alt="Luazul Smart Travel"
+             style="width:42px;height:42px;object-fit:contain;border-radius:50%;flex-shrink:0;">
+        <div>
+          <div>LUA<span>ZUL</span></div>
+          <div class="sidebar-sub">Smart Travel</div>
+        </div>
       </div>
     </div>
+
     <div class="sidebar-user">
       <div class="user-avatar" id="userAvatar">?</div>
       <div>
@@ -763,6 +546,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         <div class="user-email" id="userEmail">—</div>
       </div>
     </div>
+
     <nav>
       <div class="nav-section">Mi cuenta</div>
       <div class="nav-item active" onclick="goPage('dashboard')">
@@ -774,11 +558,13 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
       <div class="nav-item" onclick="goPage('paquete')">
         <span class="icon">🏖️</span> Mi Paquete
       </div>
+
       <div class="nav-section">Finanzas</div>
       <div class="nav-item" onclick="goPage('cuotas')">
         <span class="icon">💳</span> Mis Cuotas
         <span class="nav-badge" id="cuotasBadge">—</span>
       </div>
+
       <div class="nav-section">Documentos</div>
       <div class="nav-item" onclick="goPage('voucher')">
         <span class="icon">🎫</span> Voucher
@@ -786,50 +572,52 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
       <div class="nav-item" onclick="goPage('contrato')">
         <span class="icon">📄</span> Contrato
       </div>
+
       <div class="nav-section">Programa</div>
       <div class="nav-item" onclick="goPage('referidos')">
         <span class="icon">🎁</span> Mis Referidos
-        <span class="nav-badge" id="referidosBadge" style="background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.3);">—</span>
+        <span class="nav-badge" id="referidosBadge"
+              style="background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.3);">—</span>
       </div>
+
       <div class="nav-section">Comunidad</div>
       <div class="nav-item" onclick="window.open('comunidad.html','_blank')">
-        <span class="icon">🌊</span> Comunidad Luazul Smart Travel
-        <span class="nav-badge" id="novedadesBadge" style="display:none;background:rgba(255,80,80,.2);color:#ff8080;border:1px solid rgba(255,80,80,.3);">●</span>
+        <span class="icon">🌊</span> Comunidad Luazul
+        <span class="nav-badge" id="novedadesBadge"
+              style="display:none;background:rgba(255,80,80,.2);color:#ff8080;border:1px solid rgba(255,80,80,.3);">●</span>
       </div>
-      <div class="nav-section" style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(100,160,255,.1);">Sitio</div>
-      <a class="nav-item" href="index.html" target="_blank" rel="noopener" style="color:rgba(126,184,255,.7);">
-        <span class="icon">🌐</span> Ver sitio web
-      </a>
-      <div class="nav-item" onclick="window.open('comunidad.html','_blank')">
-        <span class="icon">🌊</span> Comunidad
-      </div>
-      <div class="nav-item" id="adminComunidadBtn" style="display:none;" onclick="window.open('comunidad-admin.html','_blank')">
-        <span class="icon">✏️</span> Gestionar Comunidad
-      </div>
+
+      <div class="nav-section" style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(100,160,255,.1);">Soporte</div>
       <div class="nav-item" onclick="goPage('solicitud')">
         <span class="icon">📝</span> Solicitar Extensión
       </div>
       <div class="nav-item" onclick="window.open('https://wa.me/5492974726449','_blank')">
         <span class="icon">💬</span> WhatsApp
       </div>
+      <a class="nav-item" href="index.html" target="_blank" rel="noopener"
+         style="color:rgba(126,184,255,.7);">
+        <span class="icon">🌐</span> Ver sitio web
+      </a>
     </nav>
+
     <div class="sidebar-footer">
       <div style="display:flex;justify-content:center;gap:10px;margin-bottom:14px;">
-        <!-- REDES SOCIALES: activar cuando estén creadas las cuentas -->
         <div title="Instagram — próximamente"
-           style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(11,61,145,.15);border:1px dashed rgba(100,160,255,.15);color:rgba(126,184,255,.3);font-size:1.1rem;cursor:default;">
+             style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(11,61,145,.15);border:1px dashed rgba(100,160,255,.15);color:rgba(126,184,255,.3);font-size:1.1rem;cursor:default;">
           📸
         </div>
         <div title="Facebook — próximamente"
-           style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(11,61,145,.15);border:1px dashed rgba(100,160,255,.15);color:rgba(126,184,255,.3);font-size:1.1rem;cursor:default;">
+             style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(11,61,145,.15);border:1px dashed rgba(100,160,255,.15);color:rgba(126,184,255,.3);font-size:1.1rem;cursor:default;">
           👥
         </div>
         <div title="TikTok — próximamente"
-           style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(11,61,145,.15);border:1px dashed rgba(100,160,255,.15);color:rgba(126,184,255,.3);font-size:1.1rem;cursor:default;">
+             style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(11,61,145,.15);border:1px dashed rgba(100,160,255,.15);color:rgba(126,184,255,.3);font-size:1.1rem;cursor:default;">
           🎵
         </div>
       </div>
-      <div style="text-align:center;font-size:.6rem;color:rgba(150,190,255,.25);margin-bottom:12px;">Redes sociales — próximamente</div>
+      <div style="text-align:center;font-size:.6rem;color:rgba(150,190,255,.25);margin-bottom:12px;">
+        Redes sociales — próximamente
+      </div>
       <button class="logout-btn" onclick="doLogout()">🚪 Cerrar sesión</button>
     </div>
   </aside>
@@ -839,9 +627,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
     <div class="topbar">
       <div style="display:flex;align-items:center;gap:12px;">
         <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
-        <div>
-          <div class="page-title" id="pageTitle">Dashboard</div>
-        </div>
+        <div class="page-title" id="pageTitle">Dashboard</div>
       </div>
       <div class="topbar-right">
         <div class="status-pill"><div class="status-dot"></div> Activo</div>
@@ -897,7 +683,10 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
           <button class="btn btn-ghost" onclick="goPage('voucher')">🎫 Mi voucher</button>
           <button class="btn btn-ghost" onclick="goPage('contrato')">📄 Mi contrato</button>
           <button class="btn btn-ghost" onclick="goPage('solicitud')">📝 Solicitar extensión</button>
-          <button class="btn btn-success" onclick="window.open('https://wa.me/5492974726449','_blank')">💬 Contactar a Luazul Smart Travel</button>
+          <button class="btn btn-success"
+                  onclick="window.open('https://wa.me/5492974726449','_blank')">
+            💬 Contactar a Luazul
+          </button>
         </div>
       </div>
     </div>
@@ -907,44 +696,32 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
       <div class="glass" style="padding:28px;margin-bottom:20px;">
         <div class="section-title" style="margin-bottom:20px;">👤 Mis datos de contacto</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
-
           <div style="background:rgba(11,61,145,.2);border:1px solid var(--border);border-radius:14px;padding:18px;">
             <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(126,184,255,.6);margin-bottom:8px;">Nombre completo</div>
             <div style="font-size:1rem;font-weight:700;color:#fff;" id="perfil-nombre">—</div>
           </div>
-
           <div style="background:rgba(11,61,145,.2);border:1px solid var(--border);border-radius:14px;padding:18px;">
             <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(126,184,255,.6);margin-bottom:8px;">Email</div>
             <div style="font-size:.95rem;color:#fff;" id="perfil-email">—</div>
           </div>
-
           <div style="background:rgba(11,61,145,.2);border:1px solid var(--border);border-radius:14px;padding:18px;">
             <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(126,184,255,.6);margin-bottom:8px;">Documento</div>
             <div style="font-size:.95rem;color:#fff;" id="perfil-documento">—</div>
           </div>
-
-          <div style="background:rgba(11,61,145,.2);border:1px solid var(--border);border-radius:14px;padding:18px;">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(126,184,255,.6);margin-bottom:8px;">Domicilio</div>
-            <div style="font-size:.95rem;color:#fff;" id="perfil-domicilio">—</div>
-          </div>
-
           <div style="background:rgba(11,61,145,.25);border:1.5px solid rgba(126,184,255,.3);border-radius:14px;padding:18px;">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7eb8ff;margin-bottom:8px;">📱 Teléfono principal</div>
-            <div style="font-size:1.05rem;font-weight:800;color:#fff;" id="perfil-tel1">—</div>
+            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7eb8ff;margin-bottom:8px;">📱 Teléfono</div>
+            <div style="font-size:1.05rem;font-weight:800;color:#fff;" id="perfil-tel">—</div>
           </div>
-
-          <div style="background:rgba(11,61,145,.25);border:1.5px solid rgba(126,184,255,.3);border-radius:14px;padding:18px;">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7eb8ff;margin-bottom:8px;">📱 Teléfono alternativo</div>
-            <div style="font-size:1.05rem;font-weight:800;color:#fff;" id="perfil-tel2">—</div>
-          </div>
-
         </div>
       </div>
-
       <div class="glass" style="padding:24px;">
         <div class="section-title" style="margin-bottom:16px;">🔒 Seguridad</div>
-        <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:18px;line-height:1.7;">Para actualizar tus datos de contacto o teléfonos, contactá directamente a tu asesora de Luazul Smart Travel.</p>
-        <button class="btn btn-primary" onclick="window.open('https://wa.me/5492974726449?text=' + encodeURIComponent('Hola, necesito actualizar mis datos de contacto en el panel de cliente de Luazul Smart Travel.'),'_blank')" style="border-radius:12px;">
+        <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:18px;line-height:1.7;">
+          Para actualizar tus datos de contacto, contactá directamente a tu asesora de Luazul Smart Travel.
+        </p>
+        <button class="btn btn-primary"
+                onclick="window.open('https://wa.me/5492974726449?text=' + encodeURIComponent('Hola, necesito actualizar mis datos en el panel de cliente de Luazul Smart Travel.'),'_blank')"
+                style="border-radius:12px;">
           💬 Actualizar mis datos por WhatsApp
         </button>
       </div>
@@ -960,10 +737,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
           <div class="paquete-chips" id="pkgChips"></div>
         </div>
       </div>
-      <div class="info-grid" id="pkgInfoGrid">
-        <!-- filled by JS -->
-      </div>
-      <!-- Destination immersive section — filled by renderDestInfo() -->
+      <div class="info-grid" id="pkgInfoGrid"></div>
       <div id="pkgDestInfo"></div>
     </div>
 
@@ -1007,126 +781,80 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <button class="btn btn-primary" onclick="descargarContrato()">📥 Descargar PDF</button>
             <button class="btn btn-ghost" onclick="imprimirContrato()">🖨️ Imprimir</button>
-            <button class="btn btn-ghost" onclick="window.open('https://wa.me/5492974726449','_blank')">💬 Consultar</button>
+            <button class="btn btn-ghost"
+                    onclick="window.open('https://wa.me/5492974726449','_blank')">💬 Consultar</button>
           </div>
         </div>
-
-        <div class="contrato-doc glass" id="contratoDoc">
-          <!-- filled by renderContrato() -->
-        </div>
+        <div class="contrato-doc glass" id="contratoDoc"></div>
       </div>
     </div>
 
     <!-- ── REFERIDOS ── -->
     <div class="page" id="page-referidos">
       <div class="glass" style="padding:28px;max-width:680px;">
-        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🎁 Mis Referidos</div>
-        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Por cada <strong style="color:var(--text);">3 paquetes referidos</strong> activos te premiamos con un <strong style="color:#fbbf24;">tour gratis</strong> 🏆</p>
-
-        <!-- Progress bar -->
+        <div class="section-title">🎁 Mis Referidos</div>
+        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">
+          Por cada <strong style="color:var(--text);">3 paquetes referidos</strong> activos te premiamos con un
+          <strong style="color:#fbbf24;">tour gratis</strong> 🏆
+        </p>
         <div id="refProgressWrap" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
             <span style="font-size:.82rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;">Progreso hacia tu próximo tour</span>
-            <span id="refCount" style="font-family:Syne,sans-serif;font-size:1.4rem;font-weight:900;color:#fbbf24;">0 / 3</span>
+            <span id="refCount" style="font-size:1.4rem;font-weight:900;color:#fbbf24;">0 / 3</span>
           </div>
           <div style="height:10px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;">
             <div id="refBar" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#f59e0b,#fbbf24);width:0%;transition:width .6s ease;"></div>
           </div>
           <div id="refPremioMsg" style="margin-top:10px;font-size:.83rem;color:var(--text-muted);"></div>
         </div>
-
-        <!-- Referidos list -->
         <div id="refList" style="display:flex;flex-direction:column;gap:10px;"></div>
-
-        <!-- CTA share -->
         <div style="margin-top:22px;padding:16px 18px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;text-align:center;">
-          <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;">Compartí tu código de referido con amigos</div>
-          <div id="refCode" style="font-family:Syne,sans-serif;font-size:1.3rem;font-weight:900;color:#fbbf24;letter-spacing:2px;margin-bottom:12px;">—</div>
-          <button onclick="compartirRef()" style="padding:9px 22px;border-radius:20px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;font-weight:700;font-size:.85rem;cursor:pointer;">💬 Compartir por WhatsApp</button>
+          <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;">Compartí tu código con amigos</div>
+          <div id="refCode" style="font-size:1.3rem;font-weight:900;color:#fbbf24;letter-spacing:2px;margin-bottom:12px;">—</div>
+          <button onclick="compartirRef()"
+                  style="padding:9px 22px;border-radius:20px;border:none;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;font-weight:700;font-size:.85rem;cursor:pointer;">
+            💬 Compartir por WhatsApp
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- ── SOLICITUD ── -->
-    <!-- ── COMUNIDAD LUAZUL ── -->
+    <!-- ── COMUNIDAD (vista embebida) ── -->
     <div class="page" id="page-comunidad">
       <div class="glass" style="padding:32px;margin-bottom:20px;text-align:center;">
         <div style="font-size:2.5rem;margin-bottom:12px;">🌊</div>
         <div style="font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:6px;">Comunidad Luazul Smart Travel</div>
-        <div style="font-size:.9rem;color:var(--text-muted);max-width:480px;margin:0 auto;">Viajeros que, como vos, están construyendo su próxima aventura cuota a cuota.</div>
+        <div style="font-size:.9rem;color:var(--text-muted);max-width:480px;margin:0 auto;">
+          Viajeros que, como vos, están construyendo su próxima aventura cuota a cuota.
+        </div>
       </div>
       <div class="glass" style="padding:28px;margin-bottom:20px;">
         <div class="section-title" style="margin-bottom:20px;">📣 Novedades del equipo</div>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div style="background:rgba(126,184,255,.06);border:1px solid rgba(126,184,255,.15);border-radius:14px;padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-              <span style="font-size:1.3rem;">🏖️</span>
-              <div><div style="font-weight:700;color:#fff;font-size:.95rem;">Plazas disponibles — Diciembre 2026</div>
-              <div style="font-size:.72rem;color:var(--text-muted);margin-top:2px;">Marzo 2026</div></div>
-            </div>
-            <p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">Quedan <strong style="color:#7eb8ff;">8 lugares disponibles</strong> para el grupo de Diciembre. Si tenés amigos interesados, es el momento — los precios se mantienen hasta fin de mes.</p>
-          </div>
-          <div style="background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:14px;padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-              <span style="font-size:1.3rem;">✅</span>
-              <div><div style="font-weight:700;color:#fff;font-size:.95rem;">Hotel confirmado — Búzios</div>
-              <div style="font-size:.72rem;color:var(--text-muted);margin-top:2px;">Febrero 2026</div></div>
-            </div>
-            <p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">El hotel en Búzios ya tiene reserva confirmada. Piscina frente al mar, desayuno incluido y a 5 minutos de la Rua das Pedras 🌴</p>
-          </div>
-          <div style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15);border-radius:14px;padding:20px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-              <span style="font-size:1.3rem;">🚙</span>
-              <div><div style="font-weight:700;color:#fff;font-size:.95rem;">Tour en Buggy incluido en todos los paquetes</div>
-              <div style="font-size:.72rem;color:var(--text-muted);margin-top:2px;">Enero 2026</div></div>
-            </div>
-            <p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">A partir de esta temporada, el paseo en buggy por Arraial do Cabo está incluido en todos los paquetes 🎉</p>
-          </div>
-        </div>
-      </div>
-      <div class="glass" style="padding:28px;margin-bottom:20px;">
-        <div class="section-title" style="margin-bottom:18px;">💡 Tips para tu viaje</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
-          <div style="background:rgba(11,61,145,.2);border:1px solid var(--border);border-radius:14px;padding:18px;">
-            <div style="font-size:1.4rem;margin-bottom:8px;">💱</div>
-            <div style="font-weight:700;color:#fff;font-size:.9rem;margin-bottom:6px;">Cambio de moneda</div>
-            <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">Llevá dólares y cambiá en casas de cambio locales. El real se consigue mejor en Brasil.</div>
-          </div>
-          <div style="background:rgba(11,61,145,.2);border:1px solid var(--border);border-radius:14px;padding:18px;">
-            <div style="font-size:1.4rem;margin-bottom:8px;">🧴</div>
-            <div style="font-weight:700;color:#fff;font-size:.9rem;margin-bottom:6px;">Protector solar</div>
-            <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">FPS 50+ mínimo. El sol de Cabo Frío es intenso incluso nublado. Llevá bastante — allá es más caro.</div>
-          </div>
-          <div style="background:rgba(11,61,145,.2);border:1px solid var(--border);border-radius:14px;padding:18px;">
-            <div style="font-size:1.4rem;margin-bottom:8px;">📱</div>
-            <div style="font-weight:700;color:#fff;font-size:.9rem;margin-bottom:6px;">Chip local en Brasil</div>
-            <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">Comprá un chip de Claro o Vivo en el aeropuerto. USD 5-10 para internet los 7 días.</div>
-          </div>
-          <div style="background:rgba(11,61,145,.2);border:1px solid var(--border);border-radius:14px;padding:18px;">
-            <div style="font-size:1.4rem;margin-bottom:8px;">🛂</div>
-            <div style="font-weight:700;color:#fff;font-size:.9rem;margin-bottom:6px;">Documentación</div>
-            <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">ARG, URU y PAR ingresan con DNI. Chilenos necesitan pasaporte vigente.</div>
-          </div>
+        <div id="comunidadPosts" style="display:flex;flex-direction:column;gap:14px;">
+          <div style="color:var(--text-muted);text-align:center;padding:32px;">Cargando novedades...</div>
         </div>
       </div>
       <div style="text-align:center;padding:8px 0 4px;">
-        <button class="btn btn-primary" onclick="window.open('https://wa.me/5492974726449?text=' + encodeURIComponent('¡Hola! Soy cliente Luazul Smart Travel y quiero unirme al grupo de viajeros de Diciembre 2026 🏖️'),'_blank')" style="font-size:.95rem;padding:14px 32px;">
+        <button class="btn btn-primary"
+                onclick="window.open('https://wa.me/5492974726449?text=' + encodeURIComponent('¡Hola! Soy cliente Luazul Smart Travel y quiero unirme al grupo de viajeros 🏖️'),'_blank')"
+                style="font-size:.95rem;padding:14px 32px;">
           💬 Unirme al grupo de viajeros
         </button>
-        <div style="font-size:.75rem;color:var(--text-muted);margin-top:10px;">Conectate con el resto del grupo — van a Cabo Frío juntos</div>
       </div>
     </div>
 
+    <!-- ── SOLICITUD ── -->
     <div class="page" id="page-solicitud">
       <div class="glass" style="padding:28px;max-width:600px;">
         <div class="section-title">Solicitar extensión de plan</div>
         <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:20px;line-height:1.7;">
-          Podés solicitar ampliar tu plan de cuotas sin penalidades. Tu solicitud llegará directamente a Luazul Smart Travel vía WhatsApp y un asesor te contactará a la brevedad.
+          Podés solicitar ampliar tu plan de cuotas sin penalidades. Tu solicitud llegará directamente a Luazul Smart Travel vía WhatsApp.
         </p>
-        <div class="request-form">
+        <div>
           <div class="form-group">
             <label>Motivo de la solicitud</label>
-            <select id="motivoSelect" style="width:100%;padding:14px 18px;background:rgba(5,20,60,.8);border:1px solid var(--border);border-radius:12px;color:white;font-family:inherit;font-size:.9rem;">
+            <select id="motivoSelect"
+                    style="width:100%;padding:14px 18px;background:rgba(5,20,60,.8);border:1px solid var(--border);border-radius:12px;color:white;font-family:inherit;font-size:.9rem;">
               <option value="">— Seleccioná un motivo —</option>
               <option value="Extensión de cuotas">Ampliar cantidad de cuotas</option>
               <option value="Cambio de fecha de viaje">Cambio de fecha de viaje</option>
@@ -1137,14 +865,14 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
           </div>
           <div class="form-group">
             <label>Detalle adicional (opcional)</label>
-            <textarea id="solicitudMsg" placeholder="Contanos más sobre tu solicitud..."></textarea>
+            <textarea id="solicitudMsg"
+                      style="width:100%;background:rgba(5,20,60,.8);border:1px solid var(--border);border-radius:12px;color:white;font-family:inherit;font-size:.9rem;padding:14px 18px;min-height:120px;resize:vertical;transition:border-color .2s;"
+                      placeholder="Contanos más sobre tu solicitud..."></textarea>
           </div>
-          <button class="btn btn-primary" onclick="enviarSolicitud()" style="width:100%;border-radius:12px;padding:15px;">
+          <button class="btn btn-primary" onclick="enviarSolicitud()"
+                  style="width:100%;border-radius:12px;padding:15px;">
             📲 Enviar por WhatsApp
           </button>
-          <div class="success-msg" id="successMsg">
-            ✅ ¡Solicitud enviada! Un asesor te contactará a la brevedad.
-          </div>
         </div>
       </div>
     </div>
@@ -1152,404 +880,138 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   </main>
 </div>
 
-<!-- ══════════════ SETUP GUIDE (modal) ══════════════ -->
-<div id="setupModal" style="display:none;position:fixed;inset:0;z-index:200;overflow-y:auto;padding:24px;">
-  <div style="max-width:720px;margin:0 auto;" class="glass" id="setupContent">
-    <div style="padding:36px;">
-      <h2 style="font-size:1.5rem;margin-bottom:6px;">⚙️ Configuración inicial</h2>
-      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:28px;">Seguí estos pasos para conectar el panel con tu Google Sheets. Solo lo hacés una vez.</p>
-
-      <div class="setup-step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <h4>Crear el Google Sheet</h4>
-          <p>Abrí <a href="https://sheets.google.com" target="_blank" style="color:var(--blue-light);">sheets.google.com</a> y creá una hoja nueva llamada <code>Luazul Smart Travel Clientes</code>. Creá una pestaña llamada <code>Clientes</code> con estas columnas exactas en la fila 1:</p>
-          <p style="margin-top:8px;"><code>email | password | nombre | apellido | documento | domicilio | <strong>telefono1</strong> | <strong>telefono2</strong> | destino | paquete | personas | noches | fecha_viaje | total_usd | cuotas_total | cuotas_pagadas | monto_cuota | estado | contrato_url | voucher_url</code></p>
-        </div>
-      </div>
-
-      <div class="setup-step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h4>Publicar como API (Apps Script)</h4>
-          <p>En el Sheet: <strong>Extensiones → Apps Script</strong>. Borrá todo y pegá el código que aparece abajo. Luego hacé clic en <strong>Implementar → Nueva implementación → Aplicación web</strong>. Ejecutar como: <strong>Yo</strong>. Acceso: <strong>Cualquier persona</strong>. Copiá la URL que te da.</p>
-        </div>
-      </div>
-
-      <div style="background:rgba(5,20,60,.8);border:1px solid var(--border);border-radius:12px;padding:18px;margin:16px 0;font-family:monospace;font-size:.78rem;color:#7eb8ff;line-height:1.8;overflow-x:auto;">
-function doGet(e) {<br>
-&nbsp;&nbsp;var email = e.parameter.email;<br>
-&nbsp;&nbsp;var pass  = e.parameter.password;<br>
-&nbsp;&nbsp;var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Clientes');<br>
-&nbsp;&nbsp;var data  = sheet.getDataRange().getValues();<br>
-&nbsp;&nbsp;var headers = data[0];<br>
-&nbsp;&nbsp;for (var i = 1; i &lt; data.length; i++) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;var row = {};<br>
-&nbsp;&nbsp;&nbsp;&nbsp;headers.forEach(function(h,j){ row[h] = data[i][j]; });<br>
-&nbsp;&nbsp;&nbsp;&nbsp;if (row.email == email &amp;&amp; row.password == pass) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return ContentService.createTextOutput(JSON.stringify({ok:true,data:row})).setMimeType(ContentService.MimeType.JSON);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;return ContentService.createTextOutput(JSON.stringify({ok:false})).setMimeType(ContentService.MimeType.JSON);<br>
-}
-      </div>
-
-      <div class="setup-step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <h4>Pegar la URL aquí abajo</h4>
-          <p>Pegá la URL de tu Apps Script deployment para activar el panel real.</p>
-          <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
-            <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/..." style="flex:1;min-width:200px;padding:12px 16px;background:rgba(5,20,60,.8);border:1px solid var(--border);border-radius:10px;color:white;font-family:inherit;font-size:.85rem;" />
-            <button class="btn btn-primary" onclick="saveApiUrl()">Guardar y conectar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="setup-step">
-        <div class="step-num">4</div>
-        <div class="step-content">
-          <h4>Agregar clientes al Sheet</h4>
-          <p>Completá una fila por cliente. Campos obligatorios: <code>email</code>, <code>password</code>, <code>nombre</code>, <code>destino</code>, <code>total_usd</code>, <code>cuotas_total</code>, <code>cuotas_pagadas</code>, <code>monto_cuota</code>. El campo <code>estado</code> puede ser: <code>activo</code>, <code>completado</code>.</p>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="closeSetup()">✅ Entendido, cerrar guía</button>      </div>
-    </div>
-  </div>
-</div>
-
+<!-- ══════════════ SCRIPTS ══════════════ -->
 <script>
-// ══════════════════════════════════════════════════════
-//  CONFIG — pegá aquí tu URL de Google Apps Script
-// ══════════════════════════════════════════════════════
-
-// ════════════════════════════════════════════════════════════════════
-// FASE 1 — LocalStorage (standalone, sin backend)
-// FASE 2 — Supabase (reemplazar funciones dbFindUser, dbSave, etc.)
-//
-// Para migrar a Supabase, reemplazar el bloque de DATA LAYER con:
-//
-//   const { createClient } = supabase
-//   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-//
-//   // [SUPABASE] → sb.from('clientes').select('*').eq('email',email).eq('password',password)
-//   async function dbFindUser(email, password) {
-//     const { data } = await sb.from('clientes')
-//       .select('*').eq('email', email).eq('password', password).single()
-//     return data
-//   }
-//
-//   async function dbSavePayment(clientId, cuotaNum, comprobante) {
-//     const { data } = await sb.from('comprobantes')
-//       .insert({ client_id: clientId, cuota: cuotaNum, url: comprobante })
-//     return data
-//   }
-//
-// Tablas Supabase necesarias: clientes, comprobantes, notificaciones, referidos
-// ════════════════════════════════════════════════════════════════════
-
-// ── LIMPIEZA DE DATOS DEMO ────────────────────────────────────────
-var DATA_VERSION = 'v3_prod_clean';
-(function(){
-  if(localStorage.getItem('luazul_cliente_version') !== DATA_VERSION){
-    ['luazul_db','luazul_notifs','luazul_vendors','luazul_cuentas_pago','luazul_api_url'].forEach(function(k){
-      localStorage.removeItem(k);
-    });
-    // Limpiar referidos dinámicos luazul_referidos_*
-    Object.keys(localStorage).filter(function(k){ return k.startsWith('luazul_referidos_'); })
-      .forEach(function(k){ localStorage.removeItem(k); });
-    localStorage.setItem('luazul_cliente_version', DATA_VERSION);
-  }
-})();
-var API_URL = localStorage.getItem('luazul_api_url') || '';
-
-function saveApiUrl() {
-  var input = document.querySelector('#setupModal input[type="url"], #setupModal input[placeholder*="script"], #setupModal input[placeholder*="google"]');
-  if (!input) {
-    // fallback: find any input inside setupModal
-    var modal = document.getElementById('setupModal');
-    input = modal ? modal.querySelector('input') : null;
-  }
-  var url = input ? input.value.trim() : '';
-  if (!url) { alert('Pegá la URL de tu Apps Script primero.'); return; }
-  localStorage.setItem('luazul_api_url', url);
-  API_URL = url;
-  var modal = document.getElementById('setupModal');
-  if (modal) modal.style.display = 'none';
-  showToast('✅ API conectada — recargá para usar datos reales');
-  setTimeout(function(){ location.reload(); }, 1500);
-}
-
+'use strict';
 
 // ══════════════════════════════════════════════════════
-//  DEMO DATA — se usa cuando no hay API configurada
+//  STATE
 // ══════════════════════════════════════════════════════
-
-var currentUser = null;
+var currentUser = null; // datos de la tabla clientes
+var currentSession = null; // sesión Supabase Auth
 
 // ══════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(async function() {
+window.addEventListener('DOMContentLoaded', function () {
+  setTimeout(async function () {
     document.getElementById('loadingScreen').style.display = 'none';
 
-    // [SUPABASE] Verificar sesión activa primero
-    if (supabaseClient) {
-      try {
-        var sessionResult = await supabaseClient.auth.getSession();
-        var session = sessionResult.data && sessionResult.data.session;
-        if (session && session.user) {
-          // Buscar datos frescos en tabla clientes
-          var r = await supabaseClient.from('clientes')
-            .select('*')
-            .eq('email', session.user.email.toLowerCase())
-            .single();
-          if (r.data) {
-            currentUser = r.data;
-          } else {
-            var meta = session.user.user_metadata || {};
-            currentUser = {
-              email:          session.user.email,
-              nombre:         meta.nombre || session.user.email.split('@')[0],
-              apellido:       meta.apellido || '',
-              destino:        meta.destino || '—',
-              plan:           meta.plan || 'Plan Luazul Smart Travel',
-              paquete:        meta.paquete || '—',
-              total_usd:      meta.total_usd || 0,
-              cuotas_total:   meta.cuotas_total || 10,
-              cuotas_pagadas: meta.cuotas_pagadas || 0,
-              monto_cuota:    meta.monto_cuota || 0,
-              estado:         'activo'
-            };
-          }
-          sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
-          showApp();
-          return;
-        }
-      } catch(e) { console.warn('[SB] session check:', e.message); }
+    if (!sbClient) {
+      showLoginScreen();
+      showError('Error de configuración. Contactá al soporte técnico.');
+      return;
     }
 
-    // Respaldo: sessionStorage local
-    var saved = sessionStorage.getItem('luazul_session');
-    if (saved) {
-      var sessionUser = JSON.parse(saved);
-      var fresh = dbFindUser(sessionUser.email, sessionUser.password);
-      currentUser = fresh || sessionUser;
-      sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
-      showApp();
-    } else {
-      document.getElementById('loginScreen').style.display = 'flex';
-    }
-  }, 1200);
-
-
-  // ── Real-time sync: refresh if admin changes data ──────────────────────
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'luazul_db' && currentUser) {
-      var fresh = dbFindUser(currentUser.email, currentUser.password);
-      if (fresh) {
-        currentUser = fresh;
-        sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
-        showApp();
-        showSyncBadge();
+    try {
+      var { data: sessionData } = await sbClient.auth.getSession();
+      if (sessionData && sessionData.session) {
+        currentSession = sessionData.session;
+        var ok = await loadClientData(sessionData.session.user.email);
+        if (ok) { showApp(); return; }
       }
+    } catch (e) {
+      console.warn('[SB] session check:', e.message);
     }
-  });
 
-  // Enter key on login
-  document.getElementById('loginPass').addEventListener('keypress', function(e) {
+    showLoginScreen();
+  }, 1000);
+
+  document.getElementById('loginPass').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') doLogin();
+  });
+  document.getElementById('loginEmail').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') document.getElementById('loginPass').focus();
   });
 });
 
 // ══════════════════════════════════════════════════════
-//  LOGIN
+//  AUTH
 // ══════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════
-//  SHARED DB — reads from localStorage written by admin panel
-// ══════════════════════════════════════════════════════
-// ── DATA LAYER — FASE 1: localStorage | FASE 2: reemplazar con Supabase ──
-var DB_KEY = 'luazul_db';
+async function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  var pass  = document.getElementById('loginPass').value;
 
-/* ─────────────────────────────────────────────────────────────
- * DEMO CREDENTIALS — Phase 1 local testing
- * email:    cliente_demo@luazul.com
- * password: demo123
- *
- * [SUPABASE PHASE 2] Remove DEMO_CREDENTIALS and the check
- * in dbFindUser() — use supabase.auth.signInWithPassword() instead.
- * ─────────────────────────────────────────────────────────────  */
-var DEMO_CREDENTIALS = {
-  email:         'cliente_demo@luazul.com',
-  password:      'demo123',
-  nombre:        'Martina',
-  apellido:      'González',
-  plan:          'Plan Caribe Diciembre 2026 · 10 cuotas',
-  destino:       'Cabo Frío + Búzios',
-  paquete:       '4 Amigos · 7 noches',
-  personas:      4,
-  noches:        7,
-  fecha_viaje:   'Diciembre 2026',
-  total_usd:     1450,
-  cuotas_total:  10,
-  cuotas_pagadas:7,
-  monto_cuota:   145,
-  telefono1:     '',
-  telefono2:     '',
-  cuota:         145,
-  pagadas:       7,
-  total:         10,
-  estado:        'activo',
-  moneda:        'USD',
-  badge:         '\uD83C\uDFAF Demo',
-  notas:         'Cuenta de demostración — activa desde junio 2025.'
-};
+  if (!email || !pass) { showError('Completá email y contraseña.'); return; }
 
-// [SUPABASE PHASE 2] → roles table with isEditor flag
-var EDITOR_CREDENTIALS = {
-  email:    'editor@luazul.com',
-  password: 'editor2026',
-  nombre:   'Editor',
-  apellido: 'Luazul Smart Travel',
-  plan:     '—',
-  destino:  '—',
-  cuota:    0,
-  pagadas:  0,
-  total:    0,
-  estado:   'activo',
-  moneda:   'USD',
-  badge:    '\u270F\uFE0F Editor',
-  notas:    'Cuenta de editor de contenido — gesti\u00f3n de novedades.',
-  isEditor: true
-};
-
-// [SUPABASE] → sb.from('clientes').select('*').eq('email',email).eq('password',password)
-function dbFindUser(email, password) {
-  email = (email || '').toLowerCase().trim();
-
-  // [SUPABASE PHASE 2] Remove this demo block:
-  if (email === DEMO_CREDENTIALS.email && password === DEMO_CREDENTIALS.password) {
-    return DEMO_CREDENTIALS;
-  }
-  if (email === EDITOR_CREDENTIALS.email && password === EDITOR_CREDENTIALS.password) {
-    return EDITOR_CREDENTIALS;
-  }
+  var btn = document.getElementById('loginBtn');
+  btn.textContent = 'Verificando...';
+  btn.disabled = true;
+  document.getElementById('loginError').style.display = 'none';
 
   try {
-    var raw = localStorage.getItem(DB_KEY);
-    if (!raw) return null;
-    var clients = JSON.parse(raw);
-    for (var i = 0; i < clients.length; i++) {
-      var c = clients[i];
-      if ((c.email || '').toLowerCase().trim() === email && c.password === password) {
-        return c;
-      }
-    }
-  } catch(e) {}
-  return null;
-}
+    var { data, error } = await sbClient.auth.signInWithPassword({ email, password: pass });
 
-
-function showSyncBadge() {
-  var b = document.getElementById('syncBadge');
-  b.classList.add('show');
-  setTimeout(function(){ b.classList.remove('show'); }, 3000);
-}
-
-function doLogin() {
-  var email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  var pass  = document.getElementById('loginPass').value.trim();
-  var errEl = document.getElementById('loginError');
-  errEl.style.display = 'none';
-
-  if (!email || !pass) { showError('Completá email y contraseña'); return; }
-
-  // ── 1. Check shared DB (set by admin panel) ──────────────────────────
-  var dbUser = dbFindUser(email, pass);
-  if (dbUser) {
-    if (dbUser.estado === 'baja') {
-      showError('Tu plan fue dado de baja. Contactá a Luazul Smart Travel para más info.');
+    if (error) {
+      btn.textContent = 'Ingresar al panel';
+      btn.disabled = false;
+      showError(error.message === 'Invalid login credentials'
+        ? 'Email o contraseña incorrectos.'
+        : 'Error de conexión. Verificá tu internet.');
       return;
     }
-    loginSuccess(dbUser);
-    return;
+
+    currentSession = data.session;
+    var ok = await loadClientData(data.user.email);
+
+    btn.textContent = 'Ingresar al panel';
+    btn.disabled = false;
+
+    if (!ok) {
+      showError('Tu cuenta no tiene un perfil de cliente activo. Contactá a Luazul Smart Travel.');
+      await sbClient.auth.signOut();
+      return;
+    }
+
+    document.getElementById('loginScreen').style.display = 'none';
+    showApp();
+
+  } catch (e) {
+    btn.textContent = 'Ingresar al panel';
+    btn.disabled = false;
+    showError('Error inesperado. Intentá de nuevo.');
+    console.error('[SB] login error:', e);
   }
+}
 
-  // ── 2. [SUPABASE] → autenticación real + datos de tabla clientes ─────────
-  if (supabaseClient) {
-    var btn2 = document.querySelector('.login-btn');
-    if (btn2) { btn2.textContent = 'Verificando...'; btn2.disabled = true; }
-    supabaseClient.auth.signInWithPassword({ email: email, password: pass })
-      .then(function(result) {
-        if (result.error) throw result.error;
-        // Buscar datos del cliente en la tabla clientes
-        return supabaseClient.from('clientes')
-          .select('*')
-          .eq('email', result.data.user.email.toLowerCase())
-          .single()
-          .then(function(r2) {
-            if (btn2) { btn2.textContent = 'Ingresar al panel'; btn2.disabled = false; }
-            if (r2.error || !r2.data) {
-              // Si no está en la tabla, usar user_metadata como respaldo
-              var u = result.data.user;
-              var meta = u.user_metadata || {};
-              loginSuccess({
-                email:          u.email,
-                nombre:         meta.nombre || u.email.split('@')[0],
-                apellido:       meta.apellido || '',
-                destino:        meta.destino || '—',
-                plan:           meta.plan || 'Plan Luazul Smart Travel',
-                paquete:        meta.paquete || '—',
-                total_usd:      meta.total_usd || 0,
-                cuotas_total:   meta.cuotas_total || 10,
-                cuotas_pagadas: meta.cuotas_pagadas || 0,
-                monto_cuota:    meta.monto_cuota || 0,
-                estado:         'activo'
-              });
-            } else {
-              loginSuccess(r2.data);
-            }
-          });
-      })
-      .catch(function(err) {
-        if (btn2) { btn2.textContent = 'Ingresar al panel'; btn2.disabled = false; }
-        showError((err && err.message === 'Invalid login credentials')
-          ? 'Email o contraseña incorrectos.'
-          : 'Error de conexión. Verificá tu internet.');
-      });
-    return;
+// Carga los datos del cliente desde la tabla clientes
+async function loadClientData(email) {
+  try {
+    var { data, error } = await sbClient
+      .from('clientes')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .single();
+
+    if (error || !data) return false;
+
+    // Bloquear acceso si fue dado de baja
+    if (data.estado === 'baja') {
+      showError('Tu plan fue dado de baja. Contactá a Luazul Smart Travel para más información.');
+      await sbClient.auth.signOut();
+      return false;
+    }
+
+    currentUser = data;
+    return true;
+  } catch (e) {
+    console.warn('[SB] loadClientData:', e.message);
+    return false;
   }
+}
 
-  // ── 3. Real API (Google Sheets / futuro Supabase REST) ───────────────────
-  if (API_URL) {
+async function doLogout() {
+  if (sbClient) { try { await sbClient.auth.signOut(); } catch (e) {} }
+  currentUser    = null;
+  currentSession = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value  = '';
+  showLoginScreen();
+}
 
-    var btn = document.querySelector('.login-btn');
-    btn.textContent = 'Verificando...';
-    btn.disabled = true;
-    fetch(API_URL + '?email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass))
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        btn.textContent = 'Ingresar al panel';
-        btn.disabled = false;
-        if (d.ok) {
-          loginSuccess(d.data);
-        } else {
-          showError('Email o contraseña incorrectos');
-        }
-      })
-      .catch(function(){
-        btn.textContent = 'Ingresar al panel';
-        btn.disabled = false;
-        showError('Error de conexión. Verificá tu internet.');
-      });
-    return;
-  }
-
-  // No match found anywhere
-  showError('Email o contraseña incorrectos. Si no tenés cuenta, contactá a Luazul Smart Travel.');
+function showLoginScreen() {
+  document.getElementById('loginScreen').style.display = 'flex';
 }
 
 function showError(msg) {
@@ -1558,32 +1020,15 @@ function showError(msg) {
   el.style.display = 'block';
 }
 
-function loginSuccess(user) {
-  currentUser = user;
-  sessionStorage.setItem('luazul_session', JSON.stringify(user));
-  document.getElementById('loginScreen').style.display = 'none';
-  showApp();
-}
-
-async function doLogout() {
-  if (supabaseClient) { try { await supabaseClient.auth.signOut(); } catch(e){} }
-  sessionStorage.removeItem('luazul_session');
-  currentUser = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginEmail').value = '';
-  document.getElementById('loginPass').value  = '';
-}
-
 // ══════════════════════════════════════════════════════
 //  APP RENDER
 // ══════════════════════════════════════════════════════
 function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  var u = currentUser;
 
-  // Sidebar user info
-  var initials = (u.nombre || 'U').split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+  var u = currentUser;
+  var initials = (u.nombre || 'C').split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
   document.getElementById('userAvatar').textContent = initials;
   document.getElementById('userName').textContent   = u.nombre || u.email;
   document.getElementById('userEmail').textContent  = u.email;
@@ -1595,39 +1040,50 @@ function showApp() {
   renderVoucher();
   renderContrato();
   renderReferidos();
+  cargarComunidad();
   goPage('dashboard');
 }
 
+// ══════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════
 function goPage(name) {
-  // hide all pages
-  var pages = document.querySelectorAll('.page');
-  pages.forEach(function(p){ p.classList.remove('active'); });
-  // show target
+  document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
   var target = document.getElementById('page-' + name);
   if (target) target.classList.add('active');
-  // update nav highlight
-  var navItems = document.querySelectorAll('.nav-item');
-  navItems.forEach(function(n){ n.classList.remove('active'); });
-  var titles = { dashboard:'Dashboard', paquete:'Mi Paquete', cuotas:'Mis Cuotas',
-    perfil:'Mi Perfil', voucher:'Voucher', contrato:'Contrato', solicitud:'Solicitar Extensión', referidos:'Mis Referidos', comunidad:'Comunidad Luazul Smart Travel' };
+
+  var titles = {
+    dashboard: 'Dashboard', paquete: 'Mi Paquete', cuotas: 'Mis Cuotas',
+    perfil: 'Mi Perfil', voucher: 'Voucher', contrato: 'Contrato',
+    solicitud: 'Solicitar Extensión', referidos: 'Mis Referidos', comunidad: 'Comunidad Luazul'
+  };
   var titleEl = document.getElementById('pageTitle');
   if (titleEl) titleEl.textContent = titles[name] || name;
+
+  closeSidebar();
 }
 
-// ── DASHBOARD ──
-function renderDashboard() {
-  // Show admin comunidad btn for editors
-  var adminBtn = document.getElementById('adminComunidadBtn');
-  if (adminBtn && currentUser && currentUser.isEditor) adminBtn.style.display = 'flex';
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
 
-  var u = currentUser;
-  var total  = parseInt(u.cuotas_total)  || 10;
-  var pagadas = parseInt(u.cuotas_pagadas) || 0;
+// ══════════════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════════════
+function renderDashboard() {
+  var u          = currentUser;
+  var total      = parseInt(u.cuotas_total)   || 0;
+  var pagadas    = parseInt(u.cuotas_pagadas) || 0;
   var pendientes = total - pagadas;
-  var monto  = parseFloat(u.monto_cuota) || 0;
-  var totalUsd = parseFloat(u.total_usd) || 0;
-  var abonado  = pagadas * monto;
-  var pct = Math.round((pagadas / total) * 100);
+  var monto      = parseFloat(u.monto_cuota)  || 0;
+  var totalUsd   = parseFloat(u.total_usd)    || 0;
+  var abonado    = pagadas * monto;
+  var pct        = total > 0 ? Math.round((pagadas / total) * 100) : 0;
 
   document.getElementById('statPagadas').textContent    = pagadas;
   document.getElementById('statPagadasSub').textContent = 'de ' + total + ' cuotas';
@@ -1636,11 +1092,10 @@ function renderDashboard() {
   document.getElementById('statAbonado').textContent    = 'USD ' + abonado.toFixed(0);
   document.getElementById('statAbonadoSub').textContent = 'de USD ' + totalUsd.toFixed(0) + ' total';
 
-  // Days to trip
-  var diasEl = document.getElementById('statDias');
+  var diasEl  = document.getElementById('statDias');
   var diasSub = document.getElementById('statDiasSub');
   if (u.fecha_viaje) {
-    var diff = Math.ceil((new Date(u.fecha_viaje) - new Date()) / (1000*60*60*24));
+    var diff = Math.ceil((new Date(u.fecha_viaje) - new Date()) / 86400000);
     diasEl.textContent  = diff > 0 ? diff : '🎉';
     diasSub.textContent = diff > 0 ? u.fecha_viaje : '¡Viaje en curso!';
   } else {
@@ -1650,167 +1105,130 @@ function renderDashboard() {
 
   document.getElementById('progLabel').textContent = 'Cuotas abonadas: ' + pagadas + ' / ' + total;
   document.getElementById('progPct').textContent   = pct + '%';
-  setTimeout(function(){ document.getElementById('progFill').style.width = pct + '%'; }, 200);
-
+  setTimeout(function () { document.getElementById('progFill').style.width = pct + '%'; }, 200);
   document.getElementById('cuotasBadge').textContent = pendientes > 0 ? pendientes : '✓';
-  checkNovedadesBadge();
-
-function checkNovedadesBadge() {
-  try {
-    var posts = JSON.parse(localStorage.getItem('luazul_novedades') || '[]');
-    var badge = document.getElementById('novedadesBadge');
-    if (!badge || !posts.length) return;
-    var lastSeen = localStorage.getItem('luazul_novedades_visto');
-    if (!lastSeen) { badge.style.display = 'inline-block'; return; }
-    var hasNew = posts.some(function(p){ return new Date(p.fecha) > new Date(lastSeen); });
-    badge.style.display = hasNew ? 'inline-block' : 'none';
-  } catch(e) {}
 }
 
+// ══════════════════════════════════════════════════════
+//  PERFIL
+// ══════════════════════════════════════════════════════
+function renderPerfil() {
+  var u = currentUser;
+  function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; }
+  set('perfil-nombre',    u.nombre || '—');
+  set('perfil-email',     u.email  || '—');
+  set('perfil-documento', u.documento || 'No registrado');
+  set('perfil-tel',       u.telefono  || 'No registrado');
 }
 
-// ── PAQUETE ──
+// ══════════════════════════════════════════════════════
+//  PAQUETE
+// ══════════════════════════════════════════════════════
 function renderPaquete() {
   var u = currentUser;
-  document.getElementById('pkgName').textContent = u.paquete || 'Paquete Luazul Smart Travel';
-  document.getElementById('pkgDest').textContent = u.destino || 'Destino por confirmar';
+  document.getElementById('pkgName').textContent = u.paquete  || 'Paquete Luazul Smart Travel';
+  document.getElementById('pkgDest').textContent = u.destino  || 'Destino por confirmar';
 
   var chips = [
-    u.noches   ? u.noches + ' noches'  : null,
-    u.personas ? u.personas + ' personas' : null,
-    u.estado   ? u.estado.toUpperCase() : 'ACTIVO'
+    u.estado ? u.estado.toUpperCase() : 'ACTIVO'
   ].filter(Boolean);
 
-  document.getElementById('pkgChips').innerHTML = chips.map(function(c){
+  document.getElementById('pkgChips').innerHTML = chips.map(function (c) {
     return '<span class="chip">' + c + '</span>';
   }).join('');
 
   var infos = [
-    {label:'💰 Total del plan', value: u.total_usd ? 'USD ' + u.total_usd : '—'},
-    {label:'💳 Cuota mensual',  value: u.monto_cuota ? 'USD ' + u.monto_cuota : '—'},
-    {label:'📅 Fecha de viaje', value: u.fecha_viaje || 'Por confirmar'},
-    {label:'🏝️ Destino',       value: u.destino || '—'},
-    {label:'👥 Pasajeros',      value: u.personas ? u.personas + ' personas' : '—'},
-    {label:'🌙 Noches',         value: u.noches || '—'},
+    { label: '💰 Total del plan',  value: u.total_usd    ? 'USD ' + u.total_usd   : '—' },
+    { label: '💳 Cuota mensual',   value: u.monto_cuota  ? 'USD ' + u.monto_cuota : '—' },
+    { label: '📅 Fecha de viaje',  value: u.fecha_viaje  || 'Por confirmar'             },
+    { label: '🏝️ Destino',         value: u.destino      || '—'                         },
   ];
 
-  document.getElementById('pkgInfoGrid').innerHTML = infos.map(function(item){
-    return '<div class="info-item glass"><div class="ilabel">' + item.label + '</div><div class="ivalue">' + item.value + '</div></div>';
+  document.getElementById('pkgInfoGrid').innerHTML = infos.map(function (item) {
+    return '<div class="info-item glass"><div class="ilabel">' + item.label + '</div>'
+         + '<div class="ivalue">' + item.value + '</div></div>';
   }).join('');
-  // Render immersive destination section
+
   renderDestInfo();
 }
 
-
-function renderPerfil() {
-  var u = currentUser;
-  function set(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = val || '—';
-  }
-  set('perfil-nombre',    (u.nombre || '') + ' ' + (u.apellido || ''));
-  set('perfil-email',     u.email || '');
-  set('perfil-documento', u.documento || 'No registrado');
-  set('perfil-domicilio', u.domicilio || 'No registrado');
-  set('perfil-tel1',      u.telefono1 || 'No registrado');
-  set('perfil-tel2',      u.telefono2 || 'No registrado');
-}
-
-// ── DESTINATION DATA ────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+//  DESTINATION DATA
+// ══════════════════════════════════════════════════════
 var DEST_INFO = {
-  'cabo': {
-    key: 'cabo',
-    name: 'Cabo Frío',
-    country: 'Río de Janeiro, Brasil',
-    emoji: '🏖️',
-    tag: 'Costa do Sol · Brasil',
-    lat: -22.88, lon: -42.03, tz: 'America/Sao_Paulo',
+  cabo: {
+    key: 'cabo', name: 'Cabo Frío', country: 'Río de Janeiro, Brasil', emoji: '🏖️',
+    tag: 'Costa do Sol · Brasil', lat: -22.88, lon: -42.03, tz: 'America/Sao_Paulo',
     emotional: 'Muy pronto vas a estar caminando por la arena blanca de <strong>Cabo Frío</strong>, sintiendo el agua cristalina del Atlántico en tus pies. El canal de Itajuru, las dunas doradas y el cielo infinito de Brasil te están esperando. Cada cuota que abonás te acerca a ese momento que ya es tuyo.',
     highlights: ['🌊 Aguas cristalinas', '🏜️ Dunas impresionantes', '🐟 Gastronomía del mar', '🛶 Paseos en lancha', '🌅 Atardeceres únicos'],
     attractions: [
-      {icon:'🏰', name:'Forte São Mateus', desc:'Fortaleza colonial del s.XVII con vista al canal y al mar'},
-      {icon:'🏖️', name:'Praia do Forte', desc:'La playa icónica de Cabo Frío, siempre animada'},
-      {icon:'🛶', name:'Lagoa Araruama', desc:'La laguna hipersalina más grande de Sudamérica'},
-      {icon:'🚤', name:'Arraial do Cabo', desc:'El Caribe brasileño, a solo 15 minutos'},
-      {icon:'🌅', name:'Dunas de Cabo Frío', desc:'Arena blanca sobre el océano — perfectas al atardecer'},
-      {icon:'🍽️', name:'Rua das Pedras', desc:'Gastronomía y souvenirs en el corazón de la ciudad'},
+      { icon: '🏰', name: 'Forte São Mateus',  desc: 'Fortaleza colonial del s.XVII con vista al canal' },
+      { icon: '🏖️', name: 'Praia do Forte',    desc: 'La playa icónica de Cabo Frío, siempre animada' },
+      { icon: '🛶', name: 'Lagoa Araruama',    desc: 'La laguna hipersalina más grande de Sudamérica' },
+      { icon: '🚤', name: 'Arraial do Cabo',   desc: 'El Caribe brasileño, a solo 15 minutos' },
+      { icon: '🌅', name: 'Dunas de Cabo Frío', desc: 'Arena blanca sobre el océano — perfectas al atardecer' },
+      { icon: '🍽️', name: 'Rua das Pedras',    desc: 'Gastronomía y souvenirs en el corazón de la ciudad' },
     ]
   },
-  'arraial': {
-    key: 'arraial',
-    name: 'Arraial do Cabo',
-    country: 'Costa del Sol · Brasil',
-    emoji: '🌊',
-    tag: 'El Caribe Brasileño · Brasil',
-    lat: -22.97, lon: -42.02, tz: 'America/Sao_Paulo',
-    emotional: 'Imaginá ese momento en que el barco se detiene y el agua alrededor tuyo es de un turquesa imposible — eso es <strong>Arraial do Cabo</strong>. Las aguas más transparentes de todo Río de Janeiro te están esperando. Cada paso de tu plan te lleva más cerca de ese paraíso que pronto será tu realidad.',
+  arraial: {
+    key: 'arraial', name: 'Arraial do Cabo', emoji: '🌊',
+    tag: 'El Caribe Brasileño · Brasil', lat: -22.97, lon: -42.02, tz: 'America/Sao_Paulo',
+    emotional: 'Imaginá ese momento en que el barco se detiene y el agua alrededor tuyo es de un turquesa imposible — eso es <strong>Arraial do Cabo</strong>. Las aguas más transparentes de todo Río de Janeiro te están esperando.',
     highlights: ['💎 Aguas únicas en el mundo', '🤿 Buceo y snorkeling de élite', '⛵ Paseos en barco', '🌅 Tranquilidad auténtica', '🐠 Vida marina increíble'],
     attractions: [
-      {icon:'🌊', name:'Praia do Forno', desc:'Aguas turquesas flanqueadas por rocas doradas'},
-      {icon:'🤿', name:'Gruta Azul', desc:'Cueva submarina de colores imposibles'},
-      {icon:'🏔️', name:'Morro do Forno', desc:'Vista 360° sobre playas y el Atlántico'},
-      {icon:'⛵', name:'Ilhas de Arraial', desc:'Islas vírgenes accesibles en lancha'},
-      {icon:'🎣', name:'Punta del Cabo', desc:'Donde el océano choca desde dos direcciones'},
-      {icon:'🍤', name:'Gastronomía local', desc:'Mariscos frescos y sabores del nordeste'},
+      { icon: '🌊', name: 'Praia do Forno',     desc: 'Aguas turquesas flanqueadas por rocas doradas' },
+      { icon: '🤿', name: 'Gruta Azul',         desc: 'Cueva submarina de colores imposibles' },
+      { icon: '🏔️', name: 'Morro do Forno',     desc: 'Vista 360° sobre playas y el Atlántico' },
+      { icon: '⛵', name: 'Ilhas de Arraial',   desc: 'Islas vírgenes accesibles en lancha' },
+      { icon: '🎣', name: 'Punta del Cabo',     desc: 'Donde el océano choca desde dos direcciones' },
+      { icon: '🍤', name: 'Gastronomía local',  desc: 'Mariscos frescos y sabores del nordeste' },
     ]
   },
-  'buzios': {
-    key: 'buzios',
-    name: 'Búzios',
-    country: 'Armação dos Búzios · Brasil',
-    emoji: '⛵',
-    tag: 'La perla de la Costa · Brasil',
-    lat: -22.75, lon: -41.88, tz: 'America/Sao_Paulo',
-    emotional: 'Muy pronto vas a estar paseando por la <strong>Rua das Pedras</strong> de Búzios, el mismo lugar que conquistó a Brigitte Bardot y que hoy te espera a vos. Veintitrés playas, una península llena de encanto y noches que no terminan. Este viaje que estás construyendo cuota a cuota ya tiene nombre: se llama Búzios.',
+  buzios: {
+    key: 'buzios', name: 'Búzios', emoji: '⛵',
+    tag: 'La perla de la Costa · Brasil', lat: -22.75, lon: -41.88, tz: 'America/Sao_Paulo',
+    emotional: 'Muy pronto vas a estar paseando por la <strong>Rua das Pedras</strong> de Búzios, el mismo lugar que conquistó a Brigitte Bardot y que hoy te espera a vos. Veintitrés playas, una península llena de encanto y noches que no terminan.',
     highlights: ['⛵ 23 playas en una península', '🌙 Vida nocturna incomparable', '🎨 Cultura y arte vibrante', '🏄 Deportes náuticos', '🍷 Gastronomía de autor'],
     attractions: [
-      {icon:'🚶', name:'Orla Bardot', desc:'Paseo con la famosa estatua de Brigitte Bardot'},
-      {icon:'🏖️', name:'Praia de Geribá', desc:'La más extensa, perfecta para surf'},
-      {icon:'🤿', name:'Praia João Fernandes', desc:'Aguas claras ideales para snorkeling'},
-      {icon:'🍷', name:'Rua das Pedras', desc:'La calle más sofisticada de la Costa do Sol'},
-      {icon:'🌊', name:'Praia da Ferradurinha', desc:'Una herradura de arena con agua verde esmeralda'},
-      {icon:'⛵', name:'Paseo en escuna', desc:'4 horas recorriendo las mejores playas'},
+      { icon: '🚶', name: 'Orla Bardot',           desc: 'Paseo con la famosa estatua de Brigitte Bardot' },
+      { icon: '🏖️', name: 'Praia de Geribá',       desc: 'La más extensa, perfecta para surf' },
+      { icon: '🤿', name: 'Praia João Fernandes',  desc: 'Aguas claras ideales para snorkeling' },
+      { icon: '🍷', name: 'Rua das Pedras',         desc: 'La calle más sofisticada de la Costa do Sol' },
+      { icon: '🌊', name: 'Praia da Ferradurinha',  desc: 'Una herradura de arena con agua verde esmeralda' },
+      { icon: '⛵', name: 'Paseo en escuna',        desc: '4 horas recorriendo las mejores playas' },
     ]
   },
-  'rio': {
-    key: 'rio',
-    name: 'Río de Janeiro',
-    country: 'Copacabana · Brasil',
-    emoji: '🌆',
-    tag: 'La Ciudad Maravillosa · Brasil',
-    lat: -22.90, lon: -43.17, tz: 'America/Sao_Paulo',
-    emotional: 'Muy pronto vas a estar parado frente al <strong>Cristo Redentor</strong> con toda la Ciudad Maravillosa a tus pies — la bahía, las montañas, Copacabana, el horizonte infinito. Ese momento que parece de película ya está reservado para vos. Seguí avanzando: cada cuota te acerca más a Río de Janeiro.',
-    highlights: ['🏖️ Copacabana y la vida carioca', '🌿 Naturaleza dentro de la ciudad', '🎭 Cultura y arte incomparables', '✈️ Hub de conexiones', '🎸 Samba y energía única'],
+  rio: {
+    key: 'rio', name: 'Río de Janeiro', emoji: '🌆',
+    tag: 'La Ciudad Maravillosa · Brasil', lat: -22.90, lon: -43.17, tz: 'America/Sao_Paulo',
+    emotional: 'Muy pronto vas a estar parado frente al <strong>Cristo Redentor</strong> con toda la Ciudad Maravillosa a tus pies — la bahía, las montañas, Copacabana, el horizonte infinito.',
+    highlights: ['🏖️ Copacabana y la vida carioca', '🌿 Naturaleza dentro de la ciudad', '🎭 Cultura y arte incomparables', '🎸 Samba y energía única'],
     attractions: [
-      {icon:'🌟', name:'Cristo Redentor', desc:'El ícono más famoso de Brasil desde el Corcovado'},
-      {icon:'🚡', name:'Pan de Azúcar', desc:'Teleférico con vista sobre la Bahía de Guanabara'},
-      {icon:'🏖️', name:'Copacabana', desc:'El mejor frente marítimo de América del Sur'},
-      {icon:'🏊', name:'Ipanema y Leblon', desc:'Las playas más exclusivas rodeadas de belleza'},
-      {icon:'🎸', name:'Lapa y Santa Teresa', desc:'Arte, samba y bares bohemios en el corazón carioca'},
-      {icon:'🌿', name:'Floresta da Tijuca', desc:'El bosque urbano más grande del mundo'},
+      { icon: '🌟', name: 'Cristo Redentor',  desc: 'El ícono más famoso de Brasil desde el Corcovado' },
+      { icon: '🚡', name: 'Pan de Azúcar',    desc: 'Teleférico con vista sobre la Bahía de Guanabara' },
+      { icon: '🏖️', name: 'Copacabana',       desc: 'El mejor frente marítimo de América del Sur' },
+      { icon: '🏊', name: 'Ipanema y Leblon', desc: 'Las playas más exclusivas rodeadas de belleza' },
+      { icon: '🎸', name: 'Lapa y Santa Teresa', desc: 'Arte, samba y bares bohemios en el corazón carioca' },
+      { icon: '🌿', name: 'Floresta da Tijuca', desc: 'El bosque urbano más grande del mundo' },
     ]
   }
 };
 
-// Map destino string → DEST_INFO key (self-contained, no external dependency)
 function getDestKey(destino) {
   if (!destino) return null;
   var d = destino.toLowerCase();
-  if (d.includes('arraial'))                                          return 'arraial';
-  if (d.includes('b\xfazios') || d.includes('buzios'))              return 'buzios';
-  if (d.includes('r\xedo') || d.includes('rio') || d.includes('janeiro') || d.includes('copacabana')) return 'rio';
-  if (d.includes('cabo') || d.includes('fr\xedo') || d.includes('frio')) return 'cabo';
+  if (d.includes('arraial'))                                              return 'arraial';
+  if (d.includes('búzios') || d.includes('buzios'))                     return 'buzios';
+  if (d.includes('río') || d.includes('rio') || d.includes('janeiro'))  return 'rio';
+  if (d.includes('cabo') || d.includes('frío') || d.includes('frio'))   return 'cabo';
   return null;
 }
 
-// Weather codes
-var WMO_CODES_CLI = {
-  0:'☀️ Despejado',1:'🌤️ Mayormente despejado',2:'⛅ Parcialmente nublado',
-  3:'☁️ Cubierto',45:'🌫️ Neblina',48:'🌫️ Neblina con hielo',
-  51:'🌦️ Llovizna leve',53:'🌦️ Llovizna',55:'🌧️ Llovizna intensa',
-  61:'🌧️ Lluvia leve',63:'🌧️ Lluvia',65:'🌧️ Lluvia intensa',
-  80:'🌦️ Chubascos',81:'🌧️ Lluvias',82:'⛈️ Lluvias fuertes',
-  95:'⛈️ Tormenta',96:'⛈️ Tormenta con granizo',99:'⛈️ Tormenta fuerte'
+var WMO = {
+  0:'☀️ Despejado', 1:'🌤️ Mayormente despejado', 2:'⛅ Parcialmente nublado',
+  3:'☁️ Cubierto', 45:'🌫️ Neblina', 51:'🌦️ Llovizna leve',
+  61:'🌧️ Lluvia leve', 63:'🌧️ Lluvia', 65:'🌧️ Lluvia intensa',
+  80:'🌦️ Chubascos', 95:'⛈️ Tormenta'
 };
 
 async function loadClimaForDest(destKey) {
@@ -1824,183 +1242,162 @@ async function loadClimaForDest(destKey) {
       + '?latitude=' + info.lat + '&longitude=' + info.lon
       + '&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relativehumidity_2m,uv_index'
       + '&daily=temperature_2m_max,temperature_2m_min,weathercode'
-      + '&timezone=' + encodeURIComponent(info.tz)
-      + '&forecast_days=5';
-    var r = await fetch(url);
+      + '&timezone=' + encodeURIComponent(info.tz) + '&forecast_days=5';
+    var r    = await fetch(url);
     var data = await r.json();
     var c    = data.current;
     var daily = data.daily;
-
-    var temp   = Math.round(c.temperature_2m);
-    var feels  = Math.round(c.apparent_temperature);
-    var code   = c.weathercode;
-    var wind   = Math.round(c.windspeed_10m);
-    var hum    = c.relativehumidity_2m;
-    var uv     = c.uv_index !== undefined ? parseFloat(c.uv_index).toFixed(1) : '\u2014';
-
-    var wDesc  = WMO_CODES_CLI[code] || '\uD83C\uDF24\uFE0F Variable';
-    var icon   = wDesc.split(' ')[0];
-    var dText  = wDesc.replace(/^\S+ /, '');
-
-    var comfort = temp>=28?'\uD83D\uDD25 Clima ideal para la playa':temp>=24?'\u2705 Temperatura agradable':temp>=18?'\uD83C\uDF24\uFE0F Fresco y agradable':'\uD83E\uDDE5 Llev\u00e1 algo de abrigo';
-
-    // 4-day forecast
-    var dayNames = ['Dom','Lun','Mar','Mi\u00e9','Jue','Vie','S\u00e1b'];
+    var temp  = Math.round(c.temperature_2m);
+    var feels = Math.round(c.apparent_temperature);
+    var wDesc = WMO[c.weathercode] || '🌤️ Variable';
+    var icon  = wDesc.split(' ')[0];
+    var dText = wDesc.replace(/^\S+ /, '');
+    var wind  = Math.round(c.windspeed_10m);
+    var hum   = c.relativehumidity_2m;
+    var uv    = c.uv_index !== undefined ? parseFloat(c.uv_index).toFixed(1) : '—';
+    var comfort = temp >= 28 ? '🔥 Clima ideal para la playa' : temp >= 24 ? '✅ Temperatura agradable' : temp >= 18 ? '🌤️ Fresco y agradable' : '🧥 Llevá algo de abrigo';
+    var dayNames = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
     var forecastHtml = '';
     for (var i = 1; i < Math.min(5, daily.time.length); i++) {
       var fd   = new Date(daily.time[i] + 'T12:00:00');
-      var dName = dayNames[fd.getDay()];
       var hi   = Math.round(daily.temperature_2m_max[i]);
       var lo   = Math.round(daily.temperature_2m_min[i]);
-      var fWDesc = WMO_CODES_CLI[daily.weathercode[i]] || '\uD83C\uDF24\uFE0F';
-      var fIcon  = fWDesc.split(' ')[0];
-      forecastHtml +=
-        '<div class="cli-fc-day">'
-        + '<div class="cli-fc-name">' + dName + '</div>'
+      var fIcon = (WMO[daily.weathercode[i]] || '🌤️').split(' ')[0];
+      forecastHtml += '<div class="cli-fc-day"><div class="cli-fc-name">' + dayNames[fd.getDay()] + '</div>'
         + '<div class="cli-fc-icon">' + fIcon + '</div>'
-        + '<div class="cli-fc-temps"><span class="hi">' + hi + '\xb0</span><span class="lo">' + lo + '\xb0</span></div>'
-        + '</div>';
+        + '<div class="cli-fc-temps"><span class="hi">' + hi + '°</span><span class="lo">' + lo + '°</span></div></div>';
     }
-
     el.innerHTML =
       '<div class="cli-weather-box">'
       + '<div class="cli-w-icon">' + icon + '</div>'
       + '<div class="cli-w-main">'
-      +   '<div class="cli-w-temp">' + temp + '\xb0<span>C</span></div>'
+      +   '<div class="cli-w-temp">' + temp + '°<span>C</span></div>'
       +   '<div class="cli-w-desc">' + dText + '</div>'
-      +   '<div class="cli-w-loc">\uD83D\uDCCD ' + info.name + '</div>'
+      +   '<div class="cli-w-loc">📍 ' + info.name + '</div>'
       + '</div>'
       + '<div class="cli-w-stats">'
-      +   '<div class="cli-w-stat"><strong>' + feels + '\xb0</strong><span>Sensaci\u00f3n</span></div>'
+      +   '<div class="cli-w-stat"><strong>' + feels + '°</strong><span>Sensación</span></div>'
       +   '<div class="cli-w-stat"><strong>' + hum + '%</strong><span>Humedad</span></div>'
       +   '<div class="cli-w-stat"><strong>' + wind + '</strong><span>km/h</span></div>'
       +   '<div class="cli-w-stat"><strong>' + uv + '</strong><span>UV</span></div>'
-      + '</div>'
-      + '</div>'
+      + '</div></div>'
       + '<div class="cli-forecast">' + forecastHtml + '</div>'
       + '<div class="dest-comfort">' + comfort + '</div>'
-      + '<div class="cli-footer">Datos en tiempo real \xb7 <a href="https://open-meteo.com" target="_blank" rel="noopener" style="color:rgba(126,184,255,.4);">Open-Meteo</a></div>';
-  } catch(e) {
-    el.innerHTML = '<div style="font-size:.82rem;color:rgba(150,190,255,.5);padding:12px 0;">\u26a0\ufe0f No se pudo cargar el clima. Verific\u00e1 tu conexi\u00f3n.</div>';
+      + '<div class="cli-footer">Datos en tiempo real · <a href="https://open-meteo.com" target="_blank" rel="noopener" style="color:rgba(126,184,255,.4);">Open-Meteo</a></div>';
+  } catch (e) {
+    el.innerHTML = '<div style="font-size:.82rem;color:rgba(150,190,255,.5);padding:12px 0;">⚠️ No se pudo cargar el clima.</div>';
   }
 }
 
-
 function renderDestInfo() {
-  var u = currentUser;
+  var u         = currentUser;
   var container = document.getElementById('pkgDestInfo');
   if (!container) return;
-
   var key = getDestKey(u.destino);
   var d   = key ? DEST_INFO[key] : null;
   if (!d) { container.innerHTML = ''; return; }
 
-  // ── Countdown al viaje ──
+  // Countdown
   var countdownHtml = '';
   if (u.fecha_viaje) {
-    var monthMap = {enero:0,febrero:1,marzo:2,abril:3,mayo:4,junio:5,julio:6,agosto:7,septiembre:8,octubre:9,noviembre:10,diciembre:11};
+    var monthMap = { enero:0, febrero:1, marzo:2, abril:3, mayo:4, junio:5, julio:6, agosto:7, septiembre:8, octubre:9, noviembre:10, diciembre:11 };
     var fvLow = String(u.fecha_viaje).toLowerCase();
     var mKey  = null;
-    Object.keys(monthMap).forEach(function(k){ if (fvLow.indexOf(k) >= 0) mKey = k; });
+    Object.keys(monthMap).forEach(function (k) { if (fvLow.includes(k)) mKey = k; });
     var match = String(u.fecha_viaje).match(/(\d{4})/);
     var year  = match ? parseInt(match[1]) : null;
     if (year && mKey !== null) {
       var tripDate = new Date(year, monthMap[mKey], 15);
-      var today    = new Date(); today.setHours(0,0,0,0);
+      var today    = new Date(); today.setHours(0, 0, 0, 0);
       var diff     = Math.ceil((tripDate - today) / 86400000);
       if (diff > 0) {
         var months = Math.floor(diff / 30);
         var ddays  = diff % 30;
         var label  = months > 0
-          ? months + ' mes' + (months>1?'es':'') + (ddays>0?' y '+ddays+' d\xeda'+(ddays>1?'s':''):'')
-          : diff + ' d\xedas';
-        countdownHtml =
-          '<div class="pkg-countdown">'
+          ? months + ' mes' + (months > 1 ? 'es' : '') + (ddays > 0 ? ' y ' + ddays + ' día' + (ddays > 1 ? 's' : '') : '')
+          : diff + ' días';
+        countdownHtml = '<div class="pkg-countdown">'
           + '<div class="pkg-countdown-icon"><img src="images/mariposa-avatar.png" alt="" style="width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(126,184,255,.5));"></div>'
-          + '<div>'
-          +   '<div class="pkg-countdown-num">' + label + '</div>'
-          +   '<div class="pkg-countdown-lbl">para tu viaje · ' + u.fecha_viaje + '</div>'
-          + '</div>'
-          + '</div>';
+          + '<div><div class="pkg-countdown-num">' + label + '</div>'
+          + '<div class="pkg-countdown-lbl">para tu viaje · ' + u.fecha_viaje + '</div></div></div>';
       }
     }
   }
 
-  // ── Barra de progreso cuotas ──
+  // Progress bar
   var pagadas = parseInt(u.cuotas_pagadas) || 0;
   var total   = parseInt(u.cuotas_total)   || 10;
   var pct     = Math.min(100, Math.round((pagadas / total) * 100));
-  var progressHtml =
-    '<div class="pkg-progress-wrap">'
-    + '<div class="pkg-progress-header">'
-    +   '<span class="pkg-progress-lbl">💰 Plan financiado</span>'
-    +   '<span class="pkg-progress-pct">' + pct + '%</span>'
-    + '</div>'
+  var progressHtml = '<div class="pkg-progress-wrap">'
+    + '<div class="pkg-progress-header"><span class="pkg-progress-lbl">💰 Plan financiado</span>'
+    + '<span class="pkg-progress-pct">' + pct + '%</span></div>'
     + '<div class="pkg-progress-bar"><div class="pkg-progress-fill" style="width:' + pct + '%"></div></div>'
     + '<div class="pkg-progress-sub">' + pagadas + ' de ' + total + ' cuotas abonadas · '
-    +   (pct >= 100 ? '🎉 ¡Plan completado!' : (total - pagadas) + ' restante' + ((total-pagadas)!==1?'s':''))
-    + '</div>'
-    + '</div>';
+    + (pct >= 100 ? '🎉 ¡Plan completado!' : (total - pagadas) + ' restante' + ((total - pagadas) !== 1 ? 's' : ''))
+    + '</div></div>';
 
-  var hlHtml   = d.highlights.map(function(h){ return '<span class="dest-hl-chip">' + h + '</span>'; }).join('');
-  var attrHtml = d.attractions.map(function(a){
-    return '<div class="dest-attr-item">'
-      + '<div class="dest-attr-icon">' + a.icon + '</div>'
+  var hlHtml   = d.highlights.map(function (h) { return '<span class="dest-hl-chip">' + h + '</span>'; }).join('');
+  var attrHtml = d.attractions.map(function (a) {
+    return '<div class="dest-attr-item"><div class="dest-attr-icon">' + a.icon + '</div>'
       + '<div class="dest-attr-name">' + a.name + '</div>'
-      + '<div class="dest-attr-desc">' + a.desc + '</div>'
-      + '</div>';
+      + '<div class="dest-attr-desc">' + a.desc + '</div></div>';
   }).join('');
 
   container.innerHTML =
     '<div class="dest-immersive">'
     + '<div class="dest-immersive-header" data-emoji="' + d.emoji + '">'
     +   '<div class="dest-tag">' + d.emoji + ' ' + d.tag + '</div>'
-    +   '<div class="dest-immersive-title">Tu pr\xf3ximo destino: <span>' + d.name + '</span></div>'
+    +   '<div class="dest-immersive-title">Tu próximo destino: <span>' + d.name + '</span></div>'
     +   '<p class="dest-emotional-text">' + d.emotional + '</p>'
-    +   countdownHtml
-    +   progressHtml
+    +   countdownHtml + progressHtml
     + '</div>'
     + '<div class="dest-highlights-strip">' + hlHtml + '</div>'
     + '<div class="dest-attr-row">' + attrHtml + '</div>'
     + '<div class="dest-weather-wrap">'
     +   '<div class="dest-weather-title">🌤️ Clima actual en ' + d.name + '</div>'
-    +   '<div id="pkgWeatherBox"><div class="cli-w-loading"><div class="cli-w-spinner"></div> Cargando clima en tiempo real...</div></div>'
-    + '</div>'
-    + '</div>';
+    +   '<div id="pkgWeatherBox"><div class="cli-w-loading"><div class="cli-w-spinner"></div> Cargando clima...</div></div>'
+    + '</div></div>';
 
   loadClimaForDest(key);
 }
 
-// ── CUOTAS ──
+// ══════════════════════════════════════════════════════
+//  CUOTAS
+// ══════════════════════════════════════════════════════
 function renderCuotas() {
-  var u = currentUser;
-  var total      = parseInt(u.cuotas_total)   || 10;
+  var u          = currentUser;
+  var total      = parseInt(u.cuotas_total)   || 0;
   var pagadas    = parseInt(u.cuotas_pagadas) || 0;
   var monto      = parseFloat(u.monto_cuota)  || 0;
   var pendientes = total - pagadas;
-  var comprobantes = u.comprobantes || {};
 
   document.getElementById('c-pagadas').textContent    = pagadas;
   document.getElementById('c-pendientes').textContent = pendientes;
   document.getElementById('c-total').textContent      = total;
 
+  // [FASE 2] comprobantes migrarán a Supabase Storage — por ahora se leen de localStorage
+  var comprobantes = {};
+  try {
+    var raw = localStorage.getItem('luazul_comp_' + (u.id || u.email));
+    if (raw) comprobantes = JSON.parse(raw);
+  } catch (e) {}
+
   var html = '';
   for (var i = 1; i <= total; i++) {
-    var st = i <= pagadas ? 'paid' : (i === pagadas + 1 ? 'pending' : 'future');
+    var st      = i <= pagadas ? 'paid' : (i === pagadas + 1 ? 'pending' : 'future');
     var stLabel = st === 'paid' ? 'Pagada ✅' : (st === 'pending' ? 'Pendiente ⏳' : 'Próxima');
     var hasComp = !!comprobantes[i];
-    var d = new Date();
+    var d       = new Date();
     d.setMonth(d.getMonth() + (i - pagadas - 1));
-    var mes = d.toLocaleDateString('es-AR', {month:'long', year:'numeric'});
+    var mes = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
 
-    // Upload button: show for pending/next; show "ver" for paid with comprobante
     var uploadBtn = '';
     if (st === 'pending') {
       uploadBtn = hasComp
         ? '<button onclick="verComprobante(' + i + ')" style="padding:6px 12px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;">✅ Ver comprobante</button>'
           + '<button onclick="uploadComp(' + i + ')" style="padding:6px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(180,200,240,.6);border-radius:8px;font-size:.72rem;cursor:pointer;margin-left:4px;">↺ Reemplazar</button>'
         : '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;animation:pulse-btn 2s infinite;">📎 Adjuntar comprobante</button>'
-        + '<button onclick="abrirPanelPago(' + i + ')" style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;margin-left:6px;">💳 Pagar cuota</button>';
+          + '<button onclick="abrirPanelPago(' + i + ')" style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;margin-left:6px;">💳 Pagar cuota</button>';
     } else if (st === 'paid' && hasComp) {
       uploadBtn = '<button onclick="verComprobante(' + i + ')" style="padding:5px 11px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#6ee7b7;border-radius:8px;font-size:.72rem;cursor:pointer;">📄 Comprobante</button>';
     }
@@ -2008,80 +1405,70 @@ function renderCuotas() {
     html += '<div class="cuota-row" id="cuota-row-' + i + '" style="flex-wrap:wrap;gap:8px;">'
       + '<div class="cuota-num ' + st + '">' + i + '</div>'
       + '<div class="cuota-info" style="flex:1;">'
-      +   '<div class="cuota-desc">Cuota ' + i + ' de ' + total + (hasComp ? ' <span style=\'color:#6ee7b7;font-size:.7rem;\'>● comprobante adjunto</span>' : '') + '</div>'
+      +   '<div class="cuota-desc">Cuota ' + i + ' de ' + total + (hasComp ? ' <span style="color:#6ee7b7;font-size:.7rem;">● comprobante adjunto</span>' : '') + '</div>'
       +   '<div class="cuota-date">' + (st === 'paid' ? 'Pagada' : mes) + '</div>'
       + '</div>'
       + '<div class="cuota-amount ' + st + '">USD ' + monto.toFixed(0) + '</div>'
       + '<span class="cuota-status ' + st + '">' + stLabel + '</span>'
-      + (uploadBtn ? '<div style=\'width:100%;padding-left:44px;\'>' + uploadBtn + '</div>' : '')
+      + (uploadBtn ? '<div style="width:100%;padding-left:44px;">' + uploadBtn + '</div>' : '')
       + '</div>';
   }
-  document.getElementById('cuotasGrid').innerHTML = html;
+  document.getElementById('cuotasGrid').innerHTML = html || '<div style="color:var(--text-muted);text-align:center;padding:40px;">No hay cuotas registradas.</div>';
 }
 
-// ── PANEL DE PAGO DE CUOTA ──────────────────────────────────────────────────
-var TASAS_CONVERSION = {
-  'ARS': { nombre: '🇦🇷 Peso argentino',  simbolo: '$',   tasa: 1280 },
-  'CLP': { nombre: '🇨🇱 Peso chileno',    simbolo: '$',   tasa: 970  },
-  'UYU': { nombre: '🇺🇾 Peso uruguayo',   simbolo: '$',   tasa: 40   },
-  'PYG': { nombre: '🇵🇾 Guaraní',         simbolo: '₲',   tasa: 7800 },
-  'BRL': { nombre: '🇧🇷 Real brasileño',  simbolo: 'R$',  tasa: 5.75 },
-  'USD': { nombre: '🇺🇸 Dólar',           simbolo: 'USD', tasa: 1    },
+// ══════════════════════════════════════════════════════
+//  PANEL DE PAGO
+// ══════════════════════════════════════════════════════
+var TASAS = {
+  ARS: { nombre: '🇦🇷 Peso argentino',  simbolo: '$',   tasa: 1280 },
+  CLP: { nombre: '🇨🇱 Peso chileno',    simbolo: '$',   tasa: 970  },
+  UYU: { nombre: '🇺🇾 Peso uruguayo',   simbolo: '$',   tasa: 40   },
+  PYG: { nombre: '🇵🇾 Guaraní',         simbolo: '₲',   tasa: 7800 },
+  BRL: { nombre: '🇧🇷 Real brasileño',  simbolo: 'R$',  tasa: 5.75 },
+  USD: { nombre: '🇺🇸 Dólar',           simbolo: 'USD', tasa: 1    },
 };
 
 function abrirPanelPago(numCuota) {
-  var u = currentUser;
-  var monto = parseFloat(u.monto_cuota) || 0;
+  var monto = parseFloat(currentUser.monto_cuota) || 0;
 
-  // Load payment accounts from localStorage (set by admin)
-  var cuentasRaw = localStorage.getItem('luazul_cuentas_pago');
-  var cuentas = cuentasRaw ? JSON.parse(cuentasRaw) : [];
-
-  // Cuenta PIX oficial Luazul
+  // Cuentas de pago: configuradas por el admin (luazul_cuentas_pago en localStorage)
+  // [FASE 2] → mover a tabla Supabase cuentas_pago
+  var cuentas = [];
+  try {
+    var raw = localStorage.getItem('luazul_cuentas_pago');
+    if (raw) cuentas = JSON.parse(raw);
+  } catch (e) {}
   if (!cuentas.length) {
-    cuentas = [
-      { alias: 'luazul.turismobr@gmail.com', cbu: 'luazul.turismobr@gmail.com', titular: 'Luazul Turismo', banco: 'Nubank 🇧🇷 · PIX' }
-    ];
+    cuentas = [{ alias: 'luazul.turismobr@gmail.com', titular: 'Luazul Turismo', banco: 'Nubank 🇧🇷 · PIX' }];
   }
 
-  // Build currency selector
-  var monedaOpts = Object.keys(TASAS_CONVERSION).map(function(k) {
-    return '<option value="' + k + '"' + (k === 'ARS' ? ' selected' : '') + '>' + TASAS_CONVERSION[k].nombre + '</option>';
+  var monedaOpts = Object.keys(TASAS).map(function (k) {
+    return '<option value="' + k + '"' + (k === 'ARS' ? ' selected' : '') + '>' + TASAS[k].nombre + '</option>';
   }).join('');
 
-  // Build accounts list
-  var cuentasHtml = cuentas.map(function(ct, i) {
+  var cuentasHtml = cuentas.map(function (ct, i) {
     return '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;margin-bottom:12px;">'
-      + '<div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">💳 Cuenta ' + (i+1) + (ct.banco ? ' — ' + ct.banco : '') + '</div>'
+      + '<div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">💳 Cuenta ' + (i + 1) + (ct.banco ? ' — ' + ct.banco : '') + '</div>'
       + (ct.titular ? '<div style="font-size:.82rem;color:#e2e8f0;margin-bottom:10px;">Titular: <strong>' + ct.titular + '</strong></div>' : '')
-      + '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.25);border-radius:8px;padding:10px 14px;margin-bottom:8px;">'
-      +   '<div><div style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Chave PIX</div>'
-      +   '<div style="font-size:.95rem;font-weight:700;color:#a5f3fc;font-family:monospace;" id="pago-alias-' + i + '">' + (ct.alias || '—') + '</div></div>'
-      +   '<button onclick="copiarPago(\'pago-alias-' + i + '\',this)" style="padding:5px 12px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#a5b4fc;border-radius:7px;font-size:.72rem;cursor:pointer;">📋 Copiar</button>'
-      + '</div>'
       + '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.25);border-radius:8px;padding:10px 14px;">'
-      +   '<div><div style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Titular</div>'
-      +   '<div style="font-size:.85rem;font-weight:700;color:#a5f3fc;font-family:monospace;word-break:break-all;" id="pago-cbu-' + i + '">' + (ct.titular || '—') + '</div></div>'
-      +   '<button onclick="copiarPago(\'pago-cbu-' + i + '\',this)" style="padding:5px 12px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#a5b4fc;border-radius:7px;font-size:.72rem;cursor:pointer;flex-shrink:0;margin-left:10px;">📋 Copiar</button>'
-      + '</div>'
-      + '</div>';
+      +   '<div><div style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Chave PIX</div>'
+      +   '<div style="font-size:.95rem;font-weight:700;color:#a5f3fc;font-family:monospace;" id="pc-alias-' + i + '">' + (ct.alias || '—') + '</div></div>'
+      +   '<button onclick="copiarPago(\'pc-alias-' + i + '\',this)" style="padding:5px 12px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#a5b4fc;border-radius:7px;font-size:.72rem;cursor:pointer;">📋 Copiar</button>'
+      + '</div></div>';
   }).join('');
 
-  var modalHtml = '<div id="modalPago" style="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:flex-end;justify-content:center;padding:20px;" onclick="if(event.target===this)cerrarPanelPago()">'
-    + '<div style="background:linear-gradient(135deg,#0f172a,#1e293b);border:1px solid rgba(99,102,241,.3);border-radius:20px 20px 20px 20px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:24px;">'
-    // Header
+  var html = '<div id="modalPago" style="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:flex-end;justify-content:center;padding:20px;" onclick="if(event.target===this)cerrarPanelPago()">'
+    + '<div style="background:linear-gradient(135deg,#0f172a,#1e293b);border:1px solid rgba(99,102,241,.3);border-radius:20px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:24px;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">'
     +   '<div><div style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;">Cuota ' + numCuota + '</div>'
     +   '<div style="font-size:1.5rem;font-weight:800;color:#fff;">💳 Pagar cuota</div></div>'
     +   '<button onclick="cerrarPanelPago()" style="width:36px;height:36px;background:rgba(255,255,255,.08);border:none;border-radius:50%;color:#fff;font-size:1.1rem;cursor:pointer;">✕</button>'
     + '</div>'
-    // Monto exacto
     + '<div style="background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(6,95,70,.2));border:1px solid rgba(16,185,129,.3);border-radius:14px;padding:18px;margin-bottom:20px;text-align:center;">'
     +   '<div style="font-size:.7rem;color:#6ee7b7;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Monto exacto a transferir</div>'
     +   '<div style="font-size:2.2rem;font-weight:900;color:#fff;" id="montoExactoUSD">USD ' + monto.toFixed(2) + '</div>'
     +   '<button onclick="copiarPago(\'montoExactoUSD\',this)" style="margin-top:10px;padding:6px 18px;background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;cursor:pointer;font-weight:700;">📋 Copiar monto</button>'
     + '</div>'
-    // Conversor de moneda
     + '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;margin-bottom:20px;">'
     +   '<div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">💱 Convertir a mi moneda local</div>'
     +   '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">'
@@ -2093,48 +1480,34 @@ function abrirPanelPago(numCuota) {
     +   '</div>'
     +   '<div style="font-size:.65rem;color:var(--text-muted);margin-top:8px;text-align:center;">⚠️ Tipo de cambio referencial. El monto a transferir siempre es en USD.</div>'
     + '</div>'
-    // Cuentas
     + '<div style="font-size:.75rem;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🏦 Cuentas habilitadas para el pago</div>'
     + cuentasHtml
-    // Footer aviso
     + '<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px;margin-top:16px;font-size:.75rem;color:#fcd34d;text-align:center;">'
     +   '⚠️ <strong>Único medio de pago:</strong> transferencia a las cuentas indicadas. Luego de transferir, adjuntá el comprobante en la app.'
-    + '</div>'
-    + '</div></div>';
+    + '</div></div></div>';
 
-  // Remove existing if open
   var existing = document.getElementById('modalPago');
   if (existing) existing.remove();
-
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-  // Initial conversion
+  document.body.insertAdjacentHTML('beforeend', html);
   actualizarConversion(monto);
 }
 
-function cerrarPanelPago() {
-  var m = document.getElementById('modalPago');
-  if (m) m.remove();
-}
+function cerrarPanelPago() { var m = document.getElementById('modalPago'); if (m) m.remove(); }
 
 function copiarPago(elId, btn) {
   var el = document.getElementById(elId);
   if (!el) return;
   var txt = el.textContent.trim();
-  navigator.clipboard.writeText(txt).then(function() {
+  navigator.clipboard.writeText(txt).then(function () {
     var orig = btn.textContent;
-    btn.textContent = '✅ Copiado';
-    btn.style.color = '#6ee7b7';
-    setTimeout(function(){ btn.textContent = orig; btn.style.color = ''; }, 2000);
-  }).catch(function() {
-    // Fallback
+    btn.textContent = '✅ Copiado'; btn.style.color = '#6ee7b7';
+    setTimeout(function () { btn.textContent = orig; btn.style.color = ''; }, 2000);
+  }).catch(function () {
     var ta = document.createElement('textarea');
     ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    var orig = btn.textContent;
-    btn.textContent = '✅ Copiado';
-    setTimeout(function(){ btn.textContent = orig; }, 2000);
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    var orig = btn.textContent; btn.textContent = '✅ Copiado';
+    setTimeout(function () { btn.textContent = orig; }, 2000);
   });
 }
 
@@ -2142,52 +1515,39 @@ function actualizarConversion(montoUSD) {
   var sel = document.getElementById('pagoMonedaSel');
   var out = document.getElementById('pagoConversion');
   if (!sel || !out) return;
-  var code = sel.value;
-  var t = TASAS_CONVERSION[code];
+  var t = TASAS[sel.value];
   if (!t) return;
-  if (code === 'USD') {
-    out.textContent = 'USD ' + montoUSD.toFixed(2);
-  } else {
-    var equiv = (montoUSD * t.tasa).toLocaleString('es-AR', {maximumFractionDigits: 0});
-    out.textContent = t.simbolo + ' ' + equiv;
-  }
+  out.textContent = t.simbolo === 'USD'
+    ? 'USD ' + montoUSD.toFixed(2)
+    : t.simbolo + ' ' + (montoUSD * t.tasa).toLocaleString('es-AR', { maximumFractionDigits: 0 });
 }
 
-// ── COMPROBANTE UPLOAD ──────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+//  COMPROBANTES
+//  [FASE 2] → migrar a Supabase Storage + tabla pagos
+// ══════════════════════════════════════════════════════
+function getCompKey() { return 'luazul_comp_' + (currentUser.id || currentUser.email); }
+
 function uploadComp(cuotaNum) {
   var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*,application/pdf';
-  input.onchange = function(e) {
+  input.type = 'file'; input.accept = 'image/*,application/pdf';
+  input.onchange = function (e) {
     var file = e.target.files[0];
     if (!file) return;
-    if (file.size > 3 * 1024 * 1024) {
-      showCompToast('⚠️ El archivo es demasiado grande. Máximo 3MB.', 'warn');
-      return;
-    }
+    if (file.size > 3 * 1024 * 1024) { showToast('⚠️ Archivo demasiado grande. Máximo 3MB.', 'warn'); return; }
     var reader = new FileReader();
-    reader.onload = function(ev) {
-      var dataUrl = ev.target.result;
-      // Save to client record in DB
-      var clients = JSON.parse(localStorage.getItem('luazul_db') || '[]');
-      clients = clients.map(function(c) {
-        if (c.email === currentUser.email) {
-          if (!c.comprobantes) c.comprobantes = {};
-          c.comprobantes[cuotaNum] = { data: dataUrl, nombre: file.name, fecha: new Date().toISOString(), size: file.size };
-        }
-        return c;
-      });
-      /* ⚠️ [FASE 2]: No almacenar contraseñas en localStorage. Usar tokens de sesión Supabase. */
-    localStorage.setItem('luazul_db', JSON.stringify(clients));
-      // Update currentUser
-      currentUser.comprobantes = currentUser.comprobantes || {};
-      currentUser.comprobantes[cuotaNum] = { data: dataUrl, nombre: file.name, fecha: new Date().toISOString() };
-      sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
-      // Fire notification to vendors/gerente
-      firePaymentNotif(cuotaNum, dataUrl);
-      // Re-render
+    reader.onload = function (ev) {
+      // [FASE 2] → reemplazar con Supabase Storage upload + INSERT en tabla pagos
+      var comprobantes = {};
+      try { comprobantes = JSON.parse(localStorage.getItem(getCompKey()) || '{}'); } catch (x) {}
+      comprobantes[cuotaNum] = { data: ev.target.result, nombre: file.name, fecha: new Date().toISOString() };
+      localStorage.setItem(getCompKey(), JSON.stringify(comprobantes));
+
+      // Notificar al asesor via Supabase
+      firePaymentNotif(cuotaNum);
+
       renderCuotas();
-      showCompToast('✅ Comprobante de cuota ' + cuotaNum + ' enviado. Tu asesor lo revisará pronto.', 'ok');
+      showToast('✅ Comprobante de cuota ' + cuotaNum + ' enviado. Tu asesor lo revisará pronto.', 'ok');
     };
     reader.readAsDataURL(file);
   };
@@ -2195,230 +1555,161 @@ function uploadComp(cuotaNum) {
 }
 
 function verComprobante(cuotaNum) {
-  var comp = currentUser.comprobantes && currentUser.comprobantes[cuotaNum];
+  var comprobantes = {};
+  try { comprobantes = JSON.parse(localStorage.getItem(getCompKey()) || '{}'); } catch (e) {}
+  var comp = comprobantes[cuotaNum];
   if (!comp) return;
   var w = window.open('', '_blank', 'width=560,height=480');
-  w.document.write(
-    '<html><body style="margin:0;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;">'
-    + '<p style="color:#aaa;font-size:13px;font-family:sans-serif;">Cuota ' + cuotaNum + ' · ' + (comp.nombre||'comprobante') + '</p>'
-    + '<img src="' + comp.data + '" style="max-width:96%;max-height:80vh;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);"/ loading="lazy">'
-    + '</body></html>'
-  );
+  w.document.write('<html><body style="margin:0;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;">'
+    + '<p style="color:#aaa;font-size:13px;font-family:sans-serif;">Cuota ' + cuotaNum + ' · ' + (comp.nombre || 'comprobante') + '</p>'
+    + '<img src="' + comp.data + '" style="max-width:96%;max-height:80vh;border-radius:12px;"/>'
+    + '</body></html>');
   w.document.close();
 }
 
-/* ── LZ Password toggle (shared across panels) ── */
-function lzToggle(inputId, btn) {
-  var inp  = document.getElementById(inputId);
-  var svg  = btn.querySelector('svg');
-  if (!inp || !svg) return;
-  var show = inp.type === 'password';
-  inp.type = show ? 'text' : 'password';
-  svg.innerHTML = show
-    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
-    : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
-}
-
-function firePaymentNotif(cuotaNum, dataUrl) {
-  var notifs = JSON.parse(localStorage.getItem('luazul_notifs') || '[]');
-  // Find vendor assigned to this client
-  var clients = JSON.parse(localStorage.getItem('luazul_db') || '[]');
-  var clientRec = clients.find(function(c) { return c.email === currentUser.email; });
-  var vid = (clientRec && clientRec.vid) || '';
-  var vendors = JSON.parse(localStorage.getItem('luazul_vendors') || '[]');
-  var vendor = vendors.find(function(v) { return v.id === vid; });
-  var newNotif = {
-    id: 'n' + Date.now(),
-    tipo: 'payment',
-    cid: clientRec ? clientRec.id : null,
-    cliente: currentUser.nombre || currentUser.email,
-    vid: vid,
-    vendedor: vendor ? vendor.nombre : 'Sin asignar',
-    cuota: cuotaNum,
-    monto: parseFloat(currentUser.monto_cuota) || 0,
-    ts: Date.now(),
-    leida: false,
-    aprobada: false,
-    comp: dataUrl
-  };
-  notifs.unshift(newNotif);
-  localStorage.setItem('luazul_notifs', JSON.stringify(notifs));
-}
-
-function showToast(msg, type) { showCompToast(msg, type || 'ok'); }
-function showCompToast(msg, type) {
-  var el = document.getElementById('compToast');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'compToast';
-    el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);z-index:999;padding:12px 22px;border-radius:12px;font-weight:700;font-size:.88rem;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;';
-    document.body.appendChild(el);
+// Notificación a Supabase cuando se sube un comprobante
+async function firePaymentNotif(cuotaNum) {
+  if (!sbClient || !currentUser) return;
+  try {
+    await sbClient.from('notificaciones').insert({
+      tipo:    'payment',
+      cliente_nombre: currentUser.nombre || currentUser.email,
+      cliente_id:     currentUser.id || null,
+      cuota:   cuotaNum,
+      monto:   parseFloat(currentUser.monto_cuota) || 0,
+      leida:   false,
+      aprobada: false
+    });
+  } catch (e) {
+    console.warn('[SB] firePaymentNotif:', e.message);
   }
-  el.textContent = msg;
-  if (type === 'ok') {
-    el.style.background = 'rgba(34,197,94,.2)'; el.style.border = '1px solid rgba(34,197,94,.4)'; el.style.color = '#6ee7b7';
-  } else {
-    el.style.background = 'rgba(234,179,8,.2)'; el.style.border = '1px solid rgba(234,179,8,.4)'; el.style.color = '#fcd34d';
-  }
-  el.style.transform = 'translateX(-50%) translateY(0)';
-  setTimeout(function() { el.style.transform = 'translateX(-50%) translateY(70px)'; }, 4000);
 }
 
-// ── VOUCHER ──
+// ══════════════════════════════════════════════════════
+//  VOUCHER
+// ══════════════════════════════════════════════════════
 function renderVoucher() {
-  var u = currentUser;
+  var u       = currentUser;
   var total   = parseInt(u.cuotas_total)   || 10;
   var pagadas = parseInt(u.cuotas_pagadas) || 0;
-  var pct = (pagadas / total) * 100;
+  var pct     = total > 0 ? (pagadas / total) * 100 : 0;
   var container = document.getElementById('voucherContainer');
 
   if (pct >= 60 || u.voucher_url) {
-    // Voucher available
     var dlBtn = u.voucher_url
       ? '<a href="' + u.voucher_url + '" target="_blank" class="btn btn-primary" style="margin-top:20px;">📥 Descargar Voucher PDF</a>'
       : '<button class="btn btn-ghost" style="margin-top:20px;" onclick="window.open(\'https://wa.me/5492974726449\',\'_blank\')">💬 Solicitar voucher a Luazul Smart Travel</button>';
 
     container.innerHTML = '<div class="voucher-card glass">'
       + '<div class="voucher-badge"><img src="images/mariposa-avatar.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:6px;"> Voucher de viaje</div>'
-      + '<div class="voucher-title">' + (u.destino || 'Cabo Frío') + '</div>'
+      + '<div class="voucher-title">' + (u.destino || 'Tu destino') + '</div>'
       + '<div class="voucher-dest">LUAZUL SMART TRAVEL · 2026</div>'
       + '<div class="voucher-divider"></div>'
-      + '<div class="voucher-row"><span>Titular</span><span>' + u.nombre + '</span></div>'
+      + '<div class="voucher-row"><span>Titular</span><span>' + (u.nombre || '—') + '</span></div>'
       + '<div class="voucher-row"><span>Paquete</span><span>' + (u.paquete || '—') + '</span></div>'
       + '<div class="voucher-row"><span>Fecha</span><span>' + (u.fecha_viaje || 'Por confirmar') + '</span></div>'
-      + '<div class="voucher-row"><span>Pasajeros</span><span>' + (u.personas || '—') + ' personas</span></div>'
-      + '<div class="voucher-row"><span>Noches</span><span>' + (u.noches || '—') + ' noches</span></div>'
       + '<div class="voucher-row"><span>Estado</span><span style="color:#6ee7b7;font-weight:700;">✅ CONFIRMADO</span></div>'
       + '<div class="voucher-qr">QR<br>VOUCHER</div>'
-      + dlBtn
-      + '</div>';
+      + dlBtn + '</div>';
   } else {
-    // Not available yet
     var restante = Math.ceil(60 - pct);
     container.innerHTML = '<div class="voucher-locked">'
       + '<div style="font-size:2.5rem;margin-bottom:12px;">🔒</div>'
       + '<h3 style="font-size:1.2rem;margin-bottom:8px;">Voucher no disponible aún</h3>'
-      + '<p style="font-size:.9rem;color:rgba(252,211,77,.8);line-height:1.6;">Tu voucher se habilitará cuando hayas abonado el 80% del plan.<br>Te faltan aproximadamente <strong>' + restante + '% más</strong> (' + Math.ceil(restante/100 * parseInt(u.cuotas_total||10)) + ' cuotas).</p>'
+      + '<p style="font-size:.9rem;color:rgba(252,211,77,.8);line-height:1.6;">Tu voucher se habilitará cuando hayas abonado el 60% del plan.<br>Te faltan aproximadamente <strong>' + restante + '%</strong> más.</p>'
       + '<button class="btn btn-ghost" style="margin-top:16px;" onclick="window.open(\'https://wa.me/5492974726449\',\'_blank\')">💬 Consultar a Luazul Smart Travel</button>'
       + '</div>';
   }
 }
 
-// ── CONTRATO ──
-function field(val, fallback) {
-  var v = val || fallback || '';
-  var cls = v && v !== '—' && v !== '' ? 'doc-field' : 'doc-field empty';
-  return '<span class="' + cls + '">' + (v || '_______________') + '</span>';
-}
-
+// ══════════════════════════════════════════════════════
+//  CONTRATO
+// ══════════════════════════════════════════════════════
 function renderContrato() {
-  var u = currentUser;
+  var u  = currentUser;
   var doc = document.getElementById('contratoDoc');
+  var nombre   = u.nombre    || '________________________';
+  var dni      = u.documento || '________________________';
+  var destino  = u.destino   || '________________________';
+  var total    = u.total_usd || '________';
+  var cuotas   = u.cuotas_total  || '__';
+  var monto    = u.monto_cuota   || '________';
 
-  // Personalised fields based on current user
-  var nombre   = u.nombre   || '________________________';
-  var dni      = u.documento|| '________________________';
-  var domicilio= u.domicilio|| '________________________';
-  var destino  = u.destino  || '________________________';
-  var total    = u.total_usd|| '________';
-  var cuotas   = u.cuotas_total || '__';
-  var monto    = u.monto_cuota  || '________';
-
-  // Show embedded PDF + personalised summary card
   doc.innerHTML = `
   <div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:18px 20px;margin-bottom:20px;">
     <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#60a5fa;margin-bottom:10px;">📋 Datos de tu contrato</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.85rem;">
-      <div><span style="color:var(--text-muted);">Cliente:</span> <strong>\${nombre}</strong></div>
-      <div><span style="color:var(--text-muted);">Documento:</span> <strong>\${dni}</strong></div>
-      <div><span style="color:var(--text-muted);">Destino:</span> <strong>\${destino}</strong></div>
-      <div><span style="color:var(--text-muted);">Total plan:</span> <strong>USD \${total}</strong></div>
-      <div><span style="color:var(--text-muted);">Cuotas:</span> <strong>\${cuotas} × USD \${monto}</strong></div>
+      <div><span style="color:var(--text-muted);">Cliente:</span> <strong>${nombre}</strong></div>
+      <div><span style="color:var(--text-muted);">Documento:</span> <strong>${dni}</strong></div>
+      <div><span style="color:var(--text-muted);">Destino:</span> <strong>${destino}</strong></div>
+      <div><span style="color:var(--text-muted);">Total plan:</span> <strong>USD ${total}</strong></div>
+      <div><span style="color:var(--text-muted);">Cuotas:</span> <strong>${cuotas} × USD ${monto}</strong></div>
       <div><span style="color:var(--text-muted);">Rige:</span> <strong>Ley 11.771/2008 Brasil</strong></div>
     </div>
   </div>
-  <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:12px;text-align:center;">Documento oficial — guardalo para tus registros</div>
   <div id="contratoTexto" style="background:rgba(255,255,255,.03);border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:32px;font-size:.85rem;line-height:2;color:rgba(210,225,255,.85);">
     <div style="text-align:center;margin-bottom:24px;">
       <div style="font-size:1.3rem;font-weight:900;letter-spacing:3px;color:#fff;">CONTRATO DE ADHESIÓN</div>
       <div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;">LUAZUL SMART TRAVEL — Plan de Viaje en Cuotas</div>
     </div>
-    <p>Entre <strong style="color:#fff;">LUAZUL SMART TRAVEL</strong>, en adelante "LA EMPRESA", y el/la pasajero/a <strong id="ct-nombre" style="color:#7eb8ff;"></strong>, DNI/Documento <strong id="ct-doc" style="color:#7eb8ff;"></strong>, domicilio <strong id="ct-dom" style="color:#7eb8ff;"></strong>, en adelante "EL/LA CLIENTE", se celebra el presente Contrato de Adhesión para la prestación de servicios turísticos, sujeto a las siguientes cláusulas:</p>
+    <p>Entre <strong style="color:#fff;">LUAZUL SMART TRAVEL</strong>, en adelante "LA EMPRESA", y el/la pasajero/a <strong style="color:#7eb8ff;" id="ct-nombre"></strong>, DNI/Documento <strong style="color:#7eb8ff;" id="ct-doc"></strong>, en adelante "EL/LA CLIENTE", se celebra el presente Contrato de Adhesión para la prestación de servicios turísticos.</p>
     <br>
-    <p><strong style="color:#fff;">PRIMERA — OBJETO:</strong> La empresa se compromete a prestar los servicios turísticos correspondientes al destino <strong id="ct-dest" style="color:#7eb8ff;"></strong>, conforme al paquete <strong id="ct-paq" style="color:#7eb8ff;"></strong>, para <strong id="ct-per" style="color:#7eb8ff;"></strong> persona/s, con una estadía de <strong id="ct-noch" style="color:#7eb8ff;"></strong> noches, con fecha de viaje prevista para <strong id="ct-fecha" style="color:#7eb8ff;"></strong>.</p>
+    <p><strong style="color:#fff;">PRIMERA — OBJETO:</strong> La empresa se compromete a prestar los servicios turísticos correspondientes al destino <strong style="color:#7eb8ff;" id="ct-dest"></strong>, conforme al paquete <strong style="color:#7eb8ff;" id="ct-paq"></strong>, con fecha de viaje prevista para <strong style="color:#7eb8ff;" id="ct-fecha"></strong>.</p>
     <br>
-    <p><strong style="color:#fff;">SEGUNDA — PRECIO Y MODALIDAD DE PAGO:</strong> El precio total convenido es de <strong id="ct-total" style="color:#7eb8ff;"></strong>, el cual será abonado en <strong id="ct-cuotas" style="color:#7eb8ff;"></strong> cuotas mensuales iguales y consecutivas de <strong id="ct-monto" style="color:#7eb8ff;"></strong> cada una. El pago puntual de las cuotas es condición esencial para la reserva y confirmación del servicio.</p>
+    <p><strong style="color:#fff;">SEGUNDA — PRECIO Y MODALIDAD DE PAGO:</strong> El precio total convenido es de <strong style="color:#7eb8ff;" id="ct-total"></strong>, abonado en <strong style="color:#7eb8ff;" id="ct-cuotas"></strong> cuotas mensuales de <strong style="color:#7eb8ff;" id="ct-monto"></strong> cada una.</p>
     <br>
     <p><strong style="color:#fff;">TERCERA — SERVICIOS INCLUIDOS:</strong> Traslados privados aeropuerto/hotel/aeropuerto, alojamiento en régimen de habitación confirmada, y los servicios especificados en el paquete elegido. Los vuelos no están incluidos salvo indicación expresa.</p>
     <br>
-    <p><strong style="color:#fff;">CUARTA — CANCELACIONES:</strong> En caso de cancelación por parte del cliente con más de 60 días de anticipación al viaje, se reintegrará el 70% de lo abonado. Con menos de 60 días, el reintegro será del 40%. La empresa se reserva el derecho de modificar fechas por causas de fuerza mayor.</p>
+    <p><strong style="color:#fff;">CUARTA — CANCELACIONES:</strong> Cancelación con más de 60 días de anticipación: reintegro del 70% de lo abonado. Con menos de 60 días: 40%. La empresa se reserva el derecho de modificar fechas por causas de fuerza mayor.</p>
     <br>
-    <p><strong style="color:#fff;">QUINTA — RESPONSABILIDAD:</strong> La empresa actúa como organizadora de viajes en los términos de la legislación vigente. No se responsabiliza por cancelaciones de vuelos, desastres naturales ni causas ajenas a su voluntad.</p>
-    <br>
-    <p><strong style="color:#fff;">SEXTA — DOMICILIO LEGAL:</strong> Las partes constituyen domicilio en los indicados en el encabezado. Cualquier controversia se someterá a mediación previa y a la jurisdicción de los tribunales ordinarios.</p>
+    <p><strong style="color:#fff;">QUINTA — RESPONSABILIDAD:</strong> La empresa actúa como organizadora de viajes. No se responsabiliza por cancelaciones de vuelos, desastres naturales ni causas ajenas a su voluntad.</p>
     <br>
     <div style="border-top:1px solid rgba(100,160,255,.15);margin-top:16px;padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:24px;font-size:.8rem;text-align:center;">
       <div><div style="border-top:1px solid rgba(255,255,255,.2);margin-top:40px;padding-top:8px;color:var(--text-muted);">Firma del Cliente</div></div>
       <div><div style="border-top:1px solid rgba(255,255,255,.2);margin-top:40px;padding-top:8px;color:var(--text-muted);">Luazul Smart Travel</div></div>
     </div>
-  </div>
-  `;
-  // Fill dynamic fields
-  var ct = function(id, val){ var el = document.getElementById(id); if(el) el.textContent = val || '—'; };
-  ct('ct-nombre', nombre);
-  ct('ct-doc',    dni);
-  ct('ct-dom',    domicilio);
-  ct('ct-dest',   destino);
-  ct('ct-paq',    u.paquete || '—');
-  ct('ct-per',    u.personas || '—');
-  ct('ct-noch',   u.noches || '—');
-  ct('ct-fecha',  u.fecha_viaje || 'Por confirmar');
-  ct('ct-total',  'USD ' + total);
-  ct('ct-cuotas', cuotas);
-  ct('ct-monto',  'USD ' + monto);
+  </div>`;
+
+  var ct = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+  ct('ct-nombre', nombre); ct('ct-doc', dni); ct('ct-dest', destino);
+  ct('ct-paq',   u.paquete || '—'); ct('ct-fecha', u.fecha_viaje || 'Por confirmar');
+  ct('ct-total', 'USD ' + total); ct('ct-cuotas', cuotas); ct('ct-monto', 'USD ' + monto);
 }
 
 function descargarContrato() {
-  var link = document.createElement('a');
-  // [SUPABASE] → link.href = contrato_url del cliente en storage de Supabase
-  link.href = currentUser.contrato_url || '';
-  link.download = 'Contrato_Luazul_Smart_Travel_' + (currentUser.nombre || 'cliente').replace(/\s+/g,'_') + '.pdf';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-// ── REFERIDOS ─────────────────────────────────────────────────────────────
-function getReferidos() {
-  // Get referidos: from currentUser.referidos array, or from luazul_referidos_<id> in localStorage
-  var u = currentUser;
-  // Try localStorage key first (vendedor may have added them)
-  var key = 'luazul_referidos_' + (u.id || u.email);
-  try {
-    var saved = localStorage.getItem(key);
-    if (saved) return JSON.parse(saved);
-  } catch(e) {}
-  // Fall back to user.referidos field
-  if (u.referidos && Array.isArray(u.referidos)) return u.referidos;
-  // Demo: seed with example data for demo account
-  if ((u.email || '').toLowerCase().indexOf('demo') !== -1 || (u.email || '').toLowerCase().indexOf('valentina') !== -1 || u.id == 1 || u.id === 1) {
-    return [
-      { nombre: 'Camila Ortiz',   email: 'camila.ortiz@gmail.com',   estado: 'activo',   fecha: '2026-01-18', paquete: 'Escapada en Pareja' },
-      { nombre: 'Lucas Méndez',   email: 'lucas.mendez@gmail.com',    estado: 'activo',   fecha: '2026-02-03', paquete: 'Paquete 4 Amigos'   }
-    ];
+  if (currentUser.contrato_url) {
+    var a = document.createElement('a');
+    a.href = currentUser.contrato_url;
+    a.download = 'Contrato_Luazul_' + (currentUser.nombre || 'cliente').replace(/\s+/g, '_') + '.pdf';
+    a.click();
+  } else {
+    showToast('⚠️ El contrato PDF aún no está disponible. Contactá a tu asesora.', 'warn');
   }
-  return [];
 }
+function imprimirContrato() { window.print(); }
 
-function renderReferidos() {
-  var refs = getReferidos();
-  var total = refs.length;
-  var activos = refs.filter(function(r){ return r.estado === 'activo'; }).length;
-  var premios = Math.floor(activos / 3);
+// ══════════════════════════════════════════════════════
+//  REFERIDOS — lee desde Supabase tabla referidos
+// ══════════════════════════════════════════════════════
+async function renderReferidos() {
+  var u = currentUser;
+  var refs = [];
+
+  try {
+    var { data } = await sbClient
+      .from('referidos')
+      .select('*')
+      .eq('referidor_id', u.id);
+    if (data) refs = data;
+  } catch (e) {
+    console.warn('[SB] referidos:', e.message);
+  }
+
+  var activos    = refs.filter(function (r) { return r.estado === 'activo'; }).length;
+  var premios    = Math.floor(activos / 3);
   var enProgreso = activos % 3;
-  var pct = Math.min(100, Math.round((enProgreso / 3) * 100));
+  var pct        = Math.min(100, Math.round((enProgreso / 3) * 100));
 
-  // Update progress bar
   var countEl = document.getElementById('refCount');
   var barEl   = document.getElementById('refBar');
   var msgEl   = document.getElementById('refPremioMsg');
@@ -2430,45 +1721,124 @@ function renderReferidos() {
 
   if (msgEl) {
     if (premios > 0) {
-      msgEl.innerHTML = '<span style="color:#fbbf24;font-weight:700;">🏆 ¡Ganaste ' + premios + ' tour' + (premios>1?'s':'') + ' gratis! Contactanos por WhatsApp para coordinar.</span>';
+      msgEl.innerHTML = '<span style="color:#fbbf24;font-weight:700;">🏆 ¡Ganaste ' + premios + ' tour' + (premios > 1 ? 's' : '') + ' gratis! Contactanos por WhatsApp.</span>';
     } else {
       var faltan = 3 - enProgreso;
-      msgEl.textContent = 'Te faltan ' + faltan + ' referido' + (faltan===1?'':'s') + ' activo' + (faltan===1?'':'s') + ' para ganar tu próximo tour gratis.';
+      msgEl.textContent = 'Te faltan ' + faltan + ' referido' + (faltan === 1 ? '' : 's') + ' activo' + (faltan === 1 ? '' : 's') + ' para ganar tu próximo tour gratis.';
     }
   }
 
-  // Code
-  var u = currentUser;
-  var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+  var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
   if (codeEl) codeEl.textContent = code;
 
-  // List
   if (listEl) {
-    if (refs.length === 0) {
+    if (!refs.length) {
       listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:.88rem;">Aún no tenés referidos. ¡Compartí tu código!</div>';
     } else {
-      listEl.innerHTML = refs.map(function(r) {
+      listEl.innerHTML = refs.map(function (r) {
         var estadoColor = r.estado === 'activo' ? '#6ee7b7' : '#fca5a5';
         var estadoBg    = r.estado === 'activo' ? 'rgba(16,185,129,.1)' : 'rgba(239,68,68,.1)';
         return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;">'
-          + '<div>'
-            + '<div style="font-weight:600;font-size:.9rem;">' + (r.nombre||r.email) + '</div>'
-            + '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;">' + (r.paquete||'—') + ' · ' + (r.fecha||'') + '</div>'
-          + '</div>'
-          + '<span style="font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;background:' + estadoBg + ';color:' + estadoColor + ';">' + (r.estado||'—') + '</span>'
-        + '</div>';
+          + '<div><div style="font-weight:600;font-size:.9rem;">' + (r.nombre_referido || r.email_referido || '—') + '</div>'
+          + '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;">' + (r.created_at ? new Date(r.created_at).toLocaleDateString('es-AR') : '') + '</div></div>'
+          + '<span style="font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;background:' + estadoBg + ';color:' + estadoColor + ';">' + (r.estado || '—') + '</span>'
+          + '</div>';
       }).join('');
     }
   }
+
+  // Badge en sidebar
+  var badge = document.getElementById('referidosBadge');
+  if (badge) badge.textContent = refs.length > 0 ? refs.length : '—';
 }
 
 function compartirRef() {
-  var u = currentUser;
-  var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
-  var msg = encodeURIComponent('¡Hola! Te quiero recomendar Luazul Smart Travel 🦋🏖️ Usá mi código *' + code + '* para reservar tu paquete y viajamos juntos a Cabo Frío. Escribiles a https://wa.me/5492974726449');
+  var u    = currentUser;
+  var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+  var msg  = encodeURIComponent('¡Hola! Te quiero recomendar Luazul Smart Travel 🦋🏖️ Usá mi código *' + code + '* para reservar tu paquete y viajamos juntos. Escribiles a https://wa.me/5492974726449');
   window.open('https://wa.me/?text=' + msg, '_blank');
 }
 
+// ══════════════════════════════════════════════════════
+//  COMUNIDAD — lee posts desde Supabase
+//  [FASE 2] Cuando se cree la tabla posts_comunidad
+// ══════════════════════════════════════════════════════
+async function cargarComunidad() {
+  var container = document.getElementById('comunidadPosts');
+  if (!container) return;
+
+  // [FASE 2] → sbClient.from('posts_comunidad').select('*').order('created_at', { ascending: false })
+  // Por ahora mostramos contenido estático hasta que se cree la tabla y el panel editor
+  container.innerHTML =
+    '<div style="background:rgba(126,184,255,.06);border:1px solid rgba(126,184,255,.15);border-radius:14px;padding:20px;">'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+    + '<span style="font-size:1.3rem;">🏖️</span>'
+    + '<div><div style="font-weight:700;color:#fff;font-size:.95rem;">Plazas disponibles — Diciembre 2026</div>'
+    + '<div style="font-size:.72rem;color:var(--text-muted);margin-top:2px;">Equipo Luazul Smart Travel</div></div></div>'
+    + '<p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">Quedan <strong style="color:#7eb8ff;">8 lugares disponibles</strong> para el grupo de Diciembre. Si tenés amigos interesados, es el momento — los precios se mantienen hasta fin de mes.</p>'
+    + '</div>'
+    + '<div style="background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:14px;padding:20px;">'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+    + '<span style="font-size:1.3rem;">✅</span>'
+    + '<div><div style="font-weight:700;color:#fff;font-size:.95rem;">Hotel confirmado — Búzios</div>'
+    + '<div style="font-size:.72rem;color:var(--text-muted);margin-top:2px;">Equipo Luazul Smart Travel</div></div></div>'
+    + '<p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">El hotel en Búzios ya tiene reserva confirmada. Piscina frente al mar, desayuno incluido y a 5 minutos de la Rua das Pedras 🌴</p>'
+    + '</div>';
+}
+
+// ══════════════════════════════════════════════════════
+//  SOLICITUD
+// ══════════════════════════════════════════════════════
+function enviarSolicitud() {
+  var motivo  = document.getElementById('motivoSelect').value;
+  var detalle = document.getElementById('solicitudMsg').value.trim();
+  if (!motivo) { showToast('⚠️ Seleccioná un motivo primero.', 'warn'); return; }
+  var u = currentUser;
+  var msg = '📝 *Solicitud de cliente Luazul Smart Travel*\n\n'
+    + 'Cliente: ' + (u.nombre || u.email) + '\n'
+    + 'Email: ' + u.email + '\n'
+    + 'Motivo: ' + motivo + '\n'
+    + (detalle ? 'Detalle: ' + detalle : '');
+  window.open('https://wa.me/5492974726449?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ══════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════
+function lzToggle(inputId, btn) {
+  var inp = document.getElementById(inputId);
+  var svg = btn.querySelector('svg');
+  if (!inp || !svg) return;
+  var show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  svg.innerHTML = show
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+function showSyncBadge() {
+  var b = document.getElementById('syncBadge');
+  b.classList.add('show');
+  setTimeout(function () { b.classList.remove('show'); }, 3000);
+}
+
+function showToast(msg, type) {
+  var el = document.getElementById('lzToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'lzToast';
+    el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);z-index:9998;padding:12px 22px;border-radius:12px;font-weight:700;font-size:.88rem;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  if (type === 'ok') {
+    el.style.background = 'rgba(34,197,94,.2)'; el.style.border = '1px solid rgba(34,197,94,.4)'; el.style.color = '#6ee7b7';
+  } else {
+    el.style.background = 'rgba(234,179,8,.2)'; el.style.border = '1px solid rgba(234,179,8,.4)'; el.style.color = '#fcd34d';
+  }
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(function () { el.style.transform = 'translateX(-50%) translateY(70px)'; }, 4000);
+}
 </script>
 </body>
 </html>
