@@ -326,6 +326,45 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
 .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
 
+
+/* ── TARJETA DE CONTACTO ── */
+.support-card-wrap {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.support-card-header {
+  padding: 18px 20px 14px;
+  display: flex; align-items: center; gap: 14px;
+}
+.support-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+  border: 2px solid rgba(100,160,255,.2);
+}
+.support-role-label {
+  font-size: .65rem; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 3px;
+}
+.support-name {
+  font-size: 1rem; font-weight: 800; color: #fff;
+}
+.support-sub {
+  font-size: .75rem; color: var(--text-muted); margin-top: 2px;
+}
+.support-wa-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, #15803d, #16a34a);
+  color: white; font-family: inherit; font-size: .9rem; font-weight: 700;
+  border: none; cursor: pointer; transition: all .2s;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.support-wa-btn:hover { filter: brightness(1.1); }
+.support-wa-btn.central {
+  background: linear-gradient(135deg, #1a5bb5, #0B3D91);
+}
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .sidebar { transform: translateX(-100%); }
@@ -676,19 +715,19 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         </div>
       </div>
 
-      <div class="glass" style="padding:24px;">
+      <div class="glass" style="padding:24px;margin-bottom:20px;">
         <div class="section-title">Accesos rápidos</div>
         <div style="display:flex;flex-wrap:wrap;gap:12px;">
           <button class="btn btn-ghost" onclick="goPage('cuotas')">💳 Ver cuotas</button>
           <button class="btn btn-ghost" onclick="goPage('voucher')">🎫 Mi voucher</button>
           <button class="btn btn-ghost" onclick="goPage('contrato')">📄 Mi contrato</button>
           <button class="btn btn-ghost" onclick="goPage('solicitud')">📝 Solicitar extensión</button>
-          <button class="btn btn-success"
-                  onclick="window.open('https://wa.me/5492974726449','_blank')">
-            💬 Contactar a Luazul
-          </button>
         </div>
       </div>
+
+      <!-- ── TARJETA DE CONTACTO — renderizada por renderSupportCard() ── -->
+      <div id="support-card"></div>
+
     </div>
 
     <!-- ── MI PERFIL ── -->
@@ -880,9 +919,74 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
   </main>
 </div>
 
+<!-- ══════════════ MICRO-TEMPLATES ══════════════ -->
+<!--
+  Estos bloques type="text/x-template" son IGNORADOS por el navegador como JS.
+  Solo los lee nuestro motor tpl(). Permiten HTML multilínea sin backticks.
+-->
+<script type="text/x-template" id="tpl-contrato">
+<div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:18px 20px;margin-bottom:20px;">
+  <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#60a5fa;margin-bottom:10px;">&#128203; Datos de tu contrato</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.85rem;">
+    <div><span style="color:var(--text-muted);">Cliente:</span> <strong>{{nombre}}</strong></div>
+    <div><span style="color:var(--text-muted);">Documento:</span> <strong>{{dni}}</strong></div>
+    <div><span style="color:var(--text-muted);">Destino:</span> <strong>{{destino}}</strong></div>
+    <div><span style="color:var(--text-muted);">Total plan:</span> <strong>USD {{total}}</strong></div>
+    <div><span style="color:var(--text-muted);">Cuotas:</span> <strong>{{cuotas}} &times; USD {{monto}}</strong></div>
+    <div><span style="color:var(--text-muted);">Rige:</span> <strong>Ley 11.771/2008 Brasil</strong></div>
+  </div>
+</div>
+<div id="contratoTexto" style="background:rgba(255,255,255,.03);border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:32px;font-size:.85rem;line-height:2;color:rgba(210,225,255,.85);">
+  <div style="text-align:center;margin-bottom:24px;">
+    <div style="font-size:1.3rem;font-weight:900;letter-spacing:3px;color:#fff;">CONTRATO DE ADHESI&Oacute;N</div>
+    <div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;">LUAZUL SMART TRAVEL &mdash; Plan de Viaje en Cuotas</div>
+  </div>
+  <p>Entre <strong style="color:#fff;">LUAZUL SMART TRAVEL</strong>, en adelante &ldquo;LA EMPRESA&rdquo;, y el/la pasajero/a <strong style="color:#7eb8ff;" id="ct-nombre"></strong>, DNI/Documento <strong style="color:#7eb8ff;" id="ct-doc"></strong>, en adelante &ldquo;EL/LA CLIENTE&rdquo;, se celebra el presente Contrato de Adhesi&oacute;n para la prestaci&oacute;n de servicios tur&iacute;sticos.</p>
+  <br>
+  <p><strong style="color:#fff;">PRIMERA &mdash; OBJETO:</strong> La empresa se compromete a prestar los servicios tur&iacute;sticos correspondientes al destino <strong style="color:#7eb8ff;" id="ct-dest"></strong>, conforme al paquete <strong style="color:#7eb8ff;" id="ct-paq"></strong>, con fecha de viaje prevista para <strong style="color:#7eb8ff;" id="ct-fecha"></strong>.</p>
+  <br>
+  <p><strong style="color:#fff;">SEGUNDA &mdash; PRECIO Y MODALIDAD DE PAGO:</strong> El precio total convenido es de <strong style="color:#7eb8ff;" id="ct-total"></strong>, abonado en <strong style="color:#7eb8ff;" id="ct-cuotas"></strong> cuotas mensuales de <strong style="color:#7eb8ff;" id="ct-monto"></strong> cada una.</p>
+  <br>
+  <p><strong style="color:#fff;">TERCERA &mdash; SERVICIOS INCLUIDOS:</strong> Traslados privados aeropuerto/hotel/aeropuerto, alojamiento en r&eacute;gimen de habitaci&oacute;n confirmada, y los servicios especificados en el paquete elegido. Los vuelos no est&aacute;n incluidos salvo indicaci&oacute;n expresa.</p>
+  <br>
+  <p><strong style="color:#fff;">CUARTA &mdash; CANCELACIONES:</strong> Cancelaci&oacute;n con m&aacute;s de 60 d&iacute;as de anticipaci&oacute;n: reintegro del 70% de lo abonado. Con menos de 60 d&iacute;as: 40%. La empresa se reserva el derecho de modificar fechas por causas de fuerza mayor.</p>
+  <br>
+  <p><strong style="color:#fff;">QUINTA &mdash; RESPONSABILIDAD:</strong> La empresa act&uacute;a como organizadora de viajes. No se responsabiliza por cancelaciones de vuelos, desastres naturales ni causas ajenas a su voluntad.</p>
+  <br>
+  <div style="border-top:1px solid rgba(100,160,255,.15);margin-top:16px;padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:24px;font-size:.8rem;text-align:center;">
+    <div><div style="border-top:1px solid rgba(255,255,255,.2);margin-top:40px;padding-top:8px;color:var(--text-muted);">Firma del Cliente</div></div>
+    <div><div style="border-top:1px solid rgba(255,255,255,.2);margin-top:40px;padding-top:8px;color:var(--text-muted);">Luazul Smart Travel</div></div>
+  </div>
+</div>
+</script>
+
 <!-- ══════════════ SCRIPTS ══════════════ -->
 <script>
 'use strict';
+
+// ══════════════════════════════════════════════════════
+//  MICRO-TEMPLATE ENGINE — ES5 puro, sin backticks
+//  Uso: tpl('id-del-script-template', { clave: valor })
+//  Sintaxis en el template: {{clave}}
+// ══════════════════════════════════════════════════════
+function tpl(templateId, data) {
+  var el = document.getElementById(templateId);
+  if (!el) return '';
+  var str = el.innerHTML;
+  return str.replace(/\{\{(\w+)\}\}/g, function (match, key) {
+    return Object.prototype.hasOwnProperty.call(data, key) ? String(data[key]) : '';
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  HELPER: Abrir URL desde atributo data-url del botón
+//  Resuelve el colapso de comillas en onclick dinámico.
+//  Uso en HTML generado: data-url="url" onclick="lzOpenWA(this)"
+// ══════════════════════════════════════════════════════
+function lzOpenWA(btn) {
+  var url = btn.getAttribute('data-url');
+  if (url) window.open(url, '_blank');
+}
 
 // ══════════════════════════════════════════════════════
 //  STATE
@@ -894,7 +998,7 @@ var currentSession = null; // sesión Supabase Auth
 //  INIT
 // ══════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', function () {
-  setTimeout(async function () {
+  setTimeout(function () {
     document.getElementById('loadingScreen').style.display = 'none';
 
     if (!sbClient) {
@@ -903,18 +1007,23 @@ window.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    try {
-      var { data: sessionData } = await sbClient.auth.getSession();
-      if (sessionData && sessionData.session) {
-        currentSession = sessionData.session;
-        var ok = await loadClientData(sessionData.session.user.email);
-        if (ok) { showApp(); return; }
-      }
-    } catch (e) {
-      console.warn('[SB] session check:', e.message);
-    }
-
-    showLoginScreen();
+    sbClient.auth.getSession()
+      .then(function (_gsRes) {
+        var sessionData = _gsRes.data;
+        if (sessionData && sessionData.session) {
+          currentSession = sessionData.session;
+          return loadClientData(sessionData.session.user.email)
+            .then(function (ok) {
+              if (ok) { showApp(); return; }
+              showLoginScreen();
+            });
+        }
+        showLoginScreen();
+      })
+      .catch(function (e) {
+        console.warn('[SB] session check:', e.message);
+        showLoginScreen();
+      });
   }, 1000);
 
   document.getElementById('loginPass').addEventListener('keypress', function (e) {
@@ -928,7 +1037,7 @@ window.addEventListener('DOMContentLoaded', function () {
 // ══════════════════════════════════════════════════════
 //  AUTH
 // ══════════════════════════════════════════════════════
-async function doLogin() {
+function doLogin() {
   var email = document.getElementById('loginEmail').value.trim().toLowerCase();
   var pass  = document.getElementById('loginPass').value;
 
@@ -939,75 +1048,105 @@ async function doLogin() {
   btn.disabled = true;
   document.getElementById('loginError').style.display = 'none';
 
-  try {
-    var { data, error } = await sbClient.auth.signInWithPassword({ email, password: pass });
+  function resetBtn() { btn.textContent = 'Ingresar al panel'; btn.disabled = false; }
 
-    if (error) {
-      btn.textContent = 'Ingresar al panel';
-      btn.disabled = false;
-      showError(error.message === 'Invalid login credentials'
-        ? 'Email o contraseña incorrectos.'
-        : 'Error de conexión. Verificá tu internet.');
-      return;
-    }
+  sbClient.auth.signInWithPassword({ email: email, password: pass })
+    .then(function (_signRes) {
+      var data  = _signRes.data;
+      var error = _signRes.error;
 
-    currentSession = data.session;
-    var ok = await loadClientData(data.user.email);
+      if (error) {
+        resetBtn();
+        showError(error.message === 'Invalid login credentials'
+          ? 'Email o contraseña incorrectos.'
+          : 'Error de conexión. Verificá tu internet.');
+        return;
+      }
 
-    btn.textContent = 'Ingresar al panel';
-    btn.disabled = false;
-
-    if (!ok) {
-      showError('Tu cuenta no tiene un perfil de cliente activo. Contactá a Luazul Smart Travel.');
-      await sbClient.auth.signOut();
-      return;
-    }
-
-    document.getElementById('loginScreen').style.display = 'none';
-    showApp();
-
-  } catch (e) {
-    btn.textContent = 'Ingresar al panel';
-    btn.disabled = false;
-    showError('Error inesperado. Intentá de nuevo.');
-    console.error('[SB] login error:', e);
-  }
+      currentSession = data.session;
+      return loadClientData(data.user.email)
+        .then(function (ok) {
+          resetBtn();
+          if (!ok) {
+            showError('Tu cuenta no tiene un perfil de cliente activo. Contactá a Luazul Smart Travel.');
+            sbClient.auth.signOut();
+            return;
+          }
+          document.getElementById('loginScreen').style.display = 'none';
+          showApp();
+        });
+    })
+    .catch(function (e) {
+      resetBtn();
+      showError('Error inesperado. Intentá de nuevo.');
+      console.error('[SB] login error:', e);
+    });
 }
 
 // Carga los datos del cliente desde la tabla clientes
-async function loadClientData(email) {
-  try {
-    var { data, error } = await sbClient
-      .from('clientes')
-      .select('*')
-      .eq('email', email.toLowerCase())
-      .single();
+function loadClientData(email) {
+  var SELECT_CLIENTES = '*, vendedor:staff_profiles!clientes_seller_id_fkey(id, nombre, apellido, telefono1, telefono2, activo)';
 
-    if (error || !data) return false;
+  return sbClient
+    .from('clientes')
+    .select(SELECT_CLIENTES)
+    .eq('email', email.toLowerCase())
+    .single()
+    .then(function (_cliRes) {
+      var data  = _cliRes.data;
+      var error = _cliRes.error;
 
-    // Bloquear acceso si fue dado de baja
-    if (data.estado === 'baja') {
-      showError('Tu plan fue dado de baja. Contactá a Luazul Smart Travel para más información.');
-      await sbClient.auth.signOut();
+      if (error || !data) return false;
+
+      if (data.estado === 'baja') {
+        showError('Tu plan fue dado de baja. Contactá a Luazul Smart Travel para más información.');
+        sbClient.auth.signOut();
+        return false;
+      }
+
+      var vendActivo = data.vendedor && data.vendedor.activo === true;
+      var regionId   = data.region_id || null;
+
+      if (!vendActivo && regionId) {
+        return sbClient
+          .from('staff_profiles')
+          .select('id, nombre, apellido, telefono1, telefono2')
+          .eq('role_id', 3)
+          .eq('region_id', regionId)
+          .eq('activo', true)
+          .limit(1)
+          .single()
+          .then(function (_gerRes) {
+            if (_gerRes.data) data._gerente = _gerRes.data;
+            currentUser = data;
+            return true;
+          })
+          .catch(function () {
+            data._gerente = null;
+            currentUser = data;
+            return true;
+          });
+      }
+
+      currentUser = data;
+      return true;
+    })
+    .catch(function (e) {
+      console.warn('[SB] loadClientData:', e.message);
       return false;
-    }
-
-    currentUser = data;
-    return true;
-  } catch (e) {
-    console.warn('[SB] loadClientData:', e.message);
-    return false;
-  }
+    });
 }
 
-async function doLogout() {
-  if (sbClient) { try { await sbClient.auth.signOut(); } catch (e) {} }
-  currentUser    = null;
-  currentSession = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('loginEmail').value = '';
-  document.getElementById('loginPass').value  = '';
-  showLoginScreen();
+function doLogout() {
+  var p = sbClient ? sbClient.auth.signOut() : Promise.resolve();
+  p.catch(function () {}).then(function () {
+    currentUser    = null;
+    currentSession = null;
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPass').value  = '';
+    showLoginScreen();
+  });
 }
 
 function showLoginScreen() {
@@ -1041,6 +1180,7 @@ function showApp() {
   renderContrato();
   renderReferidos();
   cargarComunidad();
+  renderSupportCard(currentUser);
   goPage('dashboard');
 }
 
@@ -1231,62 +1371,68 @@ var WMO = {
   80:'🌦️ Chubascos', 95:'⛈️ Tormenta'
 };
 
-async function loadClimaForDest(destKey) {
+function loadClimaForDest(destKey) {
   var el = document.getElementById('pkgWeatherBox');
   if (!el) return;
   var info = DEST_INFO[destKey];
   if (!info) { el.innerHTML = ''; return; }
   el.innerHTML = '<div class="cli-w-loading"><div class="cli-w-spinner"></div> Obteniendo clima en ' + info.name + '...</div>';
-  try {
-    var url = 'https://api.open-meteo.com/v1/forecast'
-      + '?latitude=' + info.lat + '&longitude=' + info.lon
-      + '&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relativehumidity_2m,uv_index'
-      + '&daily=temperature_2m_max,temperature_2m_min,weathercode'
-      + '&timezone=' + encodeURIComponent(info.tz) + '&forecast_days=5';
-    var r    = await fetch(url);
-    var data = await r.json();
-    var c    = data.current;
-    var daily = data.daily;
-    var temp  = Math.round(c.temperature_2m);
-    var feels = Math.round(c.apparent_temperature);
-    var wDesc = WMO[c.weathercode] || '🌤️ Variable';
-    var icon  = wDesc.split(' ')[0];
-    var dText = wDesc.replace(/^\S+ /, '');
-    var wind  = Math.round(c.windspeed_10m);
-    var hum   = c.relativehumidity_2m;
-    var uv    = c.uv_index !== undefined ? parseFloat(c.uv_index).toFixed(1) : '—';
-    var comfort = temp >= 28 ? '🔥 Clima ideal para la playa' : temp >= 24 ? '✅ Temperatura agradable' : temp >= 18 ? '🌤️ Fresco y agradable' : '🧥 Llevá algo de abrigo';
-    var dayNames = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-    var forecastHtml = '';
-    for (var i = 1; i < Math.min(5, daily.time.length); i++) {
-      var fd   = new Date(daily.time[i] + 'T12:00:00');
-      var hi   = Math.round(daily.temperature_2m_max[i]);
-      var lo   = Math.round(daily.temperature_2m_min[i]);
-      var fIcon = (WMO[daily.weathercode[i]] || '🌤️').split(' ')[0];
-      forecastHtml += '<div class="cli-fc-day"><div class="cli-fc-name">' + dayNames[fd.getDay()] + '</div>'
-        + '<div class="cli-fc-icon">' + fIcon + '</div>'
-        + '<div class="cli-fc-temps"><span class="hi">' + hi + '°</span><span class="lo">' + lo + '°</span></div></div>';
-    }
-    el.innerHTML =
-      '<div class="cli-weather-box">'
-      + '<div class="cli-w-icon">' + icon + '</div>'
-      + '<div class="cli-w-main">'
-      +   '<div class="cli-w-temp">' + temp + '°<span>C</span></div>'
-      +   '<div class="cli-w-desc">' + dText + '</div>'
-      +   '<div class="cli-w-loc">📍 ' + info.name + '</div>'
-      + '</div>'
-      + '<div class="cli-w-stats">'
-      +   '<div class="cli-w-stat"><strong>' + feels + '°</strong><span>Sensación</span></div>'
-      +   '<div class="cli-w-stat"><strong>' + hum + '%</strong><span>Humedad</span></div>'
-      +   '<div class="cli-w-stat"><strong>' + wind + '</strong><span>km/h</span></div>'
-      +   '<div class="cli-w-stat"><strong>' + uv + '</strong><span>UV</span></div>'
-      + '</div></div>'
-      + '<div class="cli-forecast">' + forecastHtml + '</div>'
-      + '<div class="dest-comfort">' + comfort + '</div>'
-      + '<div class="cli-footer">Datos en tiempo real · <a href="https://open-meteo.com" target="_blank" rel="noopener" style="color:rgba(126,184,255,.4);">Open-Meteo</a></div>';
-  } catch (e) {
-    el.innerHTML = '<div style="font-size:.82rem;color:rgba(150,190,255,.5);padding:12px 0;">⚠️ No se pudo cargar el clima.</div>';
-  }
+
+  var url = 'https://api.open-meteo.com/v1/forecast'
+    + '?latitude=' + info.lat + '&longitude=' + info.lon
+    + '&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relativehumidity_2m,uv_index'
+    + '&daily=temperature_2m_max,temperature_2m_min,weathercode'
+    + '&timezone=' + encodeURIComponent(info.tz) + '&forecast_days=5';
+
+  fetch(url)
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var c    = data.current;
+      var daily = data.daily;
+      var temp  = Math.round(c.temperature_2m);
+      var feels = Math.round(c.apparent_temperature);
+      var wDesc = WMO[c.weathercode] || '&#127828; Variable';
+      var icon  = wDesc.split(' ')[0];
+      var dText = wDesc.replace(/^\S+ /, '');
+      var wind  = Math.round(c.windspeed_10m);
+      var hum   = c.relativehumidity_2m;
+      var uv    = c.uv_index !== undefined ? parseFloat(c.uv_index).toFixed(1) : '—';
+      var comfort = temp >= 28 ? '&#128293; Clima ideal para la playa'
+                  : temp >= 24 ? '&#9989; Temperatura agradable'
+                  : temp >= 18 ? '&#127828; Fresco y agradable'
+                  : '&#129381; Llevá algo de abrigo';
+      var dayNames = ['Dom','Lun','Mar','Mi\u00e9','Jue','Vie','S\u00e1b'];
+      var forecastHtml = '';
+      for (var i = 1; i < Math.min(5, daily.time.length); i++) {
+        var fd    = new Date(daily.time[i] + 'T12:00:00');
+        var hi    = Math.round(daily.temperature_2m_max[i]);
+        var lo    = Math.round(daily.temperature_2m_min[i]);
+        var fIcon = (WMO[daily.weathercode[i]] || '&#127828;').split(' ')[0];
+        forecastHtml += '<div class="cli-fc-day"><div class="cli-fc-name">' + dayNames[fd.getDay()] + '</div>'
+          + '<div class="cli-fc-icon">' + fIcon + '</div>'
+          + '<div class="cli-fc-temps"><span class="hi">' + hi + '&deg;</span><span class="lo">' + lo + '&deg;</span></div></div>';
+      }
+      el.innerHTML =
+        '<div class="cli-weather-box">'
+        + '<div class="cli-w-icon">' + icon + '</div>'
+        + '<div class="cli-w-main">'
+        +   '<div class="cli-w-temp">' + temp + '&deg;<span>C</span></div>'
+        +   '<div class="cli-w-desc">' + dText + '</div>'
+        +   '<div class="cli-w-loc">&#128205; ' + info.name + '</div>'
+        + '</div>'
+        + '<div class="cli-w-stats">'
+        +   '<div class="cli-w-stat"><strong>' + feels + '&deg;</strong><span>Sensaci&oacute;n</span></div>'
+        +   '<div class="cli-w-stat"><strong>' + hum + '%</strong><span>Humedad</span></div>'
+        +   '<div class="cli-w-stat"><strong>' + wind + '</strong><span>km/h</span></div>'
+        +   '<div class="cli-w-stat"><strong>' + uv + '</strong><span>UV</span></div>'
+        + '</div></div>'
+        + '<div class="cli-forecast">' + forecastHtml + '</div>'
+        + '<div class="dest-comfort">' + comfort + '</div>'
+        + '<div class="cli-footer">Datos en tiempo real &middot; <a href="https://open-meteo.com" target="_blank" rel="noopener" style="color:rgba(126,184,255,.4);">Open-Meteo</a></div>';
+    })
+    .catch(function () {
+      el.innerHTML = '<div style="font-size:.82rem;color:rgba(150,190,255,.5);padding:12px 0;">&#9888;&#65039; No se pudo cargar el clima.</div>';
+    });
 }
 
 function renderDestInfo() {
@@ -1529,26 +1675,23 @@ function uploadComp(cuotaNum) {
 }
 
 // Notificación a Supabase cuando se sube un comprobante
-// Columnas según informe master: tipo, mensaje, destinatario_rol, cliente_id, leida, datos_extra
-async function firePaymentNotif(cuotaNum, fileName) {
+function firePaymentNotif(cuotaNum, fileName) {
   if (!sbClient || !currentUser) return;
-  try {
-    await sbClient.from('notificaciones').insert({
-      tipo:             'payment',
-      mensaje:          'El cliente ' + (currentUser.nombre || currentUser.email) + ' adjuntó comprobante de cuota ' + cuotaNum,
-      destinatario_rol: 'seller',
-      cliente_id:       currentUser.id || null,
-      leida:            false,
-      datos_extra:      {
-        cuota:    cuotaNum,
-        monto:    parseFloat(currentUser.monto_cuota) || 0,
-        archivo:  fileName || 'comprobante',
-        cliente:  currentUser.nombre || currentUser.email
-      }
-    });
-  } catch (e) {
+  sbClient.from('notificaciones').insert({
+    tipo:             'payment',
+    mensaje:          'El cliente ' + (currentUser.nombre || currentUser.email) + ' adjunt\u00f3 comprobante de cuota ' + cuotaNum,
+    destinatario_rol: 'seller',
+    cliente_id:       currentUser.id || null,
+    leida:            false,
+    datos_extra:      {
+      cuota:    cuotaNum,
+      monto:    parseFloat(currentUser.monto_cuota) || 0,
+      archivo:  fileName || 'comprobante',
+      cliente:  currentUser.nombre || currentUser.email
+    }
+  }).catch(function (e) {
     console.warn('[SB] firePaymentNotif:', e.message);
-  }
+  });
 }
 
 // ══════════════════════════════════════════════════════
@@ -1601,40 +1744,14 @@ function renderContrato() {
   var cuotas   = u.cuotas_total  || '__';
   var monto    = u.monto_cuota   || '________';
 
-  doc.innerHTML = `
-  <div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:18px 20px;margin-bottom:20px;">
-    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#60a5fa;margin-bottom:10px;">📋 Datos de tu contrato</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.85rem;">
-      <div><span style="color:var(--text-muted);">Cliente:</span> <strong>${nombre}</strong></div>
-      <div><span style="color:var(--text-muted);">Documento:</span> <strong>${dni}</strong></div>
-      <div><span style="color:var(--text-muted);">Destino:</span> <strong>${destino}</strong></div>
-      <div><span style="color:var(--text-muted);">Total plan:</span> <strong>USD ${total}</strong></div>
-      <div><span style="color:var(--text-muted);">Cuotas:</span> <strong>${cuotas} × USD ${monto}</strong></div>
-      <div><span style="color:var(--text-muted);">Rige:</span> <strong>Ley 11.771/2008 Brasil</strong></div>
-    </div>
-  </div>
-  <div id="contratoTexto" style="background:rgba(255,255,255,.03);border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:32px;font-size:.85rem;line-height:2;color:rgba(210,225,255,.85);">
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-size:1.3rem;font-weight:900;letter-spacing:3px;color:#fff;">CONTRATO DE ADHESIÓN</div>
-      <div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;">LUAZUL SMART TRAVEL — Plan de Viaje en Cuotas</div>
-    </div>
-    <p>Entre <strong style="color:#fff;">LUAZUL SMART TRAVEL</strong>, en adelante "LA EMPRESA", y el/la pasajero/a <strong style="color:#7eb8ff;" id="ct-nombre"></strong>, DNI/Documento <strong style="color:#7eb8ff;" id="ct-doc"></strong>, en adelante "EL/LA CLIENTE", se celebra el presente Contrato de Adhesión para la prestación de servicios turísticos.</p>
-    <br>
-    <p><strong style="color:#fff;">PRIMERA — OBJETO:</strong> La empresa se compromete a prestar los servicios turísticos correspondientes al destino <strong style="color:#7eb8ff;" id="ct-dest"></strong>, conforme al paquete <strong style="color:#7eb8ff;" id="ct-paq"></strong>, con fecha de viaje prevista para <strong style="color:#7eb8ff;" id="ct-fecha"></strong>.</p>
-    <br>
-    <p><strong style="color:#fff;">SEGUNDA — PRECIO Y MODALIDAD DE PAGO:</strong> El precio total convenido es de <strong style="color:#7eb8ff;" id="ct-total"></strong>, abonado en <strong style="color:#7eb8ff;" id="ct-cuotas"></strong> cuotas mensuales de <strong style="color:#7eb8ff;" id="ct-monto"></strong> cada una.</p>
-    <br>
-    <p><strong style="color:#fff;">TERCERA — SERVICIOS INCLUIDOS:</strong> Traslados privados aeropuerto/hotel/aeropuerto, alojamiento en régimen de habitación confirmada, y los servicios especificados en el paquete elegido. Los vuelos no están incluidos salvo indicación expresa.</p>
-    <br>
-    <p><strong style="color:#fff;">CUARTA — CANCELACIONES:</strong> Cancelación con más de 60 días de anticipación: reintegro del 70% de lo abonado. Con menos de 60 días: 40%. La empresa se reserva el derecho de modificar fechas por causas de fuerza mayor.</p>
-    <br>
-    <p><strong style="color:#fff;">QUINTA — RESPONSABILIDAD:</strong> La empresa actúa como organizadora de viajes. No se responsabiliza por cancelaciones de vuelos, desastres naturales ni causas ajenas a su voluntad.</p>
-    <br>
-    <div style="border-top:1px solid rgba(100,160,255,.15);margin-top:16px;padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:24px;font-size:.8rem;text-align:center;">
-      <div><div style="border-top:1px solid rgba(255,255,255,.2);margin-top:40px;padding-top:8px;color:var(--text-muted);">Firma del Cliente</div></div>
-      <div><div style="border-top:1px solid rgba(255,255,255,.2);margin-top:40px;padding-top:8px;color:var(--text-muted);">Luazul Smart Travel</div></div>
-    </div>
-  </div>`;
+  doc.innerHTML = tpl('tpl-contrato', {
+    nombre:  nombre,
+    dni:     dni,
+    destino: destino,
+    total:   total,
+    cuotas:  cuotas,
+    monto:   monto
+  });
 
   var ct = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; };
   ct('ct-nombre', nombre); ct('ct-doc', dni); ct('ct-dest', destino);
@@ -1657,65 +1774,67 @@ function imprimirContrato() { window.print(); }
 // ══════════════════════════════════════════════════════
 //  REFERIDOS — lee desde Supabase tabla referidos
 // ══════════════════════════════════════════════════════
-async function renderReferidos() {
+function renderReferidos() {
   var u = currentUser;
-  var refs = [];
 
-  try {
-    var { data } = await sbClient
-      .from('referidos')
-      .select('*')
-      .eq('cliente_id', u.id);
-    if (data) refs = data;
-  } catch (e) {
-    console.warn('[SB] referidos:', e.message);
-  }
+  function _pintarRefs(refs) {
+    var activos    = refs.filter(function (r) { return r.estado === 'activo'; }).length;
+    var premios    = Math.floor(activos / 3);
+    var enProgreso = activos % 3;
+    var pct        = Math.min(100, Math.round((enProgreso / 3) * 100));
 
-  var activos    = refs.filter(function (r) { return r.estado === 'activo'; }).length;
-  var premios    = Math.floor(activos / 3);
-  var enProgreso = activos % 3;
-  var pct        = Math.min(100, Math.round((enProgreso / 3) * 100));
+    var countEl = document.getElementById('refCount');
+    var barEl   = document.getElementById('refBar');
+    var msgEl   = document.getElementById('refPremioMsg');
+    var listEl  = document.getElementById('refList');
+    var codeEl  = document.getElementById('refCode');
 
-  var countEl = document.getElementById('refCount');
-  var barEl   = document.getElementById('refBar');
-  var msgEl   = document.getElementById('refPremioMsg');
-  var listEl  = document.getElementById('refList');
-  var codeEl  = document.getElementById('refCode');
+    if (countEl) countEl.textContent = enProgreso + ' / 3';
+    if (barEl)   barEl.style.width   = pct + '%';
 
-  if (countEl) countEl.textContent = enProgreso + ' / 3';
-  if (barEl)   barEl.style.width   = pct + '%';
-
-  if (msgEl) {
-    if (premios > 0) {
-      msgEl.innerHTML = '<span style="color:#fbbf24;font-weight:700;">🏆 ¡Ganaste ' + premios + ' tour' + (premios > 1 ? 's' : '') + ' gratis! Contactanos por WhatsApp.</span>';
-    } else {
-      var faltan = 3 - enProgreso;
-      msgEl.textContent = 'Te faltan ' + faltan + ' referido' + (faltan === 1 ? '' : 's') + ' activo' + (faltan === 1 ? '' : 's') + ' para ganar tu próximo tour gratis.';
+    if (msgEl) {
+      if (premios > 0) {
+        msgEl.innerHTML = '<span style="color:#fbbf24;font-weight:700;">&#127942; &iexcl;Ganaste ' + premios + ' tour' + (premios > 1 ? 's' : '') + ' gratis! Contactanos por WhatsApp.</span>';
+      } else {
+        var faltan = 3 - enProgreso;
+        msgEl.textContent = 'Te faltan ' + faltan + ' referido' + (faltan === 1 ? '' : 's') + ' activo' + (faltan === 1 ? '' : 's') + ' para ganar tu pr\u00f3ximo tour gratis.';
+      }
     }
-  }
 
-  var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
-  if (codeEl) codeEl.textContent = code;
+    var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    if (codeEl) codeEl.textContent = code;
 
-  if (listEl) {
-    if (!refs.length) {
-      listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:.88rem;">Aún no tenés referidos. ¡Compartí tu código!</div>';
-    } else {
-      listEl.innerHTML = refs.map(function (r) {
-        var estadoColor = r.estado === 'activo' ? '#6ee7b7' : '#fca5a5';
-        var estadoBg    = r.estado === 'activo' ? 'rgba(16,185,129,.1)' : 'rgba(239,68,68,.1)';
-        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;">'
-          + '<div><div style="font-weight:600;font-size:.9rem;">' + (r.nombre_referido || r.email_referido || '—') + '</div>'
-          + '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;">' + (r.created_at ? new Date(r.created_at).toLocaleDateString('es-AR') : '') + '</div></div>'
-          + '<span style="font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;background:' + estadoBg + ';color:' + estadoColor + ';">' + (r.estado || '—') + '</span>'
-          + '</div>';
-      }).join('');
+    if (listEl) {
+      if (!refs.length) {
+        listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:.88rem;">A\u00fan no ten\u00e9s referidos. \u00a1Compartí tu c\u00f3digo!</div>';
+      } else {
+        listEl.innerHTML = refs.map(function (r) {
+          var estadoColor = r.estado === 'activo' ? '#6ee7b7' : '#fca5a5';
+          var estadoBg    = r.estado === 'activo' ? 'rgba(16,185,129,.1)' : 'rgba(239,68,68,.1)';
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;">'
+            + '<div><div style="font-weight:600;font-size:.9rem;">' + (r.nombre_referido || r.email_referido || '\u2014') + '</div>'
+            + '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;">' + (r.created_at ? new Date(r.created_at).toLocaleDateString('es-AR') : '') + '</div></div>'
+            + '<span style="font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;background:' + estadoBg + ';color:' + estadoColor + ';">' + (r.estado || '\u2014') + '</span>'
+            + '</div>';
+        }).join('');
+      }
     }
+
+    var badge = document.getElementById('referidosBadge');
+    if (badge) badge.textContent = refs.length > 0 ? refs.length : '\u2014';
   }
 
-  // Badge en sidebar
-  var badge = document.getElementById('referidosBadge');
-  if (badge) badge.textContent = refs.length > 0 ? refs.length : '—';
+  sbClient
+    .from('referidos')
+    .select('*')
+    .eq('cliente_id', u.id)
+    .then(function (_refRes) {
+      _pintarRefs(_refRes.data || []);
+    })
+    .catch(function (e) {
+      console.warn('[SB] referidos:', e.message);
+      _pintarRefs([]);
+    });
 }
 
 function compartirRef() {
@@ -1729,7 +1848,7 @@ function compartirRef() {
 //  COMUNIDAD — lee posts desde Supabase
 //  [FASE 2] Cuando se cree la tabla posts_comunidad
 // ══════════════════════════════════════════════════════
-async function cargarComunidad() {
+function cargarComunidad() {
   var container = document.getElementById('comunidadPosts');
   if (!container) return;
 
@@ -1738,17 +1857,17 @@ async function cargarComunidad() {
   container.innerHTML =
     '<div style="background:rgba(126,184,255,.06);border:1px solid rgba(126,184,255,.15);border-radius:14px;padding:20px;">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
-    + '<span style="font-size:1.3rem;">🏖️</span>'
-    + '<div><div style="font-weight:700;color:#fff;font-size:.95rem;">Plazas disponibles — Diciembre 2026</div>'
+    + '<span style="font-size:1.3rem;">&#127958;</span>'
+    + '<div><div style="font-weight:700;color:#fff;font-size:.95rem;">Plazas disponibles &mdash; Diciembre 2026</div>'
     + '<div style="font-size:.72rem;color:var(--text-muted);margin-top:2px;">Equipo Luazul Smart Travel</div></div></div>'
-    + '<p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">Quedan <strong style="color:#7eb8ff;">8 lugares disponibles</strong> para el grupo de Diciembre. Si tenés amigos interesados, es el momento — los precios se mantienen hasta fin de mes.</p>'
+    + '<p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">Quedan <strong style="color:#7eb8ff;">8 lugares disponibles</strong> para el grupo de Diciembre. Si ten\u00e9s amigos interesados, es el momento &mdash; los precios se mantienen hasta fin de mes.</p>'
     + '</div>'
     + '<div style="background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:14px;padding:20px;">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
-    + '<span style="font-size:1.3rem;">✅</span>'
-    + '<div><div style="font-weight:700;color:#fff;font-size:.95rem;">Hotel confirmado — Búzios</div>'
+    + '<span style="font-size:1.3rem;">&#9989;</span>'
+    + '<div><div style="font-weight:700;color:#fff;font-size:.95rem;">Hotel confirmado &mdash; B\u00fazios</div>'
     + '<div style="font-size:.72rem;color:var(--text-muted);margin-top:2px;">Equipo Luazul Smart Travel</div></div></div>'
-    + '<p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">El hotel en Búzios ya tiene reserva confirmada. Piscina frente al mar, desayuno incluido y a 5 minutos de la Rua das Pedras 🌴</p>'
+    + '<p style="font-size:.85rem;color:rgba(200,220,255,.8);line-height:1.7;margin:0;">El hotel en B\u00fazios ya tiene reserva confirmada. Piscina frente al mar, desayuno incluido y a 5 minutos de la Rua das Pedras &#127796;</p>'
     + '</div>';
 }
 
@@ -1781,6 +1900,103 @@ function lzToggle(inputId, btn) {
     ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
     : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
 }
+
+
+// ══════════════════════════════════════════════════════
+//  TARJETA DE CONTACTO
+//  Jerarquía: vendedor activo → gerente regional → soporte central
+// ══════════════════════════════════════════════════════
+function renderSupportCard(data) {
+  var el = document.getElementById('support-card');
+  if (!el) return;
+
+  var vendedor = data.vendedor || null;
+  var gerente  = data._gerente || null;
+  var vendActivo = vendedor && vendedor.activo === true;
+
+  // ── Función auxiliar: limpiar número para WhatsApp ──────────────────────
+  function cleanWA(num) {
+    if (!num) return null;
+    // Eliminar espacios, guiones, paréntesis — dejar solo dígitos y +
+    var clean = String(num).replace(/[\s\-().]/g, '');
+    // Si empieza con 0 (Argentina local), convertir a internacional
+    if (clean.startsWith('0')) clean = '54' + clean.slice(1);
+    // Si no tiene código de país, asumir Argentina
+    if (!clean.startsWith('+') && !clean.startsWith('54')) clean = '54' + clean;
+    // Quitar el + para wa.me
+    return clean.replace('+', '');
+  }
+
+  var html = '';
+
+  if (vendActivo) {
+    // ── CASO 1: Vendedor activo ───────────────────────────────────────────
+    var nombre = (vendedor.nombre || '') + (vendedor.apellido ? ' ' + vendedor.apellido : '');
+    var waNum  = cleanWA(vendedor.telefono1 || vendedor.telefono2);
+    var waUrl  = waNum
+      ? 'https://wa.me/' + waNum + '?text=' + encodeURIComponent('Hola ' + (vendedor.nombre || '') + ', soy cliente Luazul Smart Travel y tengo una consulta sobre mi plan.')
+      : 'https://wa.me/5492974726449?text=' + encodeURIComponent('Hola, soy cliente Luazul Smart Travel y tengo una consulta.');
+
+    html = '<div class="support-card-wrap glass">'
+      + '<div class="support-card-header" style="background:linear-gradient(135deg,rgba(11,61,145,.4),rgba(5,20,60,.5));">'
+      +   '<div class="support-avatar" style="background:linear-gradient(135deg,rgba(11,61,145,.5),rgba(26,91,181,.4));">👤</div>'
+      +   '<div style="flex:1;">'
+      +     '<div class="support-role-label" style="color:var(--blue-light);">Tu Asesor</div>'
+      +     '<div class="support-name">' + nombre + '</div>'
+      +     (waNum ? '<div class="support-sub">📱 Disponible por WhatsApp</div>' : '<div class="support-sub">Contacto via Luazul</div>')
+      +   '</div>'
+      +   '<span style="font-size:1.4rem;">✅</span>'
+      + '</div>'
+      + '<button class="support-wa-btn" data-url="' + waUrl + '" onclick="lzOpenWA(this)">'
+      +   '<span style="font-size:1.1rem;">💬</span> Contactar a mi Asesor'
+      + '</button>'
+      + '</div>';
+
+  } else if (gerente) {
+    // ── CASO 2: Vendedor inactivo/nulo — Gerente Regional ────────────────
+    var nombre = (gerente.nombre || '') + (gerente.apellido ? ' ' + gerente.apellido : '');
+    var waNum  = cleanWA(gerente.telefono1 || gerente.telefono2);
+    var waUrl  = waNum
+      ? 'https://wa.me/' + waNum + '?text=' + encodeURIComponent('Hola ' + (gerente.nombre || '') + ', soy cliente Luazul Smart Travel y necesito ayuda con mi plan.')
+      : 'https://wa.me/5492974726449?text=' + encodeURIComponent('Hola, soy cliente Luazul Smart Travel y necesito ayuda.');
+
+    html = '<div class="support-card-wrap glass">'
+      + '<div class="support-card-header" style="background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(5,20,60,.5));">'
+      +   '<div class="support-avatar" style="background:linear-gradient(135deg,rgba(139,92,246,.4),rgba(109,40,217,.3));">🏅</div>'
+      +   '<div style="flex:1;">'
+      +     '<div class="support-role-label" style="color:#c4b5fd;">Tu Responsable Regional</div>'
+      +     '<div class="support-name">' + nombre + '</div>'
+      +     '<div class="support-sub">Gerente Regional · Atención directa</div>'
+      +   '</div>'
+      +   '<span style="font-size:1.4rem;">🛡️</span>'
+      + '</div>'
+      + '<button class="support-wa-btn" style="background:linear-gradient(135deg,#6d28d9,#7c3aed);" data-url="' + waUrl + '" onclick="lzOpenWA(this)">'
+      +   '<span style="font-size:1.1rem;">💬</span> Contactar Responsable Regional'
+      + '</button>'
+      + '</div>';
+
+  } else {
+    // ── CASO 3: Soporte Central Luazul ───────────────────────────────────
+    var waUrl = 'https://wa.me/5492974726449?text=' + encodeURIComponent('Hola, soy cliente Luazul Smart Travel y necesito ayuda con mi plan.');
+
+    html = '<div class="support-card-wrap glass">'
+      + '<div class="support-card-header" style="background:linear-gradient(135deg,rgba(11,61,145,.4),rgba(5,20,60,.5));">'
+      +   '<div class="support-avatar" style="background:linear-gradient(135deg,rgba(11,61,145,.5),rgba(26,91,181,.4));">🦋</div>'
+      +   '<div style="flex:1;">'
+      +     '<div class="support-role-label" style="color:var(--blue-light);">Soporte Central</div>'
+      +     '<div class="support-name">Luazul Smart Travel</div>'
+      +     '<div class="support-sub">Atención directa del equipo central</div>'
+      +   '</div>'
+      + '</div>'
+      + '<button class="support-wa-btn central" data-url="' + waUrl + '" onclick="lzOpenWA(this)">'
+      +   '<span style="font-size:1.1rem;">💬</span> Contactar Soporte Central'
+      + '</button>'
+      + '</div>';
+  }
+
+  el.innerHTML = html;
+}
+// ── fin tarjeta de contacto ──────────────────────────────────────────────────
 
 function showSyncBadge() {
   var b = document.getElementById('syncBadge');
