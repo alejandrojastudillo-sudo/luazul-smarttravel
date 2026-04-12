@@ -1357,10 +1357,10 @@ var DEST_INFO = {
 function getDestKey(destino) {
   if (!destino) return null;
   var d = destino.toLowerCase();
-  if (d.includes('arraial'))                                              return 'arraial';
-  if (d.includes('búzios') || d.includes('buzios'))                     return 'buzios';
-  if (d.includes('río') || d.includes('rio') || d.includes('janeiro'))  return 'rio';
-  if (d.includes('cabo') || d.includes('frío') || d.includes('frio'))   return 'cabo';
+  if (d.indexOf('arraial') !== -1)                                                                    return 'arraial';
+  if (d.indexOf('b\u00fazios') !== -1 || d.indexOf('buzios') !== -1)                               return 'buzios';
+  if (d.indexOf('r\u00edo') !== -1 || d.indexOf('rio') !== -1 || d.indexOf('janeiro') !== -1)      return 'rio';
+  if (d.indexOf('cabo') !== -1 || d.indexOf('fr\u00edo') !== -1 || d.indexOf('frio') !== -1)       return 'cabo';
   return null;
 }
 
@@ -1449,7 +1449,7 @@ function renderDestInfo() {
     var monthMap = { enero:0, febrero:1, marzo:2, abril:3, mayo:4, junio:5, julio:6, agosto:7, septiembre:8, octubre:9, noviembre:10, diciembre:11 };
     var fvLow = String(u.fecha_viaje).toLowerCase();
     var mKey  = null;
-    Object.keys(monthMap).forEach(function (k) { if (fvLow.includes(k)) mKey = k; });
+    Object.keys(monthMap).forEach(function (k) { if (fvLow.indexOf(k) !== -1) mKey = k; });
     var match = String(u.fecha_viaje).match(/(\d{4})/);
     var year  = match ? parseInt(match[1]) : null;
     if (year && mKey !== null) {
@@ -1920,9 +1920,9 @@ function renderSupportCard(data) {
     // Eliminar espacios, guiones, paréntesis — dejar solo dígitos y +
     var clean = String(num).replace(/[\s\-().]/g, '');
     // Si empieza con 0 (Argentina local), convertir a internacional
-    if (clean.startsWith('0')) clean = '54' + clean.slice(1);
+    if (clean.indexOf('0') === 0) clean = '54' + clean.slice(1);
     // Si no tiene código de país, asumir Argentina
-    if (!clean.startsWith('+') && !clean.startsWith('54')) clean = '54' + clean;
+    if (clean.indexOf('+') !== 0 && clean.indexOf('54') !== 0) clean = '54' + clean;
     // Quitar el + para wa.me
     return clean.replace('+', '');
   }
