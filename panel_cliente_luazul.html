@@ -818,12 +818,17 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         <div class="contrato-toolbar">
           <h2>📄 Contrato de Adhesión</h2>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="descargarContrato()">📥 Descargar PDF</button>
+            <button id="btnDescargaContrato" class="btn btn-primary"
+                    onclick="descargarContrato()"
+                    disabled
+                    style="opacity:.4;cursor:not-allowed;">📥 Descargar PDF</button>
             <button class="btn btn-ghost" onclick="imprimirContrato()">🖨️ Imprimir</button>
             <button class="btn btn-ghost"
                     onclick="window.open('https://wa.me/5492974726449','_blank')">💬 Consultar</button>
           </div>
         </div>
+        <!-- Estado del contrato: inyectado por renderContrato() -->
+        <div id="contratoEstadoBanner" style="margin-bottom:16px;"></div>
         <div class="contrato-doc glass" id="contratoDoc"></div>
       </div>
     </div>
@@ -964,6 +969,18 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 <script>
 'use strict';
 
+// ── SEGURIDAD: esc() — Auditoría v3.31 XSS-A1 ────────
+// Escapa HTML para uso en innerHTML. ES5 puro.
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 // ══════════════════════════════════════════════════════
 //  MICRO-TEMPLATE ENGINE — ES5 puro, sin backticks
 //  Uso: tpl('id-del-script-template', { clave: valor })
@@ -1085,6 +1102,9 @@ function doLogin() {
 
 // Carga los datos del cliente desde la tabla clientes
 function loadClientData(email) {
+  // ── Checkpoint v3.1: SELECT filtra por email Y valida user_id UUID post-carga ──
+  // La FK clientes.user_id debe coincidir con auth.uid() para garantizar
+  // que el cliente autenticado solo accede a sus propios datos.
   var SELECT_CLIENTES = '*, vendedor:staff_profiles!clientes_seller_id_fkey(id, nombre, apellido, telefono1, telefono2, activo)';
 
   return sbClient
@@ -1098,8 +1118,24 @@ function loadClientData(email) {
 
       if (error || !data) return false;
 
+      // ── SEGURIDAD — Comparación dual String() — Regla maestra v3.1 ────
+      // Verificar que el perfil cargado pertenece exactamente al usuario
+      // autenticado. Nunca comparar UUID directo sin coerción.
+      if (currentSession && currentSession.user) {
+        var _sessionUid = String(currentSession.user.id || '');
+        var _profileUid = String(data.user_id || '');
+        if (_profileUid && _profileUid !== _sessionUid) {
+          // UUID mismatch: otro cliente con el mismo email o dato corrupto
+          console.warn('[SECURITY] UUID mismatch — session:', _sessionUid, '/ perfil:', _profileUid);
+          sbClient.auth.signOut();
+          showError('Error de autenticaci\u00f3n. Por favor ingres\u00e1 de nuevo.');
+          return false;
+        }
+      }
+      // ──────────────────────────────────────────────────────────────────
+
       if (data.estado === 'baja') {
-        showError('Tu plan fue dado de baja. Contactá a Luazul Smart Travel para más información.');
+        showError('Tu plan fue dado de baja. Contact\u00e1 a Luazul Smart Travel para m\u00e1s informaci\u00f3n.');
         sbClient.auth.signOut();
         return false;
       }
@@ -1188,7 +1224,8 @@ function showApp() {
 //  NAVIGATION
 // ══════════════════════════════════════════════════════
 function goPage(name) {
-  document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+  var _pages = document.querySelectorAll('.page');
+  for (var _pi = 0; _pi < _pages.length; _pi++) { _pages[_pi].classList.remove('active'); }
   var target = document.getElementById('page-' + name);
   if (target) target.classList.add('active');
 
@@ -1511,49 +1548,103 @@ function renderDestInfo() {
 //  CUOTAS
 // ══════════════════════════════════════════════════════
 function renderCuotas() {
-  var u          = currentUser;
-  var total      = parseInt(u.cuotas_total)   || 0;
-  var pagadas    = parseInt(u.cuotas_pagadas) || 0;
-  var monto      = parseFloat(u.monto_cuota)  || 0;
-  var pendientes = total - pagadas;
+  var u = currentUser;
+  if (!u) return;
 
-  document.getElementById('c-pagadas').textContent    = pagadas;
-  document.getElementById('c-pendientes').textContent = pendientes;
-  document.getElementById('c-total').textContent      = total;
+  // ── Checkpoint v3.1: leer cuotas pagadas desde tabla `pagos` ──────────
+  // El campo clientes.cuotas_pagadas es solo un contador cache.
+  // La fuente de verdad son los registros pagos.estado = 'aprobado'.
+  // Filtrar por cliente_id (BIGINT) — sin ambigüedad de UUID aquí.
+  sbClient
+    .from('pagos')
+    .select('id, estado, created_at, comprobante_url')
+    .eq('cliente_id', u.id)
+    .eq('estado', 'aprobado')
+    .order('created_at', { ascending: true })
+    .then(function (_pagRes) {
+      _pintarCuotas(_pagRes.data || []);
+    })
+    .catch(function (e) {
+      console.warn('[SB] renderCuotas/pagos:', e.message);
+      // Fallback al snapshot local si Supabase no responde
+      var fallback = [];
+      for (var k = 0; k < (parseInt(u.cuotas_pagadas) || 0); k++) {
+        fallback.push({ id: k + 1, estado: 'aprobado', created_at: null, comprobante_url: null });
+      }
+      _pintarCuotas(fallback);
+    });
 
-  // Comprobantes: gestionados via Supabase Storage (Fase 2 pendiente)
-  var html = '';
-  for (var i = 1; i <= total; i++) {
-    var st      = i <= pagadas ? 'paid' : (i === pagadas + 1 ? 'pending' : 'future');
-    var stLabel = st === 'paid' ? 'Pagada ✅' : (st === 'pending' ? 'Pendiente ⏳' : 'Próxima');
-    var hasComp = false;
-    var d       = new Date();
-    d.setMonth(d.getMonth() + (i - pagadas - 1));
-    var mes = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+  function _pintarCuotas(pagosAprobados) {
+    var total      = parseInt(u.cuotas_total) || 0;
+    var pagadas    = pagosAprobados.length;
+    var monto      = parseFloat(u.monto_cuota) || 0;
+    var pendientes = Math.max(0, total - pagadas);
 
-    var uploadBtn = '';
-    if (st === 'pending') {
-      uploadBtn = hasComp
-        ? '<button onclick="verComprobante(' + i + ')" style="padding:6px 12px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;">✅ Ver comprobante</button>'
-          + '<button onclick="uploadComp(' + i + ')" style="padding:6px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(180,200,240,.6);border-radius:8px;font-size:.72rem;cursor:pointer;margin-left:4px;">↺ Reemplazar</button>'
-        : '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;animation:pulse-btn 2s infinite;">📎 Adjuntar comprobante</button>'
-          + '<button onclick="abrirPanelPago(' + i + ')" style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;margin-left:6px;">💳 Pagar cuota</button>';
-    } else if (st === 'paid' && hasComp) {
-      uploadBtn = '<button onclick="verComprobante(' + i + ')" style="padding:5px 11px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#6ee7b7;border-radius:8px;font-size:.72rem;cursor:pointer;">📄 Comprobante</button>';
+    document.getElementById('c-pagadas').textContent    = pagadas;
+    document.getElementById('c-pendientes').textContent = pendientes;
+    document.getElementById('c-total').textContent      = total;
+
+    var html = '';
+    for (var i = 1; i <= total; i++) {
+      var st      = i <= pagadas ? 'paid' : (i === pagadas + 1 ? 'pending' : 'future');
+      var stLabel = st === 'paid'
+        ? 'Pagada \u2705'
+        : (st === 'pending' ? 'Pendiente \u23F3' : 'Pr\u00f3xima');
+
+      // Pago aprobado correspondiente a esta posición ordinal
+      var pagoRef  = st === 'paid' ? (pagosAprobados[i - 1] || null) : null;
+      var hasComp  = pagoRef && pagoRef.comprobante_url;
+
+      // Fecha estimada §5A: fecha_alta + (i-1)*30 días
+      var d = new Date();
+      d.setMonth(d.getMonth() + (i - pagadas - 1));
+      var mes = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+      var fechaDisplay = st === 'paid'
+        ? (pagoRef && pagoRef.created_at
+            ? new Date(pagoRef.created_at).toLocaleDateString('es-AR')
+            : 'Pagada')
+        : mes;
+
+      var uploadBtn = '';
+      if (st === 'pending') {
+        uploadBtn =
+          '<button onclick="uploadComp(' + i + ')" '
+          + 'style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);'
+          + 'color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;'
+          + 'white-space:nowrap;animation:pulse-btn 2s infinite;">\uD83D\uDCCE Adjuntar comprobante</button>'
+          + '<button onclick="abrirPanelPago(' + i + ')" '
+          + 'style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);'
+          + 'color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;'
+          + 'white-space:nowrap;margin-left:6px;">\uD83D\uDCB3 Pagar cuota</button>';
+      } else if (st === 'paid' && hasComp) {
+        uploadBtn =
+          '<a href="' + pagoRef.comprobante_url + '" target="_blank" '
+          + 'style="padding:5px 11px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);'
+          + 'color:#6ee7b7;border-radius:8px;font-size:.72rem;cursor:pointer;text-decoration:none;">'
+          + '\uD83D\uDCC4 Comprobante aprobado</a>';
+      }
+
+      html +=
+        '<div class="cuota-row" id="cuota-row-' + i + '" style="flex-wrap:wrap;gap:8px;">'
+        + '<div class="cuota-num ' + st + '">' + i + '</div>'
+        + '<div class="cuota-info" style="flex:1;">'
+        +   '<div class="cuota-desc">Cuota ' + i + ' de ' + total
+        +     (hasComp ? ' <span style="color:#6ee7b7;font-size:.7rem;">\u25CF aprobado</span>' : '')
+        +   '</div>'
+        +   '<div class="cuota-date">' + fechaDisplay + '</div>'
+        + '</div>'
+        + '<div class="cuota-amount ' + st + '">USD ' + monto.toFixed(0) + '</div>'
+        + '<span class="cuota-status ' + st + '">' + stLabel + '</span>'
+        + (uploadBtn ? '<div style="width:100%;padding-left:44px;">' + uploadBtn + '</div>' : '')
+        + '</div>';
     }
 
-    html += '<div class="cuota-row" id="cuota-row-' + i + '" style="flex-wrap:wrap;gap:8px;">'
-      + '<div class="cuota-num ' + st + '">' + i + '</div>'
-      + '<div class="cuota-info" style="flex:1;">'
-      +   '<div class="cuota-desc">Cuota ' + i + ' de ' + total + (hasComp ? ' <span style="color:#6ee7b7;font-size:.7rem;">● comprobante adjunto</span>' : '') + '</div>'
-      +   '<div class="cuota-date">' + (st === 'paid' ? 'Pagada' : mes) + '</div>'
-      + '</div>'
-      + '<div class="cuota-amount ' + st + '">USD ' + monto.toFixed(0) + '</div>'
-      + '<span class="cuota-status ' + st + '">' + stLabel + '</span>'
-      + (uploadBtn ? '<div style="width:100%;padding-left:44px;">' + uploadBtn + '</div>' : '')
-      + '</div>';
+    var grid = document.getElementById('cuotasGrid');
+    if (grid) {
+      grid.innerHTML = html
+        || '<div style="color:var(--text-muted);text-align:center;padding:40px;">No hay cuotas registradas.</div>';
+    }
   }
-  document.getElementById('cuotasGrid').innerHTML = html || '<div style="color:var(--text-muted);text-align:center;padding:40px;">No hay cuotas registradas.</div>';
 }
 
 // ══════════════════════════════════════════════════════
@@ -1735,53 +1826,160 @@ function renderVoucher() {
 //  CONTRATO
 // ══════════════════════════════════════════════════════
 function renderContrato() {
-  var u  = currentUser;
-  var doc = document.getElementById('contratoDoc');
-  var nombre   = u.nombre    || '________________________';
-  var dni      = u.documento || '________________________';
-  var destino  = u.destino   || '________________________';
-  var total    = u.total_usd || '________';
-  var cuotas   = u.cuotas_total  || '__';
-  var monto    = u.monto_cuota   || '________';
+  var u      = currentUser;
+  var doc    = document.getElementById('contratoDoc');
+  var banner = document.getElementById('contratoEstadoBanner');
+  var btnDl  = document.getElementById('btnDescargaContrato');
 
-  doc.innerHTML = tpl('tpl-contrato', {
-    nombre:  nombre,
-    dni:     dni,
-    destino: destino,
-    total:   total,
-    cuotas:  cuotas,
-    monto:   monto
-  });
+  // ── Poblar campos locales con datos del cliente (siempre visible) ──────
+  var nombre  = u.nombre       || '________________________';
+  var dni     = u.documento    || '________________________';
+  var destino = u.destino      || '________________________';
+  var total   = u.total_usd    || '________';
+  var cuotas  = u.cuotas_total || '__';
+  var monto   = u.monto_cuota  || '________';
 
-  var ct = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; };
-  ct('ct-nombre', nombre); ct('ct-doc', dni); ct('ct-dest', destino);
-  ct('ct-paq',   u.paquete || '—'); ct('ct-fecha', u.fecha_viaje || 'Por confirmar');
-  ct('ct-total', 'USD ' + total); ct('ct-cuotas', cuotas); ct('ct-monto', 'USD ' + monto);
+  if (doc) {
+    doc.innerHTML = tpl('tpl-contrato', {
+      nombre: nombre, dni: dni, destino: destino,
+      total: total, cuotas: cuotas, monto: monto
+    });
+    var ct = function (id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val || '\u2014';
+    };
+    ct('ct-nombre', nombre);  ct('ct-doc', dni);         ct('ct-dest', destino);
+    ct('ct-paq',   u.paquete || '\u2014');
+    ct('ct-fecha', u.fecha_viaje || 'Por confirmar');
+    ct('ct-total', 'USD ' + total);
+    ct('ct-cuotas', cuotas);
+    ct('ct-monto',  'USD ' + monto);
+  }
+
+  // ── Checkpoint v3.1 §3: consultar tabla contratos por cliente_id ───────
+  // Botón descarga permanece deshabilitado hasta confirmar estado=firmado.
+  if (!sbClient || !u.id) return;
+
+  sbClient
+    .from('contratos')
+    .select('id, estado, numero_contrato, recibo_url, fecha_firma')
+    .eq('cliente_id', u.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .then(function (_ctRes) {
+      var rows     = _ctRes.data || [];
+      var contrato = rows.length > 0 ? rows[0] : null;
+
+      if (!contrato) {
+        // Sin fila en DB: contrato no generado aún
+        if (banner) {
+          banner.innerHTML =
+            '<div style="background:rgba(100,116,139,.1);border:1px solid rgba(100,116,139,.2);'
+            + 'border-radius:12px;padding:14px 18px;font-size:.83rem;color:rgba(200,220,255,.6);">'
+            + '\u23F3 Tu contrato a\u00fan no fue generado. Tu asesor lo preparar\u00e1 al registrarte.'
+            + '</div>';
+        }
+        _lockBtn(btnDl);
+        return;
+      }
+
+      if (contrato.estado === 'firmado') {
+        // ✅ CEO firmó — habilitar descarga
+        var _numStr   = contrato.numero_contrato ? ' \u00b7 N\u00ba ' + contrato.numero_contrato : '';
+        var _fechaStr = contrato.fecha_firma
+          ? ' \u00b7 ' + new Date(contrato.fecha_firma).toLocaleDateString('es-AR')
+          : '';
+        if (banner) {
+          banner.innerHTML =
+            '<div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);'
+            + 'border-radius:12px;padding:14px 18px;font-size:.83rem;color:#6ee7b7;'
+            + 'display:flex;align-items:center;gap:10px;">'
+            + '<span style="font-size:1.15rem;">\u2705</span>'
+            + '<span>Contrato <strong>firmado y vigente</strong>' + _numStr + _fechaStr + '.</span>'
+            + '</div>';
+        }
+        if (btnDl) {
+          btnDl.disabled          = false;
+          btnDl.style.opacity     = '1';
+          btnDl.style.cursor      = 'pointer';
+          btnDl.setAttribute('data-recibo-url',    contrato.recibo_url      || '');
+          btnDl.setAttribute('data-num-contrato',  contrato.numero_contrato || '');
+        }
+
+      } else {
+        // borrador o revisado — bloquear con banner amarillo
+        var _msg = (contrato.estado === 'revisado')
+          ? '\uD83D\uDD0D Tu contrato est\u00e1 siendo revisado por el equipo Luazul.'
+          : '\uD83D\uDCCB Contrato en proceso de validaci\u00f3n final. Te notificaremos cuando est\u00e9 listo.';
+        if (banner) {
+          banner.innerHTML =
+            '<div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.28);'
+            + 'border-radius:12px;padding:14px 18px;font-size:.83rem;color:#fcd34d;'
+            + 'display:flex;align-items:center;gap:10px;">'
+            + '<span style="font-size:1.15rem;">\u23F3</span>'
+            + '<span>' + _msg + '</span>'
+            + '</div>';
+        }
+        _lockBtn(btnDl);
+      }
+    })
+    .catch(function (e) {
+      console.warn('[SB] renderContrato/contratos:', e.message);
+    });
+
+  function _lockBtn(btn) {
+    if (!btn) return;
+    btn.disabled      = true;
+    btn.style.opacity = '.4';
+    btn.style.cursor  = 'not-allowed';
+  }
 }
 
 function descargarContrato() {
-  if (currentUser.contrato_url) {
-    var a = document.createElement('a');
-    a.href = currentUser.contrato_url;
-    a.download = 'Contrato_Luazul_' + (currentUser.nombre || 'cliente').replace(/\s+/g, '_') + '.pdf';
+  var btnDl = document.getElementById('btnDescargaContrato');
+  // Gate: nunca ejecutar si el botón está deshabilitado
+  if (!btnDl || btnDl.disabled) {
+    showToast('\u26A0\uFE0F El contrato a\u00fan no fue aprobado por la direcci\u00f3n.', 'warn');
+    return;
+  }
+  var reciboUrl   = btnDl.getAttribute('data-recibo-url')   || '';
+  var numContrato = btnDl.getAttribute('data-num-contrato') || '';
+  var nombre      = 'Contrato_Luazul_'
+    + (numContrato || (currentUser.nombre || 'cliente')).replace(/\s+/g, '_')
+    + '.pdf';
+
+  if (reciboUrl) {
+    var a      = document.createElement('a');
+    a.href     = reciboUrl;
+    a.download = nombre;
+    a.target   = '_blank';
     a.click();
   } else {
-    showToast('⚠️ El contrato PDF aún no está disponible. Contactá a tu asesora.', 'warn');
+    showToast('\u2139\uFE0F Generando PDF desde la vista actual...', 'ok');
+    setTimeout(function () { window.print(); }, 400);
   }
 }
 function imprimirContrato() { window.print(); }
 
 // ══════════════════════════════════════════════════════
-//  REFERIDOS — lee desde Supabase tabla referidos
+//  REFERIDOS — Checkpoint v3.1 §5B
+//  Regla 3:1: tour gratis por cada 3 referidos con estado='completado'.
+//  estado='activo' = cliente activo, cuenta como "en progreso".
+//  estado='completado' = plan finalizado, cuenta para el tour.
 // ══════════════════════════════════════════════════════
 function renderReferidos() {
   var u = currentUser;
 
   function _pintarRefs(refs) {
-    var activos    = refs.filter(function (r) { return r.estado === 'activo'; }).length;
-    var premios    = Math.floor(activos / 3);
-    var enProgreso = activos % 3;
-    var pct        = Math.min(100, Math.round((enProgreso / 3) * 100));
+    // ── Segmentar por estado — fuente de verdad: tabla referidos ──────
+    var completados  = refs.filter(function (r) { return r.estado === 'completado'; }).length;
+    var enProgreso   = refs.filter(function (r) { return r.estado === 'activo'; }).length;
+
+    // Tours ganados: múltiplos de 3 completados
+    var toursGanados = Math.floor(completados / 3);
+    // Progreso hacia el próximo tour: completados que no forman un nuevo múltiplo
+    var haciaProximo = completados % 3;
+    var pct          = Math.min(100, Math.round((haciaProximo / 3) * 100));
 
     var countEl = document.getElementById('refCount');
     var barEl   = document.getElementById('refBar');
@@ -1789,32 +1987,78 @@ function renderReferidos() {
     var listEl  = document.getElementById('refList');
     var codeEl  = document.getElementById('refCode');
 
-    if (countEl) countEl.textContent = enProgreso + ' / 3';
+    // Contador muestra progreso hacia el próximo tour
+    if (countEl) countEl.textContent = haciaProximo + ' / 3';
     if (barEl)   barEl.style.width   = pct + '%';
 
     if (msgEl) {
-      if (premios > 0) {
-        msgEl.innerHTML = '<span style="color:#fbbf24;font-weight:700;">&#127942; &iexcl;Ganaste ' + premios + ' tour' + (premios > 1 ? 's' : '') + ' gratis! Contactanos por WhatsApp.</span>';
+      if (toursGanados > 0) {
+        msgEl.innerHTML =
+          '<span style="color:#fbbf24;font-weight:700;">'
+          + '&#127942; &iexcl;Ganaste ' + toursGanados
+          + ' tour' + (toursGanados > 1 ? 's' : '') + ' gratis!'
+          + ' Contact\u00e1nos por WhatsApp para coordinar.'
+          + '</span>';
+      } else if (enProgreso > 0 && completados === 0) {
+        // Tiene activos pero ninguno completado aún
+        msgEl.textContent =
+          'Ten\u00e9s ' + enProgreso
+          + ' referido' + (enProgreso === 1 ? '' : 's')
+          + ' en progreso. El tour se acredita cuando completen su plan.';
       } else {
-        var faltan = 3 - enProgreso;
-        msgEl.textContent = 'Te faltan ' + faltan + ' referido' + (faltan === 1 ? '' : 's') + ' activo' + (faltan === 1 ? '' : 's') + ' para ganar tu pr\u00f3ximo tour gratis.';
+        var faltan = 3 - haciaProximo;
+        msgEl.textContent =
+          'Te faltan ' + faltan
+          + ' referido' + (faltan === 1 ? '' : 's')
+          + ' que completen su plan para ganar tu pr\u00f3ximo tour gratis.';
       }
     }
 
-    var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    // Código de referido: LUA-NOMBRE6
+    var code = 'LUA-' + (u.nombre || u.email || 'AMIGO')
+      .split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
     if (codeEl) codeEl.textContent = code;
 
+    // ── Lista de referidos ──────────────────────────────────────────
     if (listEl) {
       if (!refs.length) {
-        listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:.88rem;">A\u00fan no ten\u00e9s referidos. \u00a1Compartí tu c\u00f3digo!</div>';
+        listEl.innerHTML =
+          '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:.88rem;">'
+          + 'A\u00fan no ten\u00e9s referidos. \u00a1Compart\u00ed tu c\u00f3digo!'
+          + '</div>';
       } else {
         listEl.innerHTML = refs.map(function (r) {
-          var estadoColor = r.estado === 'activo' ? '#6ee7b7' : '#fca5a5';
-          var estadoBg    = r.estado === 'activo' ? 'rgba(16,185,129,.1)' : 'rgba(239,68,68,.1)';
-          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;">'
-            + '<div><div style="font-weight:600;font-size:.9rem;">' + (r.nombre_referido || r.email_referido || '\u2014') + '</div>'
-            + '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;">' + (r.created_at ? new Date(r.created_at).toLocaleDateString('es-AR') : '') + '</div></div>'
-            + '<span style="font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;background:' + estadoBg + ';color:' + estadoColor + ';">' + (r.estado || '\u2014') + '</span>'
+          var esComp  = r.estado === 'completado';
+          var esActiv = r.estado === 'activo';
+          var color   = esComp  ? '#fbbf24'
+                      : esActiv ? '#6ee7b7'
+                      :           '#fca5a5';
+          var bg      = esComp  ? 'rgba(251,191,36,.1)'
+                      : esActiv ? 'rgba(16,185,129,.1)'
+                      :           'rgba(239,68,68,.1)';
+          var icono   = esComp  ? '\uD83C\uDFC1'
+                      : esActiv ? '\u23F3'
+                      :           '\u26D4';
+          var nombreR = r.referido_nombre || r.nombre_referido
+                     || r.referido_email  || r.email_referido
+                     || '\u2014';
+          var fechaR  = r.created_at
+            ? new Date(r.created_at).toLocaleDateString('es-AR')
+            : '';
+          var etiqueta = esComp  ? 'Completado'
+                       : esActiv ? 'En progreso'
+                       : (r.estado || '\u2014');
+          return '<div style="display:flex;align-items:center;justify-content:space-between;'
+            + 'padding:12px 16px;background:rgba(255,255,255,.04);'
+            + 'border:1px solid var(--border);border-radius:10px;">'
+            + '<div>'
+            +   '<div style="font-weight:600;font-size:.9rem;">' + nombreR + '</div>'
+            +   '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;">' + fechaR + '</div>'
+            + '</div>'
+            + '<span style="font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;'
+            +   'background:' + bg + ';color:' + color + ';">'
+            +   icono + ' ' + etiqueta
+            + '</span>'
             + '</div>';
         }).join('');
       }
@@ -1824,15 +2068,16 @@ function renderReferidos() {
     if (badge) badge.textContent = refs.length > 0 ? refs.length : '\u2014';
   }
 
+  // ── Consulta a Supabase — cliente_id es BIGINT, sin ambigüedad UUID ──
   sbClient
     .from('referidos')
     .select('*')
-    .eq('cliente_id', u.id)
+    .eq('cliente_referidor_id', u.id)
     .then(function (_refRes) {
       _pintarRefs(_refRes.data || []);
     })
     .catch(function (e) {
-      console.warn('[SB] referidos:', e.message);
+      console.warn('[SB] renderReferidos:', e.message);
       _pintarRefs([]);
     });
 }
