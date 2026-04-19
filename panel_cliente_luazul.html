@@ -1028,10 +1028,28 @@ window.addEventListener('DOMContentLoaded', function () {
       .then(function (_gsRes) {
         var sessionData = _gsRes.data;
         if (sessionData && sessionData.session) {
-          currentSession = sessionData.session;
-          return loadClientData(sessionData.session.user.email)
-            .then(function (ok) {
-              if (ok) { showApp(); return; }
+          var uid = String(sessionData.session.user.id);
+          // ── GUARDIA v3.2: verificar role_id=4 en profiles antes de entrar ──
+          // Evita que un vendedor/gerente/CEO con sesión activa entre al panel cliente
+          return sbClient.from('profiles')
+            .select('role_id')
+            .eq('id', uid)
+            .single()
+            .then(function (profRes) {
+              if (profRes.error || !profRes.data || profRes.data.role_id !== 4) {
+                // Sesión activa pero NO es cliente — expulsar
+                sbClient.auth.signOut();
+                showLoginScreen();
+                return;
+              }
+              currentSession = sessionData.session;
+              return loadClientData(sessionData.session.user.email)
+                .then(function (ok) {
+                  if (ok) { showApp(); return; }
+                  showLoginScreen();
+                });
+            })
+            .catch(function () {
               showLoginScreen();
             });
         }
@@ -1102,15 +1120,20 @@ function doLogin() {
 
 // Carga los datos del cliente desde la tabla clientes
 function loadClientData(email) {
-  // ── Checkpoint v3.1: SELECT filtra por email Y valida user_id UUID post-carga ──
-  // La FK clientes.user_id debe coincidir con auth.uid() para garantizar
-  // que el cliente autenticado solo accede a sus propios datos.
-  var SELECT_CLIENTES = '*, vendedor:staff_profiles!clientes_seller_id_fkey(id, nombre, apellido, telefono1, telefono2, activo)';
+  // ── ADN v3 Fase 3: filtro de identidad dual ──────────────────────────────
+  // El SELECT filtra por user_id (UUID del auth session) como fuente de verdad.
+  // El email se usa solo como campo de display post-carga.
+  // Esto garantiza que el cliente autenticado solo accede a sus propios datos,
+  // incluso si dos clientes comparten email por error en carga.
+  var uid = currentSession && currentSession.user ? String(currentSession.user.id) : null;
+  if (!uid) return Promise.resolve(false);
+
+  var SELECT_CLIENTES = 'id,user_id,seller_id,nombre,email,telefono,documento,domicilio,estado,destino,paquete,fecha_viaje,monto_cuota,cuotas_total,cuotas_pagadas,total_usd,fecha_alta,notas,region_id,mora_json,comprobantes_json,voucher_url,vendedor:staff_profiles!seller_id(id,nombre,apellido,telefono1,telefono2,activo)';
 
   return sbClient
     .from('clientes')
     .select(SELECT_CLIENTES)
-    .eq('email', email.toLowerCase())
+    .eq('user_id', uid)
     .single()
     .then(function (_cliRes) {
       var data  = _cliRes.data;
@@ -1118,21 +1141,8 @@ function loadClientData(email) {
 
       if (error || !data) return false;
 
-      // ── SEGURIDAD — Comparación dual String() — Regla maestra v3.1 ────
-      // Verificar que el perfil cargado pertenece exactamente al usuario
-      // autenticado. Nunca comparar UUID directo sin coerción.
-      if (currentSession && currentSession.user) {
-        var _sessionUid = String(currentSession.user.id || '');
-        var _profileUid = String(data.user_id || '');
-        if (_profileUid && _profileUid !== _sessionUid) {
-          // UUID mismatch: otro cliente con el mismo email o dato corrupto
-          console.warn('[SECURITY] UUID mismatch — session:', _sessionUid, '/ perfil:', _profileUid);
-          sbClient.auth.signOut();
-          showError('Error de autenticaci\u00f3n. Por favor ingres\u00e1 de nuevo.');
-          return false;
-        }
-      }
-      // ──────────────────────────────────────────────────────────────────
+      // ── user_id ya fue validado en el SELECT (.eq('user_id', uid)) ────────
+      // No se requiere comparación post-carga adicional.
 
       if (data.estado === 'baja') {
         showError('Tu plan fue dado de baja. Contact\u00e1 a Luazul Smart Travel para m\u00e1s informaci\u00f3n.');
@@ -1757,7 +1767,28 @@ function uploadComp(cuotaNum) {
     var file = e.target.files[0];
     if (!file) return;
     if (file.size > 3 * 1024 * 1024) { showToast('⚠️ Archivo demasiado grande. Máximo 3MB.', 'warn'); return; }
-    // Notificar al asesor via Supabase con nombre del archivo
+
+    // ── ADN v3: insertar en tabla `pagos` para que el CEO pueda aprobar ───
+    // Sin este registro, el CEO no ve el comprobante en su panel.
+    if (sbClient && currentUser) {
+      var asesorNombre = currentUser.vendedor
+        ? ((currentUser.vendedor.nombre || '') + ' ' + (currentUser.vendedor.apellido || '')).trim()
+        : '';
+      sbClient.from('pagos').insert({
+        cliente_id:       currentUser.id,
+        numero_cuota:     cuotaNum,
+        monto_usd:        parseFloat(currentUser.monto_cuota) || 0,
+        estado:           'pendiente',
+        comprobante_url:  null,
+        cliente_nombre:   currentUser.nombre || currentUser.email,
+        vendedor_nombre:  asesorNombre,
+        created_at:       new Date().toISOString()
+      }).then(function(r) {
+        if (r.error) console.warn('[SB] uploadComp/pagos insert:', r.error.message);
+      }).catch(function(e) { console.warn('[SB] uploadComp/pagos:', e.message); });
+    }
+
+    // Notificar al asesor via tabla notificaciones
     firePaymentNotif(cuotaNum, file.name);
     renderCuotas();
     showToast('✅ Comprobante de cuota ' + cuotaNum + ' enviado. Tu asesor lo revisará pronto.', 'ok');
@@ -1771,6 +1802,7 @@ function firePaymentNotif(cuotaNum, fileName) {
   sbClient.from('notificaciones').insert({
     tipo:             'payment',
     mensaje:          'El cliente ' + (currentUser.nombre || currentUser.email) + ' adjunt\u00f3 comprobante de cuota ' + cuotaNum,
+    destinatario_id:  currentUser.seller_id || null,  // UUID del vendedor específico
     destinatario_rol: 'seller',
     cliente_id:       currentUser.id || null,
     leida:            false,
