@@ -1128,7 +1128,7 @@ function loadClientData(email) {
   var uid = currentSession && currentSession.user ? String(currentSession.user.id) : null;
   if (!uid) return Promise.resolve(false);
 
-  var SELECT_CLIENTES = 'id,user_id,seller_id,nombre,email,telefono,documento,domicilio,estado,destino,paquete,fecha_viaje,monto_cuota,cuotas_total,cuotas_pagadas,total_usd,fecha_alta,notas,region_id,mora_json,comprobantes_json,voucher_url,vendedor:staff_profiles!seller_id(id,nombre,apellido,telefono1,telefono2,activo)';
+  var SELECT_CLIENTES = 'id,user_id,seller_id,nombre,email,telefono,documento,domicilio,estado,destino,paquete,fecha_viaje,monto_cuota,cuotas_total,cuotas_pagadas,total_usd,fecha_alta,notas,region_id,mora_json,comprobantes_json,voucher_url,vendedor:staff_profiles!seller_id(id,user_id,nombre,apellido,telefono1,telefono2,activo)';
 
   return sbClient
     .from('clientes')
@@ -1156,7 +1156,7 @@ function loadClientData(email) {
       if (!vendActivo && regionId) {
         return sbClient
           .from('staff_profiles')
-          .select('id, nombre, apellido, telefono1, telefono2')
+          .select('id, user_id, nombre, apellido, telefono1, telefono2')
           .eq('role_id', 3)
           .eq('region_id', regionId)
           .eq('activo', true)
@@ -1799,11 +1799,22 @@ function uploadComp(cuotaNum) {
 // Notificación a Supabase cuando se sube un comprobante
 function firePaymentNotif(cuotaNum, fileName) {
   if (!sbClient || !currentUser) return;
+
+  // Determinar destinatario: vendedor asignado o gerente regional (Fase 3)
+  var destId = null;
+  var destRol = 'seller';
+  if (currentUser.vendedor && currentUser.vendedor.activo) {
+    destId = currentUser.vendedor.user_id;
+  } else if (currentUser._gerente) {
+    destId = currentUser._gerente.user_id;
+    destRol = 'manager';
+  }
+
   sbClient.from('notificaciones').insert({
     tipo:             'payment',
     mensaje:          'El cliente ' + (currentUser.nombre || currentUser.email) + ' adjunt\u00f3 comprobante de cuota ' + cuotaNum,
-    destinatario_id:  currentUser.seller_id || null,  // UUID del vendedor específico
-    destinatario_rol: 'seller',
+    destinatario_id:  destId,
+    destinatario_rol: destRol,
     cliente_id:       currentUser.id || null,
     leida:            false,
     datos_extra:      {
