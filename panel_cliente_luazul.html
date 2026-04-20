@@ -1567,8 +1567,8 @@ function renderCuotas() {
   // Filtrar por cliente_id (BIGINT) — sin ambigüedad de UUID aquí.
   sbClient
     .from('pagos')
-    .select('id, estado, created_at, comprobante_url')
-    .eq('cliente_id', u.id)
+    .select('id, estado, created_at, comprobante_url, numero_cuota')
+    .eq('cliente_id', parseInt(u.id) || null)
     .eq('estado', 'aprobado')
     .order('created_at', { ascending: true })
     .then(function (_pagRes) {
@@ -1772,10 +1772,10 @@ function uploadComp(cuotaNum) {
     // Sin este registro, el CEO no ve el comprobante en su panel.
     if (sbClient && currentUser) {
       var asesorNombre = currentUser.vendedor
-        ? ((currentUser.vendedor.nombre || '') + ' ' + (currentUser.vendedor.apellido || '')).trim()
+        ? ((currentUser.vendedor.nombre || '') + ' ' + (currentUser.vendedor.apellido || '')).trim() 
         : '';
       sbClient.from('pagos').insert({
-        cliente_id:       currentUser.id,
+        cliente_id:       parseInt(currentUser.id) || null,
         numero_cuota:     cuotaNum,
         monto_usd:        parseFloat(currentUser.monto_cuota) || 0,
         estado:           'pendiente',
@@ -1906,7 +1906,7 @@ function renderContrato() {
   sbClient
     .from('contratos')
     .select('id, estado, numero_contrato, recibo_url, fecha_firma')
-    .eq('cliente_id', u.id)
+    .eq('cliente_id', parseInt(u.id) || null)
     .order('created_at', { ascending: false })
     .limit(1)
     .then(function (_ctRes) {
@@ -2114,8 +2114,8 @@ function renderReferidos() {
   // ── Consulta a Supabase — cliente_id es BIGINT, sin ambigüedad UUID ──
   sbClient
     .from('referidos')
-    .select('*')
-    .eq('cliente_referidor_id', u.id)
+    .select('*, cliente_referidor_id')
+    .eq('cliente_referidor_id', parseInt(u.id) || null)
     .then(function (_refRes) {
       _pintarRefs(_refRes.data || []);
     })
