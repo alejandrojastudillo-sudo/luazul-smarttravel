@@ -1278,8 +1278,9 @@ async function renderReferidos() {
 
   try {
     var { data, error } = await sbClient
-      .from('referidos').select('*')
-      .eq('referente_id', parseInt(u.id))
+      .from('referidos')
+      .select('*')
+      .eq('cliente_referidor_id', parseInt(u.id))
       .order('created_at', { ascending: false });
     if (error) throw error;
     var container = document.getElementById('referidosContainer');
@@ -1379,7 +1380,17 @@ function closeSidebar() {
 // ══════════════════════════════════════════════════════
 //  PAGO (MODAL)
 // ══════════════════════════════════════════════════════
-function abrirPago(cuotaId) {
+async function abrirPago(cuotaId) {
+  // Verificar estado actual de la cuota
+  var { data: pago, error } = await sbClient
+    .from('pagos')
+    .select('estado')
+    .eq('id', cuotaId)
+    .maybeSingle();
+  if (pago && (pago.estado === 'pagada' || pago.estado === 'en_revision')) {
+    showToast('⚠️ Esta cuota ya está ' + (pago.estado === 'pagada' ? 'pagada' : 'en revisión') + '.', 'warn');
+    return;
+  }
   selectedCuotaId = cuotaId;
   uploadedFile    = null;
   document.getElementById('fileInput').value = '';
@@ -1393,7 +1404,8 @@ function abrirPago(cuotaId) {
 function cerrarModal(id) {
   document.getElementById(id).classList.remove('active');
   if (id === 'modalPago') {
-    renderInicio(); // actualizar progreso
+    renderInicio();
+    renderCuotas();
   }
 }
 
@@ -1455,6 +1467,21 @@ async function subirComprobante() {
     }).eq('id', selectedCuotaId);
     if (updateError) throw updateError;
 
+    // Notificar al asesor (vendedor) automáticamente
+    if (currentUser && currentUser.seller_id) {
+      try {
+        await sbClient.from('notificaciones').insert({
+          tipo: 'pago_pendiente',
+          mensaje: 'El cliente ' + currentUser.nombre + ' ha subido un comprobante para la cuota ' + selectedCuotaId,
+          destinatario_id: currentUser.seller_id,
+          destinatario_rol: 'seller',
+          remitente_id: currentUser.user_id,
+          cliente_id: currentUser.id,
+          leida: false,
+          created_at: new Date().toISOString()
+        });
+      } catch (e) { console.warn('Error al notificar al asesor:', e); }
+    }
     showToast('✅ Comprobante subido correctamente.', 'ok');
     cerrarModal('modalPago');
     await renderCuotas();
@@ -1462,7 +1489,11 @@ async function subirComprobante() {
     showSyncBadge();
   } catch (e) {
     console.error('Error subirComprobante:', e);
-    showToast('⚠️ Error al subir el comprobante.', 'warn');
+    let msg = '⚠️ Error al subir el comprobante. ';
+    if (e.message && e.message.includes('storage')) msg += 'Verificá que el bucket "comprobantes" exista.';
+    else if (e.message && e.message.includes('permission')) msg += 'No tenés permisos para subir archivos.';
+    else msg += 'Intentá de nuevo más tarde.';
+    showToast(msg, 'warn');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Subir comprobante';
@@ -1498,11 +1529,11 @@ function initFirmaCanvas() {
 
   firmaCtx = canvas.getContext('2d');
   firmaCtx.scale(dpr, dpr);
+  firmaCtx.clearRect(0, 0, rect.width, rect.height); // ← limpiar después de escalar
   firmaCtx.strokeStyle = '#ffffff';
   firmaCtx.lineWidth   = 2.5;
   firmaCtx.lineCap     = 'round';
   firmaCtx.lineJoin    = 'round';
-  firmaCtx.clearRect(0, 0, rect.width, rect.height);
 
   // ── MOUSE EVENTS ──────────────────────────────────
   canvas.addEventListener('mousedown',  firmaStart,  { passive: false });
@@ -1728,7 +1759,8 @@ function renderSupportCard(data) {
   if (vendActivo) {
     var nombre = ((vendedor.nombre || '') + ' ' + (vendedor.apellido || '')).trim();
     var waNum  = cleanWA(vendedor.telefono1 || vendedor.telefono2);
-    var waUrl  = 'https://wa.me/' + (waNum || '5492974726449') + '?text=' + encodeURIComponent('Hola ' + (vendedor.nombre || '') + ', soy cliente de Luazul Smart Travel y tengo una consulta.');
+    if (!waNum) waNum = '5492974726449';
+    var waUrl  = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent('Hola ' + (vendedor.nombre || '') + ', soy cliente de Luazul Smart Travel y tengo una consulta.');
     html = '<div class="support-card-wrap glass">'
       + '<div class="support-card-header" style="background:linear-gradient(135deg,rgba(11,61,145,.4),rgba(5,20,60,.5));">'
       +   '<div class="support-avatar" style="background:linear-gradient(135deg,rgba(11,61,145,.5),rgba(26,91,181,.4));">👤</div>'
