@@ -96,67 +96,230 @@ body::before {
 }
 
 /* ── LOGIN SCREEN ── */
+/* ── FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@300;400;500&display=swap');
+
+/* ── LOGIN SCREEN ── */
 #loginScreen {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.login-box {
-  width: 100%;
-  max-width: 420px;
-  padding: 40px 32px;
-  text-align: center;
-}
-.login-logo {
-  width: 90px; height: 90px; border-radius: 50%;
-  background: linear-gradient(135deg, rgba(11,61,145,.6), rgba(30,80,180,.4));
-  border: 2px solid var(--border);
+  position: fixed; inset: 0; z-index: 9999;
   display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 24px;
+  padding: 24px;
+  font-family: 'Montserrat', sans-serif;
   overflow: hidden;
 }
-.login-box h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 4px; }
-.login-box .tagline { color: var(--blue-light); font-size: .75rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 36px; }
-.form-group { margin-bottom: 18px; text-align: left; }
-.form-group label { display: block; font-size: .78rem; font-weight: 600; color: var(--blue-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+/* Fondo hero con overlay oscuro */
+#loginScreen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=1600&q=80&fm=webp');
+  background-size: cover;
+  background-position: center 20%;
+  filter: brightness(0.75) saturate(1.2);
+  transform: scale(1.04);
+  animation: heroZoom 20s ease-in-out infinite alternate;
+  z-index: 0;
+}
+#loginScreen::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(170deg, rgba(0,20,60,.55) 0%, rgba(0,0,0,.45) 50%, rgba(10,40,20,.4) 100%);
+  z-index: 1;
+}
+@keyframes heroZoom {
+  from { transform: scale(1.04); }
+  to   { transform: scale(1.12) translateX(-1%); }
+}
+
+/* Partículas flotantes */
+.lz-particles { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.lz-particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: floatUp linear infinite;
+}
+.lz-particle.star {
+  width: 3px; height: 3px;
+  background: rgba(255,220,100,.9);
+  box-shadow: 0 0 6px rgba(255,220,100,.6);
+  border-radius: 50%;
+}
+.lz-particle.leaf {
+  width: 8px; height: 12px;
+  background: rgba(34,180,100,.5);
+  border-radius: 50% 0 50% 0;
+}
+.lz-particle.sand {
+  width: 2px; height: 2px;
+  background: rgba(255,200,120,.6);
+  border-radius: 50%;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(110vh) rotate(0deg);  opacity: 0; }
+  10%  { opacity: .8; }
+  90%  { opacity: .5; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* Tarjeta glassmorphism */
+.login-box {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 400px;
+  padding: 44px 36px 36px;
+  text-align: center;
+  background: rgba(0,0,0,0.40);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 28px;
+  box-shadow: 0 8px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.12);
+  animation: cardIn .7s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes cardIn {
+  from { opacity:0; transform: translateY(32px) scale(.96); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+
+/* Logo circular — listo para imagen real */
+.login-logo {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: linear-gradient(135deg, #0e3a8c 0%, #1a6fbb 50%, #0fbfad 100%);
+  border: 3px solid rgba(255,255,255,.25);
+  box-shadow: 0 0 0 6px rgba(15,191,173,.15), 0 8px 32px rgba(0,0,0,.4);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 22px;
+  overflow: hidden;
+  position: relative;
+}
+.login-logo img {
+  width: 100%; height: 100%;
+  object-fit: cover; border-radius: 50%;
+}
+/* Placeholder SVG cuando no hay logo real */
+.login-logo-placeholder {
+  font-size: 2.2rem; font-weight: 900;
+  background: linear-gradient(135deg, #7ee8fa, #f9d423);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: -1px;
+}
+
+/* Títulos */
+.login-box h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.65rem; font-weight: 900;
+  letter-spacing: 3px; margin-bottom: 3px;
+  background: linear-gradient(90deg, #7ee8fa 0%, #f9d423 60%, #ff8c42 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+.login-box .tagline {
+  font-family: 'Poppins', sans-serif;
+  color: rgba(200,230,255,.65);
+  font-size: .72rem; letter-spacing: 4px;
+  text-transform: uppercase; margin-bottom: 32px;
+  font-weight: 300;
+}
+
+/* Campos */
+.form-group { margin-bottom: 16px; text-align: left; }
+.form-group label {
+  display: block; font-size: .72rem; font-weight: 700;
+  color: rgba(126,232,250,.8);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 7px;
+}
 .form-group input, .form-group select, .form-group textarea {
-  width: 100%; padding: 14px 18px;
-  background: rgba(5,20,60,.8);
-  border: 1px solid var(--border);
-  border-radius: 12px; color: white;
-  font-family: inherit; font-size: .95rem;
-  transition: border-color .2s;
+  width: 100%; padding: 13px 18px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px; color: white;
+  font-family: 'Poppins', sans-serif; font-size: .93rem;
+  transition: border-color .25s, box-shadow .25s, background .25s;
+  box-sizing: border-box;
 }
 .form-group input:focus,
 .form-group select:focus,
-.form-group textarea:focus { outline: none; border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(126,184,255,.15); }
-.form-group input::placeholder, .form-group textarea::placeholder { color: rgba(200,220,255,.3); }
+.form-group textarea:focus {
+  outline: none;
+  border-color: rgba(126,232,250,.7);
+  background: rgba(255,255,255,.12);
+  box-shadow: 0 0 0 3px rgba(126,232,250,.12);
+}
+.form-group input::placeholder { color: rgba(200,230,255,.35); font-style: italic; }
 .form-group select option { background: #0a1a3e; color: white; }
 
+/* Ojo de contraseña */
 .lz-pass-wrap { position: relative; }
 .lz-pass-wrap input { padding-right: 52px; }
 .lz-eye-btn {
   position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-  background: none; border: none; color: rgba(126,184,255,.5); cursor: pointer;
+  background: none; border: none; color: rgba(126,232,250,.45); cursor: pointer;
   padding: 8px; display: flex; align-items: center;
   transition: color .2s; min-width: 44px; min-height: 44px; justify-content: center;
   touch-action: manipulation;
 }
-.lz-eye-btn:active { color: var(--blue-light); }
+.lz-eye-btn:active { color: rgba(126,232,250,1); }
 
-.login-btn { width: 100%; padding: 16px; font-size: 1rem; border-radius: 12px; margin-top: 8px; }
-.login-error {
-  background: var(--red-glass); border: 1px solid rgba(239,68,68,.3);
-  color: #fca5a5; border-radius: 10px; padding: 12px 16px;
-  font-size: .85rem; margin-top: 14px; display: none;
+/* Link recuperar */
+.login-recover {
+  text-align: right; margin-top: -8px; margin-bottom: 20px;
 }
-.login-footer { margin-top: 24px; color: var(--text-muted); font-size: .8rem; }
-.login-footer a { color: var(--blue-light); text-decoration: none; }
+.login-recover a {
+  font-family: 'Poppins', sans-serif;
+  font-size: .75rem; color: rgba(200,230,255,.55);
+  text-decoration: underline; text-underline-offset: 3px;
+  transition: color .2s;
+}
+.login-recover a:hover { color: #7ee8fa; }
 
-/* Countdown for brute-force block */
-#loginCountdown { font-size:.8rem; color:#fcd34d; margin-top:8px; }
+/* Botón Login — gradiente azul → dorado */
+.login-btn {
+  width: 100%; padding: 15px; font-size: 1rem;
+  font-family: 'Montserrat', sans-serif; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase;
+  border: none; border-radius: 14px; cursor: pointer;
+  background: linear-gradient(90deg, #0e5f99 0%, #1a9bb5 35%, #d4a017 70%, #f0c040 100%);
+  background-size: 200% auto;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.4);
+  box-shadow: 0 4px 20px rgba(212,160,23,.35), 0 1px 0 rgba(255,255,255,.15) inset;
+  transition: background-position .4s ease, transform .15s, box-shadow .3s;
+  margin-top: 4px;
+}
+.login-btn:hover {
+  background-position: right center;
+  box-shadow: 0 6px 32px rgba(212,160,23,.55);
+  transform: translateY(-1px);
+}
+.login-btn:active { transform: translateY(0); }
+.login-btn:disabled {
+  opacity: .5; cursor: not-allowed; transform: none;
+}
+
+/* Footer link nueva cuenta */
+.login-footer {
+  margin-top: 22px;
+  font-family: 'Poppins', sans-serif;
+  color: rgba(200,230,255,.4); font-size: .78rem;
+}
+.login-footer a {
+  color: rgba(126,232,250,.75); text-decoration: none;
+  border-bottom: 1px solid rgba(126,232,250,.3);
+  transition: color .2s;
+}
+.login-footer a:hover { color: #7ee8fa; }
+
+/* Error */
+.login-error {
+  background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.35);
+  color: #fca5a5; border-radius: 10px; padding: 11px 14px;
+  font-size: .82rem; margin-top: 14px; display: none;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Countdown */
+#loginCountdown { font-size:.78rem; color:#f9d423; margin-top:8px; font-family:'Poppins',sans-serif; }
 
 /* ── TOP BAR (mobile) ── */
 .top-bar {
@@ -547,35 +710,50 @@ td { font-size: .88rem; }
      LOGIN SCREEN
 ════════════════════════════════════════════════════════ -->
 <div id="loginScreen">
-  <div class="login-box glass">
+
+  <!-- Partículas flotantes -->
+  <div class="lz-particles" id="lzParticles"></div>
+
+  <div class="login-box">
+    <!-- Logo circular — reemplazar src con logo real cuando esté disponible -->
     <div class="login-logo">
-      <img src="hero-luazul.png" alt="Luazul Smart Travel" style="width:90px;height:90px;object-fit:cover;">
+      <img src="hero-luazul.png" alt="Luazul" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <span class="login-logo-placeholder" style="display:none;">A</span>
     </div>
+
     <h1>LUAZUL</h1>
-    <div class="tagline">Smart Travel</div>
+    <div class="tagline">Portal de Cliente · Smart Travel</div>
 
     <div class="form-group">
       <label for="loginEmail">Email</label>
       <input type="email" id="loginEmail" placeholder="tu@email.com" autocomplete="email" inputmode="email">
     </div>
+
     <div class="form-group">
       <label for="loginPass">Contraseña</label>
       <div class="lz-pass-wrap">
         <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
         <button type="button" class="lz-eye-btn" onclick="lzToggle('loginPass', this)" aria-label="Mostrar contraseña">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lz-eye-loginPass">
             <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
           </svg>
         </button>
       </div>
     </div>
-    <button class="btn btn-primary login-btn" id="loginBtn" onclick="loginUser()" touch-action="manipulation">
-      Ingresar a mi portal
+
+    <div class="login-recover">
+      <a href="https://wa.me/5492974726449?text=Necesito%20recuperar%20mi%20contraseña%20-%20Luazul" target="_blank">Recuperar contraseña</a>
+    </div>
+
+    <button class="login-btn" id="loginBtn" onclick="loginUser()" touch-action="manipulation">
+      Login
     </button>
+
     <div id="loginCountdown"></div>
     <div class="login-error" id="loginError">⚠️ Email o contraseña incorrectos.</div>
+
     <div class="login-footer">
-      ¿Olvidaste tu contraseña? <a href="https://wa.me/5492974726449?text=Necesito%20ayuda%20con%20mi%20contrase%C3%B1a%20-%20Luazul" target="_blank">Contactanos</a>
+      ¿No tenés cuenta? <a href="https://wa.me/5492974726449?text=Quiero%20crear%20mi%20cuenta%20-%20Luazul" target="_blank">Crear nueva cuenta</a>
     </div>
   </div>
 </div>
@@ -848,8 +1026,8 @@ td { font-size: .88rem; }
 // ══════════════════════════════════════════════════════
 //  SUPABASE CONFIG
 // ══════════════════════════════════════════════════════
-const SUPABASE_URL = 'https://vnbhcqbprlwsvcgynkcc.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZuYmhjcWJwcmx3c3ZjZ3lua2NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcyMDMwNzUsImV4cCI6MjA1Mjc3OTA3NX0.2fhzHMd8N8CZ_lDY_zj6ZmN5UMZWDLnUZ7XZmCHFr7E';
+const SUPABASE_URL = 'https://yunvqgaljopirzvjrntc.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true }
 });
@@ -996,6 +1174,24 @@ document.addEventListener('keydown', function(e) {
     loginUser();
   }
 });
+
+// ── PARTÍCULAS FLOTANTES (login tropical) ──
+(function initParticles() {
+  var container = document.getElementById('lzParticles');
+  if (!container) return;
+  var types = ['star','star','star','leaf','sand','sand','sand'];
+  for (var i = 0; i < 28; i++) {
+    var p = document.createElement('div');
+    var type = types[Math.floor(Math.random() * types.length)];
+    p.className = 'lz-particle ' + type;
+    var left  = Math.random() * 100;
+    var delay = Math.random() * 18;
+    var dur   = 12 + Math.random() * 16;
+    var size  = type === 'leaf' ? (6 + Math.random()*6) : (2 + Math.random()*3);
+    p.style.cssText = 'left:' + left + '%;bottom:-10px;width:' + size + 'px;height:' + (type==='leaf'?size*1.5:size) + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;';
+    container.appendChild(p);
+  }
+})();
 
 // ══════════════════════════════════════════════════════
 //  SHOW APP
@@ -1481,6 +1677,8 @@ async function subirComprobante() {
           created_at: new Date().toISOString()
         });
       } catch (e) { console.warn('Error al notificar al asesor:', e); }
+    } else {
+      console.warn('⚠️ No se pudo notificar al asesor: cliente sin seller_id');
     }
     showToast('✅ Comprobante subido correctamente.', 'ok');
     cerrarModal('modalPago');
