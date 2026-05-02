@@ -1032,6 +1032,175 @@ const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true }
 });
 
+// ==================== crm-core (inline) ====================
+// Versión 1.0 – Unificación de utilidades, mapeadores, carga centralizada
+
+// ── 1. CONSTANTES DE ROLES ───────────────────────────────────
+const ROLE_CEO     = 1;
+const ROLE_MANAGER = 2;
+const ROLE_SELLER  = 3;
+const ROLE_CLIENT  = 4;
+
+// ── 2. UTILIDADES PURAS ──────────────────────────────────────
+function _lz_esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+}
+
+function _lz_fmtUSD(v) {
+  return 'USD ' + (parseFloat(v) || 0).toLocaleString('es-AR', {
+    minimumFractionDigits: 0, maximumFractionDigits: 0
+  });
+}
+
+function _lz_fmtTs(ts) {
+  var d = Math.round((Date.now() - new Date(ts)) / 60000);
+  if (d < 60)   return 'Hace ' + d + ' min';
+  if (d < 1440) return 'Hace ' + Math.round(d / 60) + ' h';
+  return 'Hace ' + Math.round(d / 1440) + ' días';
+}
+
+function _lz_normalizarTelefono(tel) {
+  if (!tel) return '';
+  var digits = String(tel).replace(/\D/g, '');
+  if (digits.charAt(0) === '0') digits = '54' + digits.slice(1);
+  if (!digits.startsWith('54')) digits = '54' + digits;
+  return digits;
+}
+
+function _lz_formatDateLocal(iso) {
+  if (!iso) return '—';
+  var d = new Date(iso);
+  if (isNaN(d)) return '—';
+  return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// ── 3. MAPEADORES ────────────────────────────────────────────
+function mapStaffFromSB(v) {
+  var comps = [];
+  if (v.comprobantes_json) { try { comps = JSON.parse(v.comprobantes_json); } catch(e) {} }
+  return {
+    id: v.id, user_id: v.user_id,
+    nombre: (v.nombre || '') + (v.apellido ? ' ' + v.apellido : ''),
+    email: v.email || v.badge || '', role_id: v.role_id, role_name: v.role_name || '',
+    activo: v.activo !== false, fechaAlta: v.fecha_alta || '',
+    telefono1: v.telefono1 || '', telefono2: v.telefono2 || '',
+    domicilio: v.domicilio || '', cbu: v.cbu || '', ciudad: v.ciudad || '',
+    region_id: v.region_id || '', region_name: v.region_name || '',
+    manager_id: v.manager_id || null, com_pct: v.com_pct || 0, pct_bonus: v.com_pct || 0,
+    region_ids: [], comprobantes: comps, _raw: v
+  };
+}
+
+function mapClientFromSB(c) {
+  return {
+    id: c.id, user_id: c.user_id, seller_id: c.seller_id || '', region_id: c.region_id || '',
+    nombre: c.nombre || '', email: c.email || '', telefono: c.telefono || '',
+    documento: c.documento || '', domicilio: c.domicilio || '', estado: c.estado || 'activo',
+    destino: c.destino || '', paquete: c.paquete || '', fecha_viaje: c.fecha_viaje || '',
+    monto_cuota: parseFloat(c.monto_cuota) || 0, cuotas_total: parseInt(c.cuotas_total) || 10,
+    cuotas_pagadas: parseInt(c.cuotas_pagadas) || 0, total_usd: parseFloat(c.total_usd) || 0,
+    fechaAlta: c.fecha_alta ? c.fecha_alta.slice(0, 10) : '', notas: c.notas || '',
+    mora_json: c.mora_json || '[]'
+  };
+}
+
+function mapPagoToNotif(p) {
+  return {
+    id: p.id, tipo: 'payment',
+    ts: p.created_at ? new Date(p.created_at).getTime() : Date.now(),
+    leida: p.estado !== 'pendiente', aprobada: p.estado === 'aprobado',
+    cliente: p.cliente_nombre || '', cid: p.cliente_id || '', cuota: p.numero_cuota || 1,
+    monto: p.monto_usd || 0, vendedor: p.vendedor_nombre || '',
+    comp: p.comprobante_url || null, aprobadoPor: p.aprobado_por || '', vid: p.seller_id || ''
+  };
+}
+
+// ── 4. ENRICH ────────────────────────────────────────────────
+function _lz_enrich(c) {
+  var total = parseInt(c.cuotas_total) || 10;
+  var pagadas = parseInt(c.cuotas_pagadas) || 0;
+  var pct = Math.round((pagadas / total) * 100);
+  c._pct = pct; c._pendientes = total - pagadas;
+  if (c.estado === 'baja')                                         { c._semaforo = 'baja';     c._prioridad = 99; }
+  else if (c.estado === 'completo')                                { c._semaforo = 'verde';    c._prioridad = 50; }
+  else if (c.estado === 'atraso' || c.estado === 'atraso_gestion'){ c._semaforo = 'rojo';     c._prioridad = 1;  }
+  else if (pct >= 80)                                              { c._semaforo = 'rojo';     c._prioridad = 2;  }
+  else if (pct >= 60)                                              { c._semaforo = 'naranja';  c._prioridad = 3;  }
+  else if (pct >= 40)                                              { c._semaforo = 'amarillo'; c._prioridad = 4;  }
+  else                                                             { c._semaforo = 'verde';    c._prioridad = 5;  }
+  if (!c.mora) { try { c.mora = c.mora_json ? JSON.parse(c.mora_json) : []; } catch(e) { c.mora = []; } }
+  if (c.fecha_viaje) {
+    var parts = String(c.fecha_viaje).split('-');
+    var fv = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    c._dias = Math.ceil((fv - today) / 86400000);
+  } else { c._dias = 9999; }
+  return c;
+}
+
+// ── 5. CARGA CENTRALIZADA ────────────────────────────────────
+const LZ_LOAD = {
+  async loadData(profile, userRole, sbClient, options = {}) {
+    const { data: regiones, error: regError } = await sbClient
+      .from('regiones').select('id, nombre, bandera, pais, color, activo')
+      .eq('activo', true).order('pais, nombre');
+    if (regError) throw regError;
+
+    let staffQuery = sbClient.from('staff_profiles_view').select('*');
+    if (userRole === ROLE_SELLER)       staffQuery = staffQuery.eq('user_id', profile.user_id);
+    else if (userRole === ROLE_MANAGER) staffQuery = staffQuery.or(`manager_id.eq.${profile.id},user_id.eq.${profile.user_id}`);
+    const { data: staffData, error: staffError } = await staffQuery;
+    if (staffError) throw staffError;
+    const staff = staffData.map(mapStaffFromSB);
+
+    let clientesQuery = sbClient.from('clientes').select('*');
+    if (userRole === ROLE_SELLER) {
+      clientesQuery = clientesQuery.eq('seller_id', profile.id);
+    } else if (userRole === ROLE_MANAGER) {
+      const { data: gr } = await sbClient.from('gerente_regiones').select('region_id').eq('gerente_id', profile.user_id);
+      const rIds = (gr || []).map(r => r.region_id);
+      clientesQuery = rIds.length ? clientesQuery.in('region_id', rIds) : clientesQuery.eq('region_id', -1);
+    }
+    const { data: clientesData, error: clientesError } = await clientesQuery.order('nombre');
+    if (clientesError) throw clientesError;
+    const clientes = clientesData.map(mapClientFromSB);
+
+    const clientIds = clientes.map(c => c.id);
+    let pagos = [];
+    if (clientIds.length) {
+      const { data: pagosData, error: pagosError } = await sbClient
+        .from('pagos').select('*').in('cliente_id', clientIds)
+        .order('created_at', { ascending: false }).limit(500);
+      if (!pagosError) pagos = pagosData.map(mapPagoToNotif);
+    }
+
+    let notifQuery = sbClient.from('notificaciones').select('*');
+    if (userRole === ROLE_SELLER)       notifQuery = notifQuery.eq('destinatario_id', profile.id);
+    else if (userRole === ROLE_MANAGER) notifQuery = notifQuery.or(`destinatario_id.eq.${profile.id},destinatario_rol.eq.manager`);
+    else                                notifQuery = notifQuery.or(`destinatario_id.eq.${profile.id},destinatario_rol.eq.ceo`);
+    const { data: notificaciones, error: notifError } = await notifQuery
+      .order('created_at', { ascending: false }).limit(200);
+    if (notifError) throw notifError;
+
+    return { regiones, staff, clientes, pagos, notificaciones };
+  }
+};
+
+// ── 6. NAMESPACE GLOBAL window.LZ ────────────────────────────
+window.LZ = {
+  ROLE_CEO, ROLE_MANAGER, ROLE_SELLER, ROLE_CLIENT,
+  esc:                _lz_esc,
+  fmtUSD:             _lz_fmtUSD,
+  fmtTs:              _lz_fmtTs,
+  normalizarTelefono: _lz_normalizarTelefono,
+  formatDateLocal:    _lz_formatDateLocal,
+  enrich:             _lz_enrich,
+  mapStaffFromSB, mapClientFromSB, mapPagoToNotif, LZ_LOAD
+};
+
 var currentUser     = null;
 var selectedCuotaId = null;
 var uploadedFile    = null;
@@ -2029,14 +2198,10 @@ function showToast(msg, type) {
 }
 
 // ── Helpers ──────────────────────────────────────────
-function formatDateLocal(isoStr) {
-  if (!isoStr) return '—';
-  var d = new Date(isoStr);
-  return isNaN(d) ? '—' : d.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
-}
+function formatDateLocal(isoStr) { return LZ.formatDateLocal(isoStr); }
 function formatNumber(num) { return new Intl.NumberFormat('es-AR').format(num); }
 function isVencida(fechaVenc) { if (!fechaVenc) return false; return new Date(fechaVenc) < new Date(); }
-function esc(str) { if (!str) return ''; var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+function esc(str) { return LZ.esc(str); }
 
 // ══════════════════════════════════════════════════════
 //  PWA: Service Worker + Install Prompt
