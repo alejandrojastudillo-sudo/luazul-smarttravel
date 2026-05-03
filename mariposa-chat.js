@@ -38,82 +38,54 @@
 
   // ========== CONOCIMIENTO LOCAL ==========
   const SALUDOS = [
-    "🦋 ¡Hola! Soy Mariposa Luazul, tu exploradora de viajes. ¿Sabías que podés viajar a Brasil por menos de USD 1.45 por día por persona? Eso es menos de lo que cuesta un café en cualquier ciudad. 🌊✨ Contame, ¿para cuántas personas pensás viajar?",
-    "¡Hola! 🌴 Qué lindo que estés pensando en Brasil. En Luazul podés pagar tu viaje en cuotas que equivalen a menos de un café por día. ¿Te gustaría saber cómo funciona?",
-    "¡Qué emoción! Un viaje a Brasil está más cerca de lo que pensás. Con menos de USD 1.45 por día por persona podés hacerlo realidad. 🦋 Contame, ¿viajás solo o en grupo?"
+    "🦋 ¡Hola! Soy Mariposa Luazul, tu exploradora de viajes. ¿Sabías que podés cumplir el sueño de viajar a Brasil pagando cuotas mensuales desde USD 87? 🌊✨ Contame, ¿para cuántas personas pensás viajar?",
+    "¡Hola! 🌴 Qué lindo que estés pensando en Brasil. En Luazul podés empezar a pagar tu viaje hoy con cuotas fijas, sin intereses, y elegir la fecha cuando tu plan esté casi completo. ¿Te gustaría saber cómo funciona?",
+    "¡Qué emoción! Un viaje a Brasil está más cerca de lo que pensás. Con nuestras cuotas accesibles, podés asegurar tu lugar ahora y decidir la fecha después. 🦋 Contame, ¿viajás solo o en grupo?"
   ];
 
   const RESPUESTAS = {
     precio: [
-      "💰 ¡Mucho menos de lo que imaginás! Viajar al paraíso te cuesta apenas 1.45 USD por día por persona. Es un plan diseñado para que, con el esfuerzo de un pequeño ahorro cotidiano (menos de lo que sale un café), asegures 7 noches frente al mar con excursiones de lujo incluidas. ¿Empezamos a verlo?",
-      "🦋 Mirá: el plan para dos cuesta USD 870 en total, o sea USD 435 por persona. Dividido en 7 noches da USD 62 por noche, pero si repartís en 30 días, son menos de USD 1.50 por día por persona. Eso es menos que un café con factura. Además pagás en cuotas. ¿Te parece accesible?",
-      "La cuenta es simple: 1.45 USD por día por persona. Eso es menos de lo que gastás en una gaseosa. Por ese importe, te llevás 7 noches frente al mar, traslados privados, tours en Río y paseo de barco. ¿Vamos a verlo juntos?"
+      "💰 ¡Claro que sí! Nuestros planes se pagan en cuotas fijas en DÓLARES, sin intereses:\n\n• Para 2 personas: USD 870 total → 10 cuotas de USD 87/mes\n• Para 4 personas: USD 1.450 total → 10 cuotas de USD 145/mes\n• Para 6 personas: USD 1.740 total → 10 cuotas de USD 174/mes\n\nPodés elegir entre 6, 10, 12 o 18 cuotas. Empezás a pagar hoy y cuando tu plan esté al 80% coordinamos la fecha. ¡Flexibilidad total!",
+      "🦋 El plan arranca desde USD 87 por mes (para 2 personas). Si son más, el costo por persona baja mucho. No necesitás definir la fecha ahora: empezás a pagar y cuando llevés el 80% del plan, elegís cuándo querés viajar. ¿Cuántos son en el grupo?",
+      "La parte linda: pagar en cuotas sin que duela. 💸 Un viaje para dos cuesta USD 870 en total → 10 cuotas de USD 87. Eso es menos de lo que gastás en una noche de boliche. ¿Te imaginás pagando tu viaje mientras seguís con tu vida normal? 🌊"
     ],
     incluye: [
-      "🏨 ¡Exacto! Para tu estadía allá está todo cubierto: hotel seleccionado, traslados privados, tour por Río (Cristo y Pan de Azúcar) y paseo en barco en Arraial con almuerzo. Solo tenés que ocuparte de tus comidas extras y tus gustitos.",
-      "El paquete incluye alojamiento, traslados, excursiones premium (Río, Arraial, Buggy) y una app exclusiva para ver cuotas y vouchers. ¿Querés que te detalle una excursión en particular?",
-      "📦 Incluye: 7 noches frente al mar, traslados privados, día en Río (Cristo + Pan de Azúcar), paseo de barco en Arraial con almuerzo, excursión en Buggy y asesoría personalizada. ¿Alguna de estas actividades te llama más la atención?"
-    ],
-    cuotas: [
-      "¡Es nuestra especialidad! Podés pagar en cuotas fijas de 43.50 USD al mes por persona (para 2 personas, 10 cuotas de USD 87 total). Pensalo así: es menos de lo que gastás en una sola noche de boliche o en un par de pizzas. Acá esa plata te compra una semana en las mejores playas de Brasil.",
-      "💸 Totalmente accesible: cuotas desde USD 43.50 por persona por mes. Elegís el plazo que más te acomode (6, 10, 12 o 18 meses). Lo mejor: empezás a pagar hoy y decidís la fecha después. ¿Te gustaría que calculemos juntos el plan ideal?",
-      "Las cuotas son fijas y sin interés. Por ejemplo, para dos personas el total es USD 870; si elegís 10 cuotas pagás USD 87 al mes (USD 43.50 cada uno). Eso es menos que una salida nocturna. ¿Te parece razonable?"
-    ],
-    sin_mora: [
-      "Acá respirás profundo y relajás, porque en Luazul no existe la mora ni los intereses. Si un mes se te complica, no pagás nada extra. Tu plan simplemente se pausa y lo retomamos cuando puedas, sin penalizaciones. ¡Queremos que ahorres con alegría, no con estrés!",
-      "✅ ¡Cero estrés! Si un mes no podés pagar, no hay recargo. Solo se pausa el voucher hasta que regularices. No te castigamos por tener un imprevisto. ¿Tranquilo, no?",
-      "Sin mora: una ventaja única. Podés retrasar una cuota sin que te apliquen intereses. Tu única responsabilidad es seguir soñando con la playa. ¿Vamos a empezar?"
+      "🏨 Tu paquete incluye TODO para que solo te preocupes por disfrutar:\n• 7 noches frente al mar\n• Traslados privados aeropuerto ↔ hotel\n• Día completo en Río (Cristo + Pan de Azúcar)\n• Paseo de barco en Arraial do Cabo con almuerzo\n• Excursión en Buggy\n• Asesoría personalizada y App exclusiva\n\n¿Querés que te cuente alguna excursión en detalle?",
+      "¡El paquete es bien completo! Alojamiento frente al mar, traslados privados, tours, excursiones y asistencia. Lo único que no incluimos son los vuelos — y eso es a propósito para que tengas libertad. ¿Te explico por qué es una ventaja?",
+      "📦 Hospedaje en hoteles frente al mar, excursiones premium (Río, Arraial, Buggy), traslados privados y app exclusiva. Todo solucionado antes de que aterrizés."
     ],
     vuelo_libre: [
-      "¡Al contrario! Que no incluya vuelos es tu pase a la libertad. Al no estar atado a un vuelo grupal caro de agencia, podés:\n• Usar tus millas acumuladas.\n• Cazar ofertas de último momento en aerolíneas low-cost.\n• Elegir salir desde el aeropuerto que te quede más cerca (Comodoro, Neuquén, Buenos Aires) sin pagar de más.\nNosotros nos ocupamos de todo lo difícil en tierra; vos elegís cómo y cuándo volar.",
-      "✈️ Tu vuelo, tu autonomía. Nosotros no queremos encajarte un aéreo caro y con horarios rígidos. Vos buscás la mejor oferta, y nosotros te esperamos en el aeropuerto con traslado privado. ¿Te parece justo?",
-      "Es una ventaja, no una desventaja. Tenés libertad total para elegir aerolínea, horarios, ciudad de salida y hasta extender tus días. Mientras tanto, nosotros te cuidamos en tierra. ¿Vamos viendo?"
+      "✈️ ¡Excelente pregunta! En Luazul NO incluimos los vuelos, y eso es justamente para darte LIBERTAD TOTAL:\n• Usás tus millas o cazás ofertas.\n• Elegís desde qué ciudad salís.\n• Llegás antes o te quedás más días.\n• Nosotros te esperamos en el aeropuerto el día que vos elijas.\n\n¡Vos sos el dueño del cielo; nosotros expertos en tierra!",
+      "¡No incluimos vuelos a propósito! Así vos tenés el control: tu aerolínea favorita, tus horarios, tus millas. Nosotros te recibimos con traslado privado cuando llegás. ¿Genial, no? 🦋",
+      "Tu vuelo, tu autonomía. 🦋 Preferimos no atarte a un paquete rígido. Vos decidís cuándo salís, con qué aerolínea, y hasta podés extender tu estadía. Nos encargamos de todo lo demás."
+    ],
+    sin_mora: [
+      "✅ TRANQUILIDAD TOTAL: Si un mes se te complica pagar la cuota, NO hay recargo ni multa. Solo se pausa el voucher hasta que regularices. Queremos que ahorres sin estrés.",
+      "¡Olvidate de las preocupaciones! Si te atrasás en una cuota, no cobramos recargo punitorio. Nuestra prioridad es que viajes, no castigarte. 🦋",
+      "📌 Sin mora, sin estrés: podés retrasar una cuota sin que te apliquen intereses. Solo se bloquea el voucher momentáneamente. Así de simple."
     ],
     fechas: [
-      "¡Para nada! Esa es la magia de la Planificación Inteligente. Primero empezás a pagar tu nido en Brasil para congelar el precio y, una vez que terminás de abonar tu plan, recién ahí elegís cuándo querés viajar. Así no tenés que pelear por las vacaciones en el trabajo hoy mismo.",
-      "📅 No tenés que elegir fecha ahora. Empezás a pagar cuotas y cuando hayas completado el 80% del plan, coordinamos la fecha que mejor te quede. Flexible y sin presiones. ¿Te parece bien?",
-      "Lo lindo es que vos decidís cuándo ir. Pagás tus cuotas tranquilo y cuando estés cerca de terminarlas, elegimos la fecha juntos. Así viajás cuando realmente puedas."
+      "📅 En Luazul no te atamos a una fecha fija desde el principio. Empezás a pagar tus cuotas hoy y cuando hayas completado el 80% de tu plan, coordinamos la fecha de viaje que mejor te quede. ¡Libertad total para elegir cuándo tomarte esas merecidas vacaciones! 🌊",
+      "La fecha la elegís vos, no nosotros. Empezás a pagar ahora y cuando ya tengas el 80% del plan cubierto, definimos los días de viaje juntos. ¿Te parece bien así? 🦋"
     ],
-    grupos: [
-      "¡Claro! Cuantos más son, más divertido y accesible es el plan. Tenemos opciones para parejas (USD 87 total por mes), grupos de 4 (USD 145/mes) o grupos de 6 (USD 174/mes). Por persona, el costo baja muchísimo. ¿Cuántos son ustedes?",
-      "👥 Viajar en grupo es lo mejor. Cuantas más personas, menos paga cada uno. Por ejemplo, si son 6 personas, la cuota total es USD 174/mes, o sea USD 29 por persona por mes. ¡Eso es menos que un combo de hamburguesa! ¿Me decís cuántos van?"
-    ],
-    app: [
-      "Vas a tener acceso a nuestra App exclusiva para viajeros. Desde ahí vas a ver cada cuota que pagás, tu contrato firmado y tus vouchers. Es transparencia total en la palma de tu mano.",
-      "📱 Todo está en tu celular. La app de Luazul muestra tus cuotas, el contrato, el voucher y hasta te avisa cuándo estás cerca del 80% para elegir fecha. ¿Te gusta la idea?"
-    ],
-    pasaporte: [
-      "¡Para nada! Como vamos a Brasil, con tu DNI argentino vigente ya estás del otro lado. Es tan fácil como viajar a la provincia de al lado, pero con palmeras y agua transparente. Sin trámites caros ni esperas en el consulado. ¡Tu única preocupación es que no se te venza el documento!",
-      "🛂 Solo necesitás DNI argentino en buen estado. Sin visa, sin pasaporte. Brasil nos recibe con los brazos abiertos. ¿Viste qué sencillo?"
-    ],
-    comida: [
-      "¡Al contrario, es donde más ahorrás! Tenés el desayuno buffet incluido para arrancar el día como un rey. Para el resto, Brasil tiene las famosas 'lanchonetes' y comida al peso donde comés increíble por muy pocos reales. Al no incluir cenas fijas de hotel (que suelen ser caras y aburridas), tenés la libertad de elegir dónde y cuánto gastar cada día. ¡Comer en la playa es un placer muy accesible!",
-      "🍔 El desayuno está incluido. Las comidas del día las resolvés como quieras. Hay opciones para todos los presupuestos, desde un sándwich en la playa hasta un buffet libre. ¿Preferís comer económico o darte algún gusto?"
-    ],
-    clima: [
-      "La Costa do Sol es mágica porque tiene buen clima casi todo el año. Pero lo mejor de nuestro sistema es que no tenés que decidirlo hoy. Empezás a pagar ahora, congelás el precio, y cuando termines tu plan, elegís el mes que más te guste. ¡Nosotros te asesoramos para que encuentres el sol perfecto!",
-      "📅 ¿Invierno o verano? Vos elegís después. Como empezás a pagar ahora, podés fijar la fecha cuando hayas pagado la mayor parte. Así viajás con el clima que más te guste."
-    ],
-    tipo_cambio: [
-      "¡Es súper simple! Usamos nuestro sistema de Exchange Inteligente. Pagás en moneda local (ARS) con una de las mejores tasas del mercado, sin vueltas ni trámites raros. Es como ir comprando 'pedacitos de playa' todos los meses con lo que te sobra del sueldo.",
-      "💵 Pagás en pesos argentinos al tipo de cambio del día, sin recargos escondidos. El monto en dólares se fija al momento de la compra del paquete, así que no te afecta la devaluación. ¿Tranquilidad garantizada?"
-    ],
-    idioma: [
-      "¡Cero drama! El 'portuñol' es el idioma oficial de la buena onda. Además, en Luazul te damos soporte constante y tenemos herramientas para que la comunicación sea lo último de lo que te preocupes. ¡Vas a volver hablando brasilero de tanto disfrutar!",
-      "🗣️ No te preocupes. Con español y buena voluntad te entendés perfecto. Y si necesitás, tenés a nosotros para ayudarte. No hace falta saber portugués para caipirinha y playa."
+    efecto_boliche: [
+      "🍹 USD 87 por mes (la cuota para 2 personas) es lo que gastarías en UNA o DOS noches de boliche. ¿Preferís una noche de fiesta o empezar a pagar tu viaje a Brasil? Y lo mejor: la fecha la elegís después. 🦋",
+      "Comparalo así: salir un sábado te cuesta fácil USD 50-70. Con USD 87 por mes te estás pagando un viaje entero a Brasil. ¿Vale la pena?",
+      "¿Sabías que la cuota de tu viaje (USD 87) es similar a lo que gastás en una salida nocturna? Empezar hoy no duele, y cuando llegués al 80% elegís cuándo ir. ¡Vos decidís! 🌊"
     ],
     contacto: [
-      "🦋 ¡Genial! ¿Viste que para que una mariposa vuele no necesita permiso de nadie? Vos tampoco. Con 1.45 USD por día, te estás comprando el derecho a despertarte frente al mar. Es menos de lo que sale un paquete de galletitas premium. Dejame tu nombre y teléfono y le pido a Alejandro (dueño) que te escriba por WhatsApp para armarte un plan que ni vas a sentir en el bolsillo.",
-      "Perfecto. Dejame tus datos y enseguida Alejandro te contacta para diseñarte el viaje a tu medida. Si querés, también podés escribirle vos al +5492974726449, ¡pero pasame tu número así le aviso que te dé prioridad! 😉"
+      "🦋 ¡Genial! Solo necesito tu nombre para que Alejandro te contacte por WhatsApp. ¿Me lo dejás?",
+      "Perfecto. Decime tu nombre y le paso tu consulta a Alejandro. Él te escribe enseguida. 📲",
+      "¡Dale! Para que el asesor te pueda ayudar, necesito tu nombre. ¿Completamos eso y listo?"
     ],
     despedida_contacto: [
-      "✅ ¡Listo! Ya le avisé a Alejandro. En breve te contactará por WhatsApp para que empieces a pagar poquito por día y asegures tu lugar en el paraíso. 🦋✨",
-      "Perfecto, ya está. En los próximos minutos recibirás un mensaje. Preparate para empezar a ahorrar menos de un café por día para tu viaje soñado."
+      "✅ ¡Listo! Ya le pasé tus datos a Alejandro. En breve te contactará por WhatsApp para ayudarte a cerrar tu viaje soñado. 🦋✨\n\n¡Nos vemos en Brasil!",
+      "Perfecto, ya está. Alejandro te escribe en los próximos minutos. ¡Preparate para empezar a disfrutar! 🌊"
     ],
     default: [
-      "🦋 Gracias por tu consulta. Para darte un número exacto, ¿cuántas personas viajarían? Así te puedo decir cuánto pagarías por día (menos de un café, te lo aseguro).",
-      "¡Que buena pregunta! Para orientarte mejor, contame cuántos son y si tenés alguna fecha aproximada en mente. Así ajusto el plan perfecto para vos.",
-      "Me encantaría ayudarte. Si me decís cuántas personas y cuántas noches (mínimo 7), te doy el precio por día, que es más barato que un café en cualquier Starbucks. 🦋"
+      "🦋 Gracias por tu consulta. ¿Para cuántas personas pensás viajar? Así te armo el plan ideal con cuotas accesibles.",
+      "¡Qué bueno que estés averiguando! ¿Viajás con amigos, en pareja o solo? Empezar a pagar hoy es más fácil de lo que creés.",
+      "Me encantaría ayudarte. Si me contás cuántos son, puedo darte los precios y explicarte cómo funciona la flexibilidad de la fecha. 🦋"
     ]
   };
 
@@ -148,7 +120,7 @@
     // Detección de intenciones (en orden de prioridad)
     if (t.includes('hola') || t.includes('buenas') || t.includes('saludos') || t.includes('mariposa') || t.includes('ayuda')) {
       respuestaKey = 'saludo';
-    } else if (t.includes('precio') || t.includes('costo') || t.includes('dolar') || t.includes('dólar') || t.includes('pagar') || t.includes('cuanto') || t.includes('cuánto')) {
+    } else if (t.includes('precio') || t.includes('costo') || t.includes('cuota') || t.includes('dolar') || t.includes('dólar') || t.includes('pagar') || t.includes('cuanto') || t.includes('cuánto')) {
       respuestaKey = 'precio';
       contexto.interes_precio = true;
       contexto.ya_pregunto_precio = true;
@@ -157,27 +129,13 @@
       contexto.ya_pregunto_incluye = true;
     } else if (t.includes('vuelo') || t.includes('aereo') || t.includes('aéreo') || t.includes('avion') || t.includes('avión') || t.includes('aerolinea') || t.includes('aerolínea')) {
       respuestaKey = 'vuelo_libre';
-    } else if (t.includes('cuota') || t.includes('facilidad') || t.includes('plazo')) {
-      respuestaKey = 'cuotas';
     } else if (t.includes('mora') || t.includes('recargo') || t.includes('atraso') || t.includes('no puedo pagar') || t.includes('me atraso')) {
       respuestaKey = 'sin_mora';
     } else if (t.includes('fecha') || t.includes('cuando') || t.includes('cuándo') || t.includes('temporada') || t.includes('epoca') || t.includes('diciembre') || t.includes('enero') || t.includes('verano')) {
       respuestaKey = 'fechas';
-    } else if (t.includes('grupo') || t.includes('amigos') || t.includes('varios')) {
-      respuestaKey = 'grupos';
-    } else if (t.includes('app') || t.includes('aplicación') || t.includes('celular')) {
-      respuestaKey = 'app';
-    } else if (t.includes('pasaporte') || t.includes('visa') || t.includes('documento') || t.includes('dni')) {
-      respuestaKey = 'pasaporte';
-    } else if (t.includes('comida') || t.includes('comer') || t.includes('desayuno') || t.includes('gastos')) {
-      respuestaKey = 'comida';
-    } else if (t.includes('clima') || t.includes('época') || t.includes('cuándo ir') || t.includes('temperatura')) {
-      respuestaKey = 'clima';
-    } else if (t.includes('dólar') || t.includes('tipo de cambio') || t.includes('pesos') || t.includes('exchange')) {
-      respuestaKey = 'tipo_cambio';
-    } else if (t.includes('idioma') || t.includes('portugués') || t.includes('hablar')) {
-      respuestaKey = 'idioma';
-    } else if (t.includes('contactar') || t.includes('asesor') || t.includes('llamar') || t.includes('whatsapp') || t.includes('telefono') || t.includes('teléfono') || t.includes('datos')) {
+    } else if (t.includes('boliche') || t.includes('fiesta') || t.includes('efecto')) {
+      respuestaKey = 'efecto_boliche';
+    } else if (t.includes('contactar') || t.includes('asesor') || t.includes('hablar') || t.includes('llamar') || t.includes('whatsapp') || t.includes('telefono') || t.includes('teléfono') || t.includes('datos')) {
       respuestaKey = 'contacto';
       contexto.modo_contacto = true;
     } else {
@@ -309,13 +267,12 @@
 
     modalContent.innerHTML =
       '<h3 style="font-size:1.2rem;margin-bottom:8px;">📲 ¡Último paso!</h3>' +
-      '<p style="font-size:0.85rem;margin-bottom:16px;">Compartí tus datos y Alejandro te contactará por WhatsApp para armar tu viaje a medida.</p>' +
+      '<p style="font-size:0.85rem;margin-bottom:16px;">Compartí tu nombre y Alejandro te contactará por WhatsApp para armar tu viaje a medida.</p>' +
       '<div style="background:rgba(126,184,255,0.08);border-radius:12px;padding:12px;margin-bottom:16px;font-size:0.75rem;border-left:3px solid #7eb8ff;">' +
         '<strong>📋 Resumen de la conversación:</strong>' +
         '<div style="max-height:120px;overflow-y:auto;margin-top:6px;white-space:pre-wrap;">' + resumen.replace(/\n/g, '<br>') + '</div>' +
       '</div>' +
-      '<input type="text" id="mp-contact-name" placeholder="Tu nombre completo" style="width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:none;background:#0f2a50;color:white;font-size:0.9rem;box-sizing:border-box;font-family:Montserrat,sans-serif;">' +
-      '<input type="tel" id="mp-contact-phone" placeholder="Tu número de WhatsApp (ej: 5491123456789)" style="width:100%;padding:12px;margin-bottom:20px;border-radius:12px;border:none;background:#0f2a50;color:white;font-size:0.9rem;box-sizing:border-box;font-family:Montserrat,sans-serif;">' +
+      '<input type="text" id="mp-contact-name" placeholder="Tu nombre completo" style="width:100%;padding:12px;margin-bottom:20px;border-radius:12px;border:none;background:#0f2a50;color:white;font-size:0.9rem;box-sizing:border-box;font-family:Montserrat,sans-serif;">' +
       '<div style="display:flex;gap:10px;">' +
         '<button id="mp-contact-send" style="flex:1;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;border-radius:40px;padding:12px;color:white;font-weight:bold;cursor:pointer;font-family:Montserrat,sans-serif;">📲 Enviar a WhatsApp</button>' +
         '<button id="mp-contact-cancel" style="flex:1;background:transparent;border:1px solid #7eb8ff;border-radius:40px;padding:12px;color:#7eb8ff;cursor:pointer;font-family:Montserrat,sans-serif;">Cancelar</button>' +
@@ -326,17 +283,13 @@
 
     modalContent.querySelector('#mp-contact-send').onclick = function() {
       var name = document.getElementById('mp-contact-name').value.trim();
-      var phone = document.getElementById('mp-contact-phone').value.trim();
-      if (!name || !phone) { alert('Por favor completá nombre y teléfono.'); return; }
-      phone = phone.replace(/\D/g, '');
-      if (phone.indexOf('549') !== 0) phone = '549' + phone;
+      if (!name) { alert('Por favor completá tu nombre para que el asesor sepa cómo llamarte.'); return; }
       var msg =
         '🦋 *NUEVO LEAD DESDE MARIPOSA*\n\n' +
-        '👤 *Nombre:* ' + name + '\n' +
-        '📞 *Teléfono:* ' + phone + '\n\n' +
+        '👤 *Nombre:* ' + name + '\n\n' +
         '📋 *Conversación reciente:*\n' + resumen + '\n\n' +
         '🔔 *Acción:* Contactar al cliente para armar presupuesto.';
-      window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg), '_blank');
+      window.open('https://wa.me/5492974726449?text=' + encodeURIComponent(msg), '_blank');
       modal.remove();
       appendBotMessage(randomRespuesta(RESPUESTAS.despedida_contacto), false);
       contexto.modo_contacto = false;
