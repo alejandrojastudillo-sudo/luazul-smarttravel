@@ -431,3 +431,16 @@
   #mp-window { right: 12px; bottom: 80px; }
   #mp-bubble { right: 12px; bottom: 14px; }
 }
+
+/* ── MEJORAS DE CONTRASTE (texto más blanco, input más legible) ── */
+.mp-msg-bot-bubble,
+.mp-msg-bot-bubble strong,
+.mp-msg-bot-bubble em,
+.mp-msg-user-bubble {
+  color: #ffffff !important;
+}
+
+#mp-text-input {
+  background: rgba(30,60,120,0.9) !important;
+  color: white !important;
+}
