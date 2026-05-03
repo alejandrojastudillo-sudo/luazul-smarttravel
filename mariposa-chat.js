@@ -1,92 +1,30 @@
 /* ============================================================
    LUAZUL Smart Travel — Mariposa Luazul 🦋
-   Versión IA con resumen inteligente de conversación
-   Captura leads y deriva a WhatsApp con contexto completo
+   Versión Conversacional (reglas + contexto + cuotas flexibles)
+   Sin IA externa — respuestas instantáneas, flujo amigable.
    ============================================================ */
 
 (function () {
   'use strict';
 
   // ========== CONFIGURACIÓN ==========
-  const GEMINI_API_KEY = 'AIzaSyDGfiI3D551PMejkjtnaq8fAY9he5MoHyA';
-  const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-  const WA_NUMBER = '5492974726449';          // Dueño (Alejandro)
-
-  // ========== PROMPT DE SISTEMA ==========
-  const SYSTEM_PROMPT = `
-Eres "Mariposa Luazul", una asistente de viajes con la personalidad de un Explorador Libre.
-
-🎯 ARQUETIPO: El Explorador Libre.
-🗣️ TONO: Entusiasta, ligero, inspirador y sumamente práctico. Hablas con la confianza de quien ya conoce el camino, pero le dejas a quien conversa el control del mapa.
-💡 FILOSOFÍA: "Viajar es un arte, y vos sos el artista. Nosotros ponemos el lienzo (el destino) y los colores (los servicios), pero vos decidís cuándo y cómo despegar."
-
-🦋 ESENCIA: Soy la representación de la libertad y la planificación inteligente. Mi tono es cálido, juvenil y vibrante, como un atardecer en Arraial do Cabo.
-✨ SUPERPODER: Convertir el miedo al gasto en la tranquilidad de una inversión mensual pequeña.
-
-——————————————————————————————————————
-📋 LO QUE OFRECE LUAZUL SMART TRAVEL
-——————————————————————————————————————
-
-Somos una agencia especializada en viajes a Brasil con salida desde la Patagonia Argentina (principalmente Comodoro Rivadavia y zona).
-
-DESTINOS PRINCIPALES:
-• Florianópolis – playas paradisíacas, vida nocturna, surf
-• Porto Seguro / Arraial da Ajuda – cultura, playas vírgenes, fiestas
-• Maceió / Maragogi – aguas cristalinas, piscinas naturales
-• Fortaleza / Jericoacoara – dunas, kitesurf, atardeceres mágicos
-• Río de Janeiro – Cristo, Copacabana, carnaval, samba
-• Foz do Iguaçu – Cataratas, naturaleza, maravilla mundial
-
-SERVICIOS QUE INCLUIMOS:
-✈️ Vuelos desde Comodoro Rivadavia (con escala Buenos Aires u otras)
-🏨 Hoteles seleccionados (categoría y ubicación estratégica)
-🚌 Traslados aeropuerto ↔ hotel
-🗺️ Excursiones opcionales con guías locales
-💳 Financiación en cuotas sin interés (hasta 12 cuotas con tarjetas seleccionadas)
-🛡️ Seguro de viaje incluido o opcional según paquete
-
-PROPUESTA DE VALOR ÚNICA:
-→ Paquetes armados "llave en mano": el cliente no tiene que coordinar nada
-→ Financiación accesible: desde $XX USD por mes dependiendo del destino
-→ Atención personalizada por WhatsApp con Alejandro (dueño y asesor principal)
-→ Experiencia real: conocemos los destinos que vendemos
-
-CÓMO TRABAJAMOS:
-1. El cliente consulta → Mariposa (IA) levanta el interés y datos básicos
-2. Se deriva a Alejandro por WhatsApp con el contexto de la conversación
-3. Alejandro arma el presupuesto personalizado en 24-48hs
-4. El cliente elige, paga la seña y confirma el viaje
-
-IMPORTANTE: No manejes precios exactos (cambian con el dólar y disponibilidad). Siempre orientá hacia "presupuesto personalizado" y derivo a Alejandro para los números reales.
-
-FRASES CLAVE QUE PODÉS USAR:
-- "¿Para cuándo imaginás estar brindando con caipirinha en la playa?"
-- "Armamos el paquete a tu medida, sin que tengas que coordinar nada"
-- "La cuota mensual es menos de lo que creés. ¿Querés que un asesor te pase los números?"
-- "Brasil te espera, solo falta ponerle fecha"
-
-CUÁNDO DERIVAR A WHATSAPP:
-→ Cuando el cliente pregunta precios específicos
-→ Cuando muestra intención de compra clara
-→ Cuando tiene dudas técnicas (vuelos específicos, fechas, habitaciones)
-→ Cuando llevan más de 4-5 intercambios y hay interés real
-→ Cuando lo pide explícitamente
-
-RESTRICCIONES:
-❌ No inventes precios ni disponibilidades
-❌ No prometás fechas de viaje sin confirmar con Alejandro
-❌ No uses lenguaje formal ni corporativo
-❌ No seas repetitivo: variá los emojis y las expresiones
-`;
+  const WA_NUMBER = '5492974726449';  // Alejandro
 
   // ========== VARIABLES GLOBALES ==========
   let isOpen = false;
   let hasGreeted = false;
-  let conversationHistory = [];
+  let contexto = {
+    personas: null,
+    destino: null,
+    interes_precio: false,
+    ya_pregunto_precio: false,
+    ya_pregunto_incluye: false,
+    modo_contacto: false
+  };
 
   const dom = {};
 
-  // ========== HELPER: Avatar ==========
+  // ========== AVATAR ==========
   const AVATAR_SRC = (window.location.pathname.indexOf('/destinos/') >= 0 ? '../images/' : 'images/') + 'mariposa-avatar.png';
   const AVATAR_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230B3D91'/%3E%3Ctext x='50' y='62' text-anchor='middle' font-size='46'%3E🦋%3C/text%3E%3C/svg%3E";
 
@@ -98,166 +36,159 @@ RESTRICCIONES:
     return img;
   }
 
-  // ========== LLAMADA A GEMINI ==========
-  async function callGemini(userMessage) {
-    if (conversationHistory.length > 20) conversationHistory = conversationHistory.slice(-20);
-    conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
+  // ========== CONOCIMIENTO LOCAL ==========
+  const SALUDOS = [
+    "🦋 ¡Hola! Soy Mariposa Luazul, tu exploradora de viajes. ¿Sabías que podés cumplir el sueño de viajar a Brasil pagando cuotas mensuales desde USD 87? 🌊✨ Contame, ¿para cuántas personas pensás viajar?",
+    "¡Hola! 🌴 Qué lindo que estés pensando en Brasil. En Luazul podés empezar a pagar tu viaje hoy con cuotas fijas, sin intereses, y elegir la fecha cuando tu plan esté casi completo. ¿Te gustaría saber cómo funciona?",
+    "¡Qué emoción! Un viaje a Brasil está más cerca de lo que pensás. Con nuestras cuotas accesibles, podés asegurar tu lugar ahora y decidir la fecha después. 🦋 Contame, ¿viajás solo o en grupo?"
+  ];
 
-    const requestBody = {
-      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents: conversationHistory,
-      generationConfig: { temperature: 0.8, maxOutputTokens: 800, topP: 0.9 },
-    };
+  const RESPUESTAS = {
+    precio: [
+      "💰 ¡Claro que sí! Nuestros planes se pagan en cuotas fijas en DÓLARES, sin intereses:\n\n• Para 2 personas: USD 870 total → 10 cuotas de USD 87/mes\n• Para 4 personas: USD 1.450 total → 10 cuotas de USD 145/mes\n• Para 6 personas: USD 1.740 total → 10 cuotas de USD 174/mes\n\nPodés elegir entre 6, 10, 12 o 18 cuotas. Empezás a pagar hoy y cuando tu plan esté al 80% coordinamos la fecha. ¡Flexibilidad total!",
+      "🦋 El plan arranca desde USD 87 por mes (para 2 personas). Si son más, el costo por persona baja mucho. No necesitás definir la fecha ahora: empezás a pagar y cuando llevés el 80% del plan, elegís cuándo querés viajar. ¿Cuántos son en el grupo?",
+      "La parte linda: pagar en cuotas sin que duela. 💸 Un viaje para dos cuesta USD 870 en total → 10 cuotas de USD 87. Eso es menos de lo que gastás en una noche de boliche. ¿Te imaginás pagando tu viaje mientras seguís con tu vida normal? 🌊"
+    ],
+    incluye: [
+      "🏨 Tu paquete incluye TODO para que solo te preocupes por disfrutar:\n• 7 noches frente al mar\n• Traslados privados aeropuerto ↔ hotel\n• Día completo en Río (Cristo + Pan de Azúcar)\n• Paseo de barco en Arraial do Cabo con almuerzo\n• Excursión en Buggy\n• Asesoría personalizada y App exclusiva\n\n¿Querés que te cuente alguna excursión en detalle?",
+      "¡El paquete es bien completo! Alojamiento frente al mar, traslados privados, tours, excursiones y asistencia. Lo único que no incluimos son los vuelos — y eso es a propósito para que tengas libertad. ¿Te explico por qué es una ventaja?",
+      "📦 Hospedaje en hoteles frente al mar, excursiones premium (Río, Arraial, Buggy), traslados privados y app exclusiva. Todo solucionado antes de que aterrizés."
+    ],
+    vuelo_libre: [
+      "✈️ ¡Excelente pregunta! En Luazul NO incluimos los vuelos, y eso es justamente para darte LIBERTAD TOTAL:\n• Usás tus millas o cazás ofertas.\n• Elegís desde qué ciudad salís.\n• Llegás antes o te quedás más días.\n• Nosotros te esperamos en el aeropuerto el día que vos elijas.\n\n¡Vos sos el dueño del cielo; nosotros expertos en tierra!",
+      "¡No incluimos vuelos a propósito! Así vos tenés el control: tu aerolínea favorita, tus horarios, tus millas. Nosotros te recibimos con traslado privado cuando llegás. ¿Genial, no? 🦋",
+      "Tu vuelo, tu autonomía. 🦋 Preferimos no atarte a un paquete rígido. Vos decidís cuándo salís, con qué aerolínea, y hasta podés extender tu estadía. Nos encargamos de todo lo demás."
+    ],
+    sin_mora: [
+      "✅ TRANQUILIDAD TOTAL: Si un mes se te complica pagar la cuota, NO hay recargo ni multa. Solo se pausa el voucher hasta que regularices. Queremos que ahorres sin estrés.",
+      "¡Olvidate de las preocupaciones! Si te atrasás en una cuota, no cobramos recargo punitorio. Nuestra prioridad es que viajes, no castigarte. 🦋",
+      "📌 Sin mora, sin estrés: podés retrasar una cuota sin que te apliquen intereses. Solo se bloquea el voucher momentáneamente. Así de simple."
+    ],
+    fechas: [
+      "📅 En Luazul no te atamos a una fecha fija desde el principio. Empezás a pagar tus cuotas hoy y cuando hayas completado el 80% de tu plan, coordinamos la fecha de viaje que mejor te quede. ¡Libertad total para elegir cuándo tomarte esas merecidas vacaciones! 🌊",
+      "La fecha la elegís vos, no nosotros. Empezás a pagar ahora y cuando ya tengas el 80% del plan cubierto, definimos los días de viaje juntos. ¿Te parece bien así? 🦋"
+    ],
+    efecto_boliche: [
+      "🍹 USD 87 por mes (la cuota para 2 personas) es lo que gastarías en UNA o DOS noches de boliche. ¿Preferís una noche de fiesta o empezar a pagar tu viaje a Brasil? Y lo mejor: la fecha la elegís después. 🦋",
+      "Comparalo así: salir un sábado te cuesta fácil USD 50-70. Con USD 87 por mes te estás pagando un viaje entero a Brasil. ¿Vale la pena?",
+      "¿Sabías que la cuota de tu viaje (USD 87) es similar a lo que gastás en una salida nocturna? Empezar hoy no duele, y cuando llegués al 80% elegís cuándo ir. ¡Vos decidís! 🌊"
+    ],
+    contacto: [
+      "🦋 ¡Genial! Solo necesito tu nombre y teléfono para pasarle tu consulta a Alejandro (dueño de la agencia). Él te contacta por WhatsApp y te arma la propuesta personalizada. ¿Me dejás tus datos?",
+      "Perfecto. ¿Querés que Alejandro te asesore personalmente? Dejame tu nombre y teléfono y él te escribe enseguida. Es gratis y sin compromiso. 📲",
+      "¡Dale! Para que el asesor te ayude con precios, fechas y cupos, necesito tu nombre y teléfono. ¿Lo completamos?"
+    ],
+    despedida_contacto: [
+      "✅ ¡Listo! Ya le pasé tus datos a Alejandro. En breve te contactará por WhatsApp para ayudarte a cerrar tu viaje soñado. 🦋✨\n\n¡Nos vemos en Brasil!",
+      "Perfecto, ya está. Alejandro te escribe en los próximos minutos. ¡Preparate para empezar a disfrutar! 🌊"
+    ],
+    default: [
+      "🦋 Gracias por tu consulta. ¿Para cuántas personas pensás viajar? Así te armo el plan ideal con cuotas accesibles.",
+      "¡Qué bueno que estés averiguando! ¿Viajás con amigos, en pareja o solo? Empezar a pagar hoy es más fácil de lo que creés.",
+      "Me encantaría ayudarte. Si me contás cuántos son, puedo darte los precios y explicarte cómo funciona la flexibilidad de la fecha. 🦋"
+    ]
+  };
 
-    try {
-      const response = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
-      const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!aiText) throw new Error('Respuesta vacía');
-      conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
-      return aiText;
-    } catch (err) {
-      console.error(err);
-      return `🦋 ¡Uy, mis antenitas están fallando! Mejor contactame por WhatsApp: +${WA_NUMBER}.`;
+  function randomRespuesta(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  // ========== MOTOR DE INTENCIÓN ==========
+  function analizarIntencion(texto) {
+    const t = texto.toLowerCase();
+    let respuestaKey = null;
+
+    // Actualizar contexto de personas
+    if (t.includes('2 personas') || t.includes('dos personas') || t.includes('pareja') || (t.includes('2') && t.includes('viajamos'))) {
+      contexto.personas = '2';
+    } else if (t.includes('4 personas') || t.includes('cuatro personas') || (t.includes('4') && t.includes('viajamos'))) {
+      contexto.personas = '4';
+    } else if (t.includes('6 personas') || t.includes('seis personas') || (t.includes('6') && t.includes('viajamos'))) {
+      contexto.personas = '6';
+    } else if (t.includes('amigos') && !contexto.personas) {
+      contexto.personas = '4';
+    } else if ((t.includes('solo') || t.includes('individual')) && !contexto.personas) {
+      contexto.personas = '2';
     }
-  }
 
-  // ========== GENERAR RESUMEN INTELIGENTE CON IA ==========
-  async function generateIntelligentSummary() {
-    if (conversationHistory.length === 0) return "Cliente inició conversación pero no hay mensajes.";
+    // Actualizar destino
+    if (t.includes('cabo frio') || t.includes('cabo frío')) contexto.destino = 'cabo_frio';
+    else if (t.includes('arraial'))                          contexto.destino = 'arraial';
+    else if (t.includes('buzios') || t.includes('búzios'))  contexto.destino = 'buzios';
+    else if (t.includes('rio de janeiro') || t.includes('río de janeiro')) contexto.destino = 'rio';
 
-    const summaryPrompt = `
-A continuación tenés una conversación entre un cliente y la asistente "Mariposa Luazul" (especialista en viajes a Brasil).
-Tu tarea es generar un **resumen ejecutivo** breve pero completo, extrayendo los puntos clave para que un vendedor pueda contactar al cliente con todo el contexto necesario.
-
-EXTRAE OBLIGATORIAMENTE:
-- Destino deseado (si lo mencionó)
-- Número de personas que viajan
-- Fechas o época de viaje (si las mencionó)
-- Presupuesto o consulta sobre precios/cuotas
-- Dudas específicas (vuelos, excursiones, mora, etc.)
-- Nivel de interés del cliente (alto, medio, bajo) según su lenguaje.
-- Cualquier objeción o miedo manifestado (ej. "me da miedo perder plata", "no sé si llego a pagar").
-
-Formato: texto plano, sin títulos, máximo 400 palabras. Sé directo y útil.
-
-CONVERSACIÓN:
-${conversationHistory.map(msg => `${msg.role === 'user' ? 'CLIENTE' : 'MARIPOSA'}: ${msg.parts[0].text.substring(0, 300)}`).join('\n')}
-`;
-
-    try {
-      const response = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: summaryPrompt }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 600 },
-        }),
-      });
-      if (!response.ok) throw new Error();
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo generar resumen.";
-    } catch (err) {
-      console.warn('Error generando resumen inteligente, usando fallback.');
-      const lastUserMsg = [...conversationHistory].reverse().find(m => m.role === 'user');
-      return `Conversación resumida (fallback): ${lastUserMsg ? lastUserMsg.parts[0].text.substring(0, 300) : 'Sin datos'}`;
+    // Detección de intenciones (en orden de prioridad)
+    if (t.includes('hola') || t.includes('buenas') || t.includes('saludos') || t.includes('mariposa') || t.includes('ayuda')) {
+      respuestaKey = 'saludo';
+    } else if (t.includes('precio') || t.includes('costo') || t.includes('cuota') || t.includes('dolar') || t.includes('dólar') || t.includes('pagar') || t.includes('cuanto') || t.includes('cuánto')) {
+      respuestaKey = 'precio';
+      contexto.interes_precio = true;
+      contexto.ya_pregunto_precio = true;
+    } else if (t.includes('incluye') || t.includes('incluido') || t.includes('que viene') || t.includes('que tiene') || t.includes('paquete')) {
+      respuestaKey = 'incluye';
+      contexto.ya_pregunto_incluye = true;
+    } else if (t.includes('vuelo') || t.includes('aereo') || t.includes('aéreo') || t.includes('avion') || t.includes('avión') || t.includes('aerolinea') || t.includes('aerolínea')) {
+      respuestaKey = 'vuelo_libre';
+    } else if (t.includes('mora') || t.includes('recargo') || t.includes('atraso') || t.includes('no puedo pagar') || t.includes('me atraso')) {
+      respuestaKey = 'sin_mora';
+    } else if (t.includes('fecha') || t.includes('cuando') || t.includes('cuándo') || t.includes('temporada') || t.includes('epoca') || t.includes('diciembre') || t.includes('enero') || t.includes('verano')) {
+      respuestaKey = 'fechas';
+    } else if (t.includes('boliche') || t.includes('fiesta') || t.includes('efecto')) {
+      respuestaKey = 'efecto_boliche';
+    } else if (t.includes('contactar') || t.includes('asesor') || t.includes('hablar') || t.includes('llamar') || t.includes('whatsapp') || t.includes('telefono') || t.includes('teléfono') || t.includes('datos')) {
+      respuestaKey = 'contacto';
+      contexto.modo_contacto = true;
+    } else {
+      respuestaKey = 'default';
     }
-  }
 
-  // ========== MODAL DE CONTACTO CON RESUMEN INTELIGENTE ==========
-  async function showContactModal() {
-    if (document.getElementById('mariposa-contact-modal')) return;
+    // Lógica contextual: si ya sabemos las personas y no respondimos precio, hacerlo ahora
+    if (respuestaKey === 'default' && contexto.personas && !contexto.ya_pregunto_precio) {
+      respuestaKey = 'precio';
+      contexto.ya_pregunto_precio = true;
+    }
 
-    const modal = document.createElement('div');
-    modal.id = 'mariposa-contact-modal';
-    modal.style.cssText = `
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-      z-index: 100000; display: flex; align-items: center; justify-content: center;
-    `;
+    // Si ya hubo intercambio y el mensaje sigue siendo genérico, ofrecer contacto
+    if (respuestaKey === 'default' && (contexto.ya_pregunto_precio || contexto.ya_pregunto_incluye)) {
+      respuestaKey = 'contacto';
+      contexto.modo_contacto = true;
+    }
 
-    const modalContent = document.createElement('div');
-    modalContent.style.cssText = `
-      background: #0a1a3e; border-radius: 24px; padding: 24px; max-width: 420px;
-      width: 90%; border: 1px solid rgba(126,184,255,0.3);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-      font-family: 'Montserrat', sans-serif; color: white;
-    `;
+    // Generar texto de respuesta
+    let respuesta;
+    if (respuestaKey === 'saludo') {
+      respuesta = randomRespuesta(SALUDOS);
+    } else if (respuestaKey && RESPUESTAS[respuestaKey]) {
+      respuesta = randomRespuesta(RESPUESTAS[respuestaKey]);
+    } else {
+      respuesta = randomRespuesta(RESPUESTAS.default);
+    }
 
-    // Estado de loading mientras se genera el resumen
-    modalContent.innerHTML = `
-      <h3 style="font-size:1.2rem; margin-bottom: 8px;">📲 Generando contexto...</h3>
-      <p style="font-size:0.85rem;">Estoy preparando un resumen para que el asesor te atienda mejor. Un momento...</p>
-      <div style="text-align:center; margin:20px;">
-        <div class="mp-typing-dots" style="display:inline-flex; gap:4px;">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-    `;
-
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
-
-    // Generar resumen inteligente
-    const summary = await generateIntelligentSummary();
-
-    // Formulario con resumen embebido
-    modalContent.innerHTML = `
-      <h3 style="font-size:1.2rem; margin-bottom: 8px;">📲 ¡Último paso!</h3>
-      <p style="font-size:0.85rem; margin-bottom: 16px;">Compartí tus datos y Alejandro te contactará por WhatsApp para armar tu viaje a medida.</p>
-      <div style="background: rgba(126,184,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 16px; font-size: 0.8rem; border-left: 3px solid #7eb8ff; max-height: 150px; overflow-y: auto;">
-        <strong>📋 Resumen de la conversación (para que el asesor te atienda mejor):</strong><br>
-        <div style="white-space: pre-wrap; margin-top: 6px;">${summary.replace(/\n/g, '<br>')}</div>
-      </div>
-      <input type="text" id="mp-contact-name" placeholder="Tu nombre completo"
-        style="width:100%; padding:12px; margin-bottom:12px; border-radius:12px; border:none; background:#0f2a50; color:white; font-size:0.9rem; box-sizing:border-box; font-family:'Montserrat',sans-serif;">
-      <input type="tel" id="mp-contact-phone" placeholder="Tu número de WhatsApp (ej: 5491123456789)"
-        style="width:100%; padding:12px; margin-bottom:20px; border-radius:12px; border:none; background:#0f2a50; color:white; font-size:0.9rem; box-sizing:border-box; font-family:'Montserrat',sans-serif;">
-      <div style="display:flex; gap:10px;">
-        <button id="mp-contact-send"
-          style="flex:1; background:linear-gradient(135deg,#1a5bb5,#0B3D91); border:none; border-radius:40px; padding:12px; color:white; font-weight:bold; cursor:pointer; font-family:'Montserrat',sans-serif;">
-          📲 Enviar a WhatsApp
-        </button>
-        <button id="mp-contact-cancel"
-          style="flex:1; background:transparent; border:1px solid #7eb8ff; border-radius:40px; padding:12px; color:#7eb8ff; cursor:pointer; font-family:'Montserrat',sans-serif;">
-          Cancelar
-        </button>
-      </div>
-    `;
-
-    const sendBtn = modalContent.querySelector('#mp-contact-send');
-    const cancelBtn = modalContent.querySelector('#mp-contact-cancel');
-
-    sendBtn.onclick = () => {
-      const name = document.getElementById('mp-contact-name').value.trim();
-      const phone = document.getElementById('mp-contact-phone').value.trim();
-      if (!name || !phone) {
-        alert('Completá nombre y teléfono.');
-        return;
-      }
-      let cleanPhone = phone.replace(/\D/g, '');
-      if (!cleanPhone.startsWith('549')) cleanPhone = '549' + cleanPhone;
-      const whatsappMessage =
-        `🦋 *NUEVO LEAD DESDE MARIPOSA IA*\n\n` +
-        `👤 *Nombre:* ${name}\n` +
-        `📞 *Teléfono:* ${cleanPhone}\n\n` +
-        `📋 *Resumen de la conversación:*\n${summary}\n\n` +
-        `🔔 *Acción sugerida:* Contactar al cliente para armar presupuesto personalizado.`;
-      window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
-      modal.remove();
-      appendBotMessage('✅ ¡Listo! Ya le pasé tus datos a Alejandro. En breve te contactará por WhatsApp. 🦋✨', false);
+    return {
+      respuesta,
+      necesitaContacto: (respuestaKey === 'contacto')
     };
-
-    cancelBtn.onclick = () => modal.remove();
   }
 
-  // ========== MOSTRAR MENSAJES ==========
-  function appendBotMessage(html, showContactButton = false) {
+  // ========== RESUMEN LOCAL DE CONVERSACIÓN ==========
+  function generarResumen() {
+    const mensajes = dom.messages
+      ? Array.from(dom.messages.querySelectorAll('.mp-msg-user-bubble, .mp-msg-bot-bubble'))
+      : [];
+    const ultimos = mensajes.slice(-8);
+    let resumen = '';
+    ultimos.forEach(bubble => {
+      const esUsuario = bubble.classList.contains('mp-msg-user-bubble');
+      const texto = (bubble.innerText || bubble.textContent || '').trim();
+      if (texto) resumen += (esUsuario ? '👤 Cliente' : '🦋 Mariposa') + ': ' + texto.substring(0, 180) + '\n';
+    });
+    if (resumen.length > 800) resumen = resumen.substring(0, 800) + '…';
+    return resumen || 'Sin mensajes registrados.';
+  }
+
+  // ========== RENDER DE MENSAJES ==========
+  function appendBotMessage(html, showContactButton) {
+    if (showContactButton === undefined) showContactButton = false;
     const wrap = document.createElement('div');
     wrap.className = 'mp-msg-bot';
 
@@ -267,15 +198,15 @@ ${conversationHistory.map(msg => `${msg.role === 'user' ? 'CLIENTE' : 'MARIPOSA'
 
     const bubble = document.createElement('div');
     bubble.className = 'mp-msg-bot-bubble';
-    bubble.innerHTML = html;
+    bubble.innerHTML = html.replace(/\n/g, '<br>');
 
     if (showContactButton) {
-      const btn = document.createElement('button');
-      btn.className = 'mp-opt';
-      btn.innerHTML = '<span class="mp-opt-icon">📲</span> Quiero que me contacte un asesor';
-      btn.style.marginTop = '10px';
-      btn.addEventListener('click', () => showContactModal());
-      bubble.appendChild(btn);
+      const contactBtn = document.createElement('button');
+      contactBtn.className = 'mp-opt';
+      contactBtn.style.marginTop = '10px';
+      contactBtn.innerHTML = '<span class="mp-opt-icon">📲</span> Quiero que me contacte un asesor';
+      contactBtn.addEventListener('click', function() { showContactModal(); });
+      bubble.appendChild(contactBtn);
     }
 
     wrap.appendChild(avatarDiv);
@@ -305,152 +236,164 @@ ${conversationHistory.map(msg => `${msg.role === 'user' ? 'CLIENTE' : 'MARIPOSA'
 
     const dots = document.createElement('div');
     dots.className = 'mp-typing-dots';
-    for (let i = 0; i < 3; i++) dots.appendChild(document.createElement('span'));
+    for (var i = 0; i < 3; i++) dots.appendChild(document.createElement('span'));
 
     typingDiv.appendChild(avatarDiv);
     typingDiv.appendChild(dots);
     dom.messages.appendChild(typingDiv);
     scrollToBottom();
 
-    setTimeout(() => {
+    setTimeout(function() {
       if (typingDiv.parentNode) typingDiv.parentNode.removeChild(typingDiv);
       callback();
-    }, 900);
+    }, 700);
   }
 
   function scrollToBottom() {
     if (dom.messages) dom.messages.scrollTop = dom.messages.scrollHeight;
   }
 
+  // ========== MODAL DE CONTACTO ==========
+  function showContactModal() {
+    if (document.getElementById('mariposa-contact-modal')) return;
+    var resumen = generarResumen();
+
+    var modal = document.createElement('div');
+    modal.id = 'mariposa-contact-modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:100000;display:flex;align-items:center;justify-content:center;';
+
+    var modalContent = document.createElement('div');
+    modalContent.style.cssText = 'background:#0a1a3e;border-radius:24px;padding:24px;max-width:420px;width:90%;border:1px solid rgba(126,184,255,0.3);box-shadow:0 20px 40px rgba(0,0,0,0.5);font-family:Montserrat,sans-serif;color:white;max-height:85vh;overflow-y:auto;';
+
+    modalContent.innerHTML =
+      '<h3 style="font-size:1.2rem;margin-bottom:8px;">📲 ¡Último paso!</h3>' +
+      '<p style="font-size:0.85rem;margin-bottom:16px;">Compartí tus datos y Alejandro te contactará por WhatsApp para armar tu viaje a medida.</p>' +
+      '<div style="background:rgba(126,184,255,0.08);border-radius:12px;padding:12px;margin-bottom:16px;font-size:0.75rem;border-left:3px solid #7eb8ff;">' +
+        '<strong>📋 Resumen de la conversación:</strong>' +
+        '<div style="max-height:120px;overflow-y:auto;margin-top:6px;white-space:pre-wrap;">' + resumen.replace(/\n/g, '<br>') + '</div>' +
+      '</div>' +
+      '<input type="text" id="mp-contact-name" placeholder="Tu nombre completo" style="width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:none;background:#0f2a50;color:white;font-size:0.9rem;box-sizing:border-box;font-family:Montserrat,sans-serif;">' +
+      '<input type="tel" id="mp-contact-phone" placeholder="Tu número de WhatsApp (ej: 5491123456789)" style="width:100%;padding:12px;margin-bottom:20px;border-radius:12px;border:none;background:#0f2a50;color:white;font-size:0.9rem;box-sizing:border-box;font-family:Montserrat,sans-serif;">' +
+      '<div style="display:flex;gap:10px;">' +
+        '<button id="mp-contact-send" style="flex:1;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;border-radius:40px;padding:12px;color:white;font-weight:bold;cursor:pointer;font-family:Montserrat,sans-serif;">📲 Enviar a WhatsApp</button>' +
+        '<button id="mp-contact-cancel" style="flex:1;background:transparent;border:1px solid #7eb8ff;border-radius:40px;padding:12px;color:#7eb8ff;cursor:pointer;font-family:Montserrat,sans-serif;">Cancelar</button>' +
+      '</div>';
+
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    modalContent.querySelector('#mp-contact-send').onclick = function() {
+      var name = document.getElementById('mp-contact-name').value.trim();
+      var phone = document.getElementById('mp-contact-phone').value.trim();
+      if (!name || !phone) { alert('Por favor completá nombre y teléfono.'); return; }
+      phone = phone.replace(/\D/g, '');
+      if (phone.indexOf('549') !== 0) phone = '549' + phone;
+      var msg =
+        '🦋 *NUEVO LEAD DESDE MARIPOSA*\n\n' +
+        '👤 *Nombre:* ' + name + '\n' +
+        '📞 *Teléfono:* ' + phone + '\n\n' +
+        '📋 *Conversación reciente:*\n' + resumen + '\n\n' +
+        '🔔 *Acción:* Contactar al cliente para armar presupuesto.';
+      window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg), '_blank');
+      modal.remove();
+      appendBotMessage(randomRespuesta(RESPUESTAS.despedida_contacto), false);
+      contexto.modo_contacto = false;
+    };
+
+    modalContent.querySelector('#mp-contact-cancel').onclick = function() { modal.remove(); };
+  }
+
   // ========== ENVÍO DE MENSAJE ==========
-  async function sendUserMessage() {
-    const text = dom.textInput.value.trim();
+  function sendUserMessage() {
+    var text = dom.textInput.value.trim();
     if (!text) return;
     dom.textInput.value = '';
     appendUserMessage(text);
-
-    // Detección de palabras clave para derivar a asesor humano
-    const lowerText = text.toLowerCase();
-    const wantsAgent = ['contactar', 'asesor', 'hablar', 'whatsapp', 'llamar', 'precio', 'presupuesto', 'cuánto', 'cuanto'].some(kw => lowerText.includes(kw));
-
-    if (wantsAgent) {
-      showTypingIndicator(() => {
-        appendBotMessage(
-          '🦋 ¡Genial! Un asesor puede ayudarte mejor con eso. Solo necesito tu nombre y teléfono para conectarte con Alejandro. ¿Me los dejás?',
-          true
-        );
-      });
-      return;
-    }
-
-    showTypingIndicator(async () => {
-      const aiResponse = await callGemini(text);
-      // Detectar si la IA recomienda derivar
-      const needsContact = ['dejame tu nombre', 'teléfono', 'asesor', 'alejandro', 'whatsapp'].some(kw => aiResponse.toLowerCase().includes(kw));
-      appendBotMessage(aiResponse, needsContact);
+    var resultado = analizarIntencion(text);
+    showTypingIndicator(function() {
+      appendBotMessage(resultado.respuesta, resultado.necesitaContacto);
     });
   }
 
   // ========== UI: BUBBLE ==========
   function buildBubble() {
-    const bubble = document.createElement('div');
+    var bubble = document.createElement('div');
     bubble.id = 'mp-bubble';
     bubble.setAttribute('role', 'button');
     bubble.setAttribute('aria-label', 'Abrir asistente Mariposa Luazul');
-    bubble.innerHTML = `
-      <div id="mp-bubble-avatar">${avatarImg().outerHTML}</div>
-      <div id="mp-bubble-text">
-        <div class="mp-bt-name">Mariposa Luazul</div>
-        <div class="mp-bt-sub">Asistente de Viaje</div>
-      </div>
-      <div id="mp-notif-dot"></div>
-    `;
+    bubble.innerHTML =
+      '<div id="mp-bubble-avatar">' + avatarImg().outerHTML + '</div>' +
+      '<div id="mp-bubble-text"><div class="mp-bt-name">Mariposa Luazul</div><div class="mp-bt-sub">Asistente de Viaje</div></div>' +
+      '<div id="mp-notif-dot"></div>';
     bubble.addEventListener('click', toggleChat);
     return bubble;
   }
 
   // ========== UI: WINDOW ==========
   function buildWindow() {
-    const win = document.createElement('div');
+    var win = document.createElement('div');
     win.id = 'mp-window';
     win.setAttribute('role', 'dialog');
     win.setAttribute('aria-label', 'Chat Mariposa Luazul');
-    win.innerHTML = `
-      <div id="mp-header">
-        <div id="mp-header-avatar">${avatarImg().outerHTML}</div>
-        <div id="mp-header-info">
-          <div id="mp-header-name">Mariposa Luazul 🦋</div>
-          <div id="mp-header-status">En línea ahora</div>
-        </div>
-        <button id="mp-close-btn" aria-label="Cerrar chat">✕</button>
-      </div>
-      <div id="mp-messages"></div>
-      <div id="mp-input-row">
-        <input type="text" id="mp-text-input" placeholder="Escribe tu pregunta..." autocomplete="off">
-        <button id="mp-send-btn" aria-label="Enviar mensaje">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
-          </svg>
-        </button>
-      </div>
-      <div id="mp-footer">LUAZUL Smart Travel · Asistente Digital</div>
-    `;
+    win.innerHTML =
+      '<div id="mp-header">' +
+        '<div id="mp-header-avatar">' + avatarImg().outerHTML + '</div>' +
+        '<div id="mp-header-info">' +
+          '<div id="mp-header-name">Mariposa Luazul 🦋</div>' +
+          '<div id="mp-header-status">En línea ahora</div>' +
+        '</div>' +
+        '<button id="mp-close-btn" aria-label="Cerrar chat">✕</button>' +
+      '</div>' +
+      '<div id="mp-messages"></div>' +
+      '<div id="mp-input-row">' +
+        '<input type="text" id="mp-text-input" placeholder="Escribe tu pregunta..." autocomplete="off">' +
+        '<button id="mp-send-btn" aria-label="Enviar"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>' +
+      '</div>' +
+      '<div id="mp-footer">LUAZUL Smart Travel · Asistente Digital</div>';
     return win;
   }
 
   // ========== TOGGLE ==========
   function toggleChat() {
     isOpen = !isOpen;
-    const win = document.getElementById('mp-window');
-
+    var win = document.getElementById('mp-window');
     if (isOpen) {
       win.classList.add('mp-open');
-      const dot = document.getElementById('mp-notif-dot');
+      var dot = document.getElementById('mp-notif-dot');
       if (dot) dot.style.display = 'none';
-
       if (!hasGreeted) {
         hasGreeted = true;
-        setTimeout(() => {
-          const welcome = "🦋 ¡Hola! Soy Mariposa Luazul, tu exploradora de viajes. ¿Listo para descubrir cómo hacer realidad tu viaje a Brasil con cuotas que no duelen? 🌊✨ Contame, ¿pensás viajar con amigos, en pareja o solo? ¿Y para cuándo querés estar tomando caipirinha en la playa?";
-          appendBotMessage(welcome, false);
-          conversationHistory.push({ role: "model", parts: [{ text: welcome }] });
-        }, 300);
+        setTimeout(function() { appendBotMessage(randomRespuesta(SALUDOS), false); }, 300);
       }
-
-      setTimeout(() => dom.textInput && dom.textInput.focus(), 350);
+      setTimeout(function() { if (dom.textInput) dom.textInput.focus(); }, 350);
     } else {
       win.classList.remove('mp-open');
     }
   }
 
-  // ========== INIT ==========
+  // ========== INICIALIZACIÓN ==========
   function init() {
-    // Inyectar CSS si no está cargado
     if (!document.querySelector('link[href*="mariposa-chat.css"]')) {
-      const link = document.createElement('link');
+      var link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = (window.location.pathname.indexOf('/destinos/') >= 0 ? '../' : '') + 'mariposa-chat.css';
       document.head.appendChild(link);
     }
 
-    const bubble = buildBubble();
-    const win = buildWindow();
+    var bubble = buildBubble();
+    var win    = buildWindow();
     document.body.appendChild(bubble);
     document.body.appendChild(win);
 
     dom.messages  = document.getElementById('mp-messages');
     dom.textInput = document.getElementById('mp-text-input');
 
-    const sendBtn  = document.getElementById('mp-send-btn');
-    const closeBtn = document.getElementById('mp-close-btn');
+    var sendBtn  = document.getElementById('mp-send-btn');
+    var closeBtn = document.getElementById('mp-close-btn');
 
-    if (sendBtn)  sendBtn.addEventListener('click', sendUserMessage);
-    if (closeBtn) closeBtn.addEventListener('click', toggleChat);
-    if (dom.textInput) {
-      dom.textInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendUserMessage();
-      });
-    }
+    if (sendBtn)       sendBtn.addEventListener('click', sendUserMessage);
+    if (closeBtn)      closeBtn.addEventListener('click', toggleChat);
+    if (dom.textInput) dom.textInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') sendUserMessage(); });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
