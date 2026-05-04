@@ -1819,6 +1819,15 @@ async function subirComprobante() {
   btn.disabled = true;
   btn.textContent = '⏳ Subiendo...';
   try {
+    // Verificar que el bucket 'comprobantes' exista
+    const { data: buckets } = await sbClient.storage.listBuckets();
+    const hasBucket = buckets && buckets.some(b => b.name === 'comprobantes');
+    if (!hasBucket) {
+      showToast('⚠️ El sistema no está configurado para recibir comprobantes aún. Contactá al soporte.', 'warn');
+      btn.disabled = false;
+      btn.textContent = 'Subir comprobante';
+      return;
+    }
     var ext      = uploadedFile.name.split('.').pop();
     var fileName = 'comprobantes/' + Date.now() + '_c' + selectedCuotaId + '.' + ext;
     var { error: upError } = await sbClient.storage.from('comprobantes').upload(fileName, uploadedFile);
@@ -1832,7 +1841,7 @@ async function subirComprobante() {
     }).eq('id', selectedCuotaId);
     if (updateError) throw updateError;
 
-    // Notificar al asesor (vendedor) automáticamente
+    // Notificar al asesor (vendedor) automáticamente, con fallback a gerente regional
     if (currentUser && currentUser.seller_id) {
       try {
         await sbClient.from('notificaciones').insert({
@@ -1846,8 +1855,33 @@ async function subirComprobante() {
           created_at: new Date().toISOString()
         });
       } catch (e) { console.warn('Error al notificar al asesor:', e); }
+    } else if (currentUser && currentUser.region_id) {
+      // Fallback: buscar gerente regional (role_id = 2) con la misma región y activo
+      try {
+        const { data: gerente } = await sbClient
+          .from('staff_profiles')
+          .select('user_id')
+          .eq('role_id', 2)
+          .eq('region_id', currentUser.region_id)
+          .eq('activo', true)
+          .maybeSingle();
+        if (gerente) {
+          await sbClient.from('notificaciones').insert({
+            tipo: 'pago_pendiente',
+            mensaje: 'El cliente ' + currentUser.nombre + ' ha subido un comprobante (sin asesor asignado)',
+            destinatario_id: gerente.user_id,
+            destinatario_rol: 'manager',
+            remitente_id: currentUser.user_id,
+            cliente_id: currentUser.id,
+            leida: false,
+            created_at: new Date().toISOString()
+          });
+        } else {
+          console.warn('No se encontró gerente para la región', currentUser.region_id);
+        }
+      } catch (e) { console.warn('Error al notificar al gerente:', e); }
     } else {
-      console.warn('⚠️ No se pudo notificar al asesor: cliente sin seller_id');
+      console.warn('⚠️ No se pudo notificar: cliente sin seller_id ni región');
     }
     showToast('✅ Comprobante subido correctamente.', 'ok');
     cerrarModal('modalPago');
@@ -2137,6 +2171,22 @@ function renderSupportCard(data) {
       +   '<span style="font-size:1.3rem;">✅</span>'
       + '</div>'
       + '<button class="support-wa-btn" data-url="' + waUrl + '" onclick="lzOpenWA(this)"><span style="font-size:1.1rem;">💬</span> Contactar a mi Asesor</button>'
+      + '</div>';
+
+  } else if (vendedor && !vendedor.activo && gerente) {
+    // Caso: vendedor existe pero inactivo, mostrar gerente con mensaje aclaratorio
+    var nombreGerente = ((gerente.nombre || '') + ' ' + (gerente.apellido || '')).trim();
+    var waNumGerente  = cleanWA(gerente.telefono1 || gerente.telefono2);
+    var waUrlGerente  = 'https://wa.me/' + (waNumGerente || '5492974726449') + '?text=' + encodeURIComponent('Hola, soy cliente de Luazul Smart Travel y necesito ayuda con mi plan.');
+    html = '<div class="support-card-wrap glass">'
+      + '<div class="support-card-header" style="background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(5,20,60,.5));">'
+      +   '<div class="support-avatar" style="background:linear-gradient(135deg,rgba(139,92,246,.4),rgba(109,40,217,.3));">🏅</div>'
+      +   '<div style="flex:1;min-width:0;"><div class="support-role-label" style="color:#c4b5fd;">Responsable Regional (tu asesor no está disponible)</div>'
+      +   '<div class="support-name">' + esc(nombreGerente || 'Responsable Regional') + '</div>'
+      +   '<div class="support-sub">Gerente Regional · Atención directa</div></div>'
+      +   '<span style="font-size:1.3rem;">🛡️</span>'
+      + '</div>'
+      + '<button class="support-wa-btn" style="background:linear-gradient(135deg,#6d28d9,#7c3aed);" data-url="' + waUrlGerente + '" onclick="lzOpenWA(this)"><span style="font-size:1.1rem;">💬</span> Contactar Responsable Regional</button>'
       + '</div>';
 
   } else if (gerente) {
