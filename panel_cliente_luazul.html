@@ -1056,7 +1056,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
           <h2>📄 Contrato de Adhesión</h2>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <button class="btn btn-primary" onclick="descargarContrato()">📥 Descargar PDF</button>
-            <button class="btn btn-ghost" onclick="imprimirContrato()">🖨️ Imprimir</button>
+            <button class="btn btn-ghost" onclick="descargarContrato()">🖨️ Imprimir / PDF</button>
             <button class="btn btn-ghost" onclick="window.open('https://wa.me/5492974726449','_blank')">💬 Consultar</button>
           </div>
         </div>
@@ -1440,6 +1440,11 @@ async function doLogin() {
 
   if (!email || !pass) { showError('Complet\u00e1 email y contrase\u00f1a'); return; }
 
+  if (!sbClient) {
+    showError('Error de conexión con el servidor. Recargá la página.');
+    return;
+  }
+
   var btn = document.querySelector('.login-btn');
   if (btn) { btn.disabled = true; btn.textContent = '\u23F3 Verificando...'; }
 
@@ -1587,8 +1592,13 @@ async function renderDashboard() {
     diasEl.onclick  = elegirFechaViaje;
     diasSub.onclick = elegirFechaViaje;
   } else {
-    diasEl.textContent  = '—';
-    diasSub.textContent = 'Disponible al 80% · llevás ' + pct + '%';
+    var faltanCuotas = total - pagadas;
+    diasEl.textContent  = '🎯';
+    diasSub.textContent = '¡' + faltanCuotas + ' cuota' + (faltanCuotas !== 1 ? 's' : '') + ' más y podrás elegir tu fecha de viaje! (' + pct + '%)';
+    if (diasEl) diasEl.style.cursor = 'default';
+    if (diasSub) diasSub.style.cursor = 'default';
+    diasEl.onclick  = null;
+    diasSub.onclick = null;
   }
 
   document.getElementById('progLabel').textContent = 'Cuotas abonadas: ' + pagadas + ' / ' + total;
@@ -2348,11 +2358,15 @@ function renderContrato() {
   // Bloque fecha de viaje según regla del 80%
   var fechaViajeHtml = '';
   if (u.fecha_viaje) {
-    fechaViajeHtml = '<p><strong>Fecha de viaje elegida:</strong> ' + u.fecha_viaje + '</p>';
+    fechaViajeHtml = '<p><strong>Fecha de viaje elegida:</strong> ' + escapeHtml(u.fecha_viaje) + '</p>';
   } else if (puedeElegirFecha) {
-    fechaViajeHtml = '<button class="btn btn-primary" onclick="elegirFechaViaje()" style="margin:10px 0;">📅 Elegir mi fecha de viaje</button>';
+    fechaViajeHtml = '<button class="btn btn-primary" onclick="elegirFechaViaje()" style="margin:10px 0;">📅 Elegir mi fecha de viaje ahora</button>';
   } else {
-    fechaViajeHtml = '<p><em>Podrás elegir tu fecha de viaje cuando hayas abonado el 80% del plan. Actualmente llevás ' + Math.round(pct) + '%.</em></p>';
+    var faltanContrato = totalCuotas - pagadas;
+    fechaViajeHtml = '<div style="background:rgba(126,184,255,.1);border-radius:12px;padding:12px;margin:16px 0;">'
+      + '<div style="font-weight:800;color:#7eb8ff;">🌟 Tu viaje está más cerca de lo que crees</div>'
+      + '<p style="margin:8px 0 0;">Abonaste <strong>' + pagadas + ' de ' + totalCuotas + ' cuotas (' + Math.round(pct) + '%)</strong>. ¡Te faltan solo <strong>' + faltanContrato + ' cuota' + (faltanContrato !== 1 ? 's' : '') + '</strong> para poder elegir la fecha de tu viaje soñado!</p>'
+      + '</div>';
   }
 
   container.innerHTML = '<div class="contrato-doc glass" style="max-height:70vh;overflow-y:auto;padding:32px;">'
@@ -2362,7 +2376,7 @@ function renderContrato() {
     +   '<hr style="margin:8px 0;border-color:rgba(100,160,255,.3);">'
     + '</div>'
 
-    + '<p>En la ciudad de Río de Janeiro, República Federativa de Brasil, a los <strong>' + new Date().getDate() + '</strong> días del mes de <strong>' + new Date().toLocaleString('es-AR',{month:'long'}) + '</strong> de <strong>' + new Date().getFullYear() + '</strong>, comparecen ante el presente instrumento, por una parte, <strong>LUAZUL TURISMO E EXCHANGE LTDA.</strong>, sociedad legalmente constituida e inscrita en el Ministerio de Turismo de Brasil bajo el CADASTUR N° 54.728.334/0001-05, con CNPJ/MF N° 54.728.334/0001-05, en adelante denominada "LA EMPRESA"; y por la otra parte, el señor o señora <strong>' + nombre + '</strong>, titular del documento de identidad N° <strong>' + documento + '</strong>, con domicilio real en <strong>' + domicilio + '</strong>, correo electrónico <strong>' + email + '</strong>, teléfono <strong>' + telefono + '</strong>, en adelante denominado "EL CLIENTE". Ambas partes acuerdan celebrar el presente contrato de adhesión al plan de ahorro turístico.</p>'
+    + '<p>En la ciudad de Río de Janeiro, República Federativa de Brasil, a los <strong>' + new Date().getDate() + '</strong> días del mes de <strong>' + new Date().toLocaleString('es-AR',{month:'long'}) + '</strong> de <strong>' + new Date().getFullYear() + '</strong>, comparecen ante el presente instrumento, por una parte, <strong>LUAZUL TURISMO E EXCHANGE LTDA.</strong>, sociedad legalmente constituida e inscrita en el Ministerio de Turismo de Brasil bajo el CADASTUR N° 54.728.334/0001-05, con CNPJ/MF N° 54.728.334/0001-05, en adelante denominada "LA EMPRESA"; y por la otra parte, el señor o señora <strong>' + escapeHtml(nombre) + '</strong>, titular del documento de identidad N° <strong>' + escapeHtml(documento) + '</strong>, con domicilio real en <strong>' + escapeHtml(domicilio) + '</strong>, correo electrónico <strong>' + escapeHtml(email) + '</strong>, teléfono <strong>' + escapeHtml(telefono) + '</strong>, en adelante denominado "EL CLIENTE". Ambas partes acuerdan celebrar el presente contrato de adhesión al plan de ahorro turístico.</p>'
 
     + '<h3>PRIMERA: RESPALDO LEGAL Y CALIDAD DEL SERVICIO</h3>'
     + '<p>LA EMPRESA garantiza a EL CLIENTE que su actividad se encuentra plenamente autorizada por el Ministerio de Turismo de Brasil, acreditada en el CADASTUR (www.cadasturturismo.gov.br). El presente plan facilita la adquisición programada del paquete turístico en la Costa do Sol (Cabo Frío, Arraial do Cabo, Búzios) y/o Río de Janeiro, asegurando la congelación de los beneficios y tarifas pactadas.</p>'
@@ -2378,7 +2392,7 @@ function renderContrato() {
     + '</ul>'
 
     + '<h3>TERCERA: PLAN DE PAGO</h3>'
-    + '<p>El precio total del plan asciende a <strong>USD ' + totalUSD + '</strong>, abonado en <strong>' + cuotasTotal + '</strong> cuotas mensuales de <strong>USD ' + montoCuota + '</strong> cada una. EL CLIENTE pagará cada cuota en su moneda local al tipo de cambio referencial publicado en el panel al momento del pago.</p>'
+    + '<p>El precio total del plan asciende a <strong>USD ' + escapeHtml(totalUSD) + '</strong>, abonado en <strong>' + escapeHtml(String(cuotasTotal)) + '</strong> cuotas mensuales de <strong>USD ' + escapeHtml(montoCuota) + '</strong> cada una. EL CLIENTE pagará cada cuota en su moneda local al tipo de cambio referencial publicado en el panel al momento del pago.</p>'
 
     + '<h3>CUARTA: LIBERTAD TOTAL PARA ELEGIR LA FECHA DE VIAJE</h3>'
     + '<p>EL CLIENTE puede elegir su fecha de viaje una vez completado el 100% del plan. Desde el 80% abonado se habilita una pre-validación tentativa. LA EMPRESA confirmará la fecha en un máximo de 30 días corridos desde el pago total.</p>'
@@ -2419,8 +2433,8 @@ function renderContrato() {
     + '</div>'
 
     + '<div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;text-align:center;font-size:.75rem;color:var(--text-muted);">'
-    +   '<p>Número de Contrato: <strong>' + numeroContrato + '</strong></p>'
-    +   '<p>Firmado digitalmente el día ' + fechaFirma + '</p>'
+    +   '<p>Número de Contrato: <strong>' + escapeHtml(numeroContrato) + '</strong></p>'
+    +   '<p>Firmado digitalmente el día ' + escapeHtml(fechaFirma) + '</p>'
     + '</div>'
     + '</div>';
 
