@@ -1599,14 +1599,13 @@ async function renderDashboard() {
   var cardViaje = document.getElementById('cardViaje');
 
   if (u.fecha_viaje && u.fecha_viaje !== '') {
-    // Estado 3: tiene fecha elegida → countdown de días
+    // Estado 3: tiene fecha elegida → mostrar % del plan + fecha como subtítulo
     var diff = Math.ceil((new Date(u.fecha_viaje) - new Date()) / (1000*60*60*24));
     var esCurso = diff <= 0;
     diasEl.textContent    = esCurso ? '🎉' : '✈️';
-    diasLabel.textContent = esCurso ? '¡Viaje en curso!' : 'Días para tu viaje';
-    diasValor.textContent = esCurso ? '¡Ya!' : diff;
-    diasSub.textContent   = esCurso ? '¡Que lo disfrutes!' : 'Salida: ' + u.fecha_viaje;
-    // Barra: cuánto del plan está pago (va hasta 100%)
+    diasLabel.textContent = esCurso ? '¡Viaje en curso!' : 'Mi viaje';
+    diasValor.textContent = esCurso ? '¡Ya!' : pct + '%';
+    diasSub.textContent   = esCurso ? '¡Que lo disfrutes!' : '📅 Salida: ' + u.fecha_viaje;
     setTimeout(function(){ if(diasBar) diasBar.style.width = Math.min(pct, 100) + '%'; }, 200);
     diasBar.style.background = esCurso ? 'linear-gradient(90deg,#10b981,#6ee7b7)' : 'linear-gradient(90deg,#1a5bb5,#7eb8ff)';
     if (cardViaje) cardViaje.style.cursor = 'default';
@@ -1877,41 +1876,62 @@ function renderDestInfo() {
   var d   = key ? DEST_INFO[key] : null;
   if (!d) { container.innerHTML = ''; return; }
 
-  // ── Countdown al viaje ──
-  var countdownHtml = '';
-  if (u.fecha_viaje) {
-    var monthMap = {enero:0,febrero:1,marzo:2,abril:3,mayo:4,junio:5,julio:6,agosto:7,septiembre:8,octubre:9,noviembre:10,diciembre:11};
-    var fvLow = String(u.fecha_viaje).toLowerCase();
-    var mKey  = null;
-    Object.keys(monthMap).forEach(function(k){ if (fvLow.indexOf(k) >= 0) mKey = k; });
-    var match = String(u.fecha_viaje).match(/(\d{4})/);
-    var year  = match ? parseInt(match[1]) : null;
-    if (year && mKey !== null) {
-      var tripDate = new Date(year, monthMap[mKey], 15);
-      var today    = new Date(); today.setHours(0,0,0,0);
-      var diff     = Math.ceil((tripDate - today) / 86400000);
-      if (diff > 0) {
-        var months = Math.floor(diff / 30);
-        var ddays  = diff % 30;
-        var label  = months > 0
-          ? months + ' mes' + (months>1?'es':'') + (ddays>0?' y '+ddays+' d\xeda'+(ddays>1?'s':''):'')
-          : diff + ' d\xedas';
-        countdownHtml =
-          '<div class="pkg-countdown">'
-          + '<div class="pkg-countdown-icon"><img src="images/mariposa-avatar.png" alt="" style="width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(126,184,255,.5));"></div>'
-          + '<div>'
-          +   '<div class="pkg-countdown-num">' + label + '</div>'
-          +   '<div class="pkg-countdown-lbl">para tu viaje · ' + u.fecha_viaje + '</div>'
-          + '</div>'
-          + '</div>';
-      }
-    }
-  }
-
-  // ── Barra de progreso cuotas ──
+  // ── Bloque motivacional "Mi viaje" (misma lógica que dashboard) ──
   var pagadas = parseInt(u.cuotas_pagadas) || 0;
   var total   = parseInt(u.cuotas_total)   || 10;
   var pct     = Math.min(100, Math.round((pagadas / total) * 100));
+
+  var viajeHtml = '';
+  if (u.fecha_viaje && u.fecha_viaje !== '') {
+    var diff2   = Math.ceil((new Date(u.fecha_viaje) - new Date()) / (1000*60*60*24));
+    var esCurso = diff2 <= 0;
+    var barW    = Math.min(pct, 100);
+    var barColor = esCurso ? 'linear-gradient(90deg,#10b981,#6ee7b7)' : 'linear-gradient(90deg,#1a5bb5,#7eb8ff)';
+    viajeHtml =
+      '<div class="pkg-countdown" style="flex-direction:column;align-items:flex-start;gap:10px;">'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+      +   '<div class="pkg-countdown-icon"><img src="images/mariposa-avatar.png" alt="" style="width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(126,184,255,.5));"></div>'
+      +   '<div>'
+      +     '<div class="pkg-countdown-num" style="font-size:1.4rem;">' + (esCurso ? '🎉 ¡Viaje en curso!' : '✈️ ' + pct + '% del plan') + '</div>'
+      +     '<div class="pkg-countdown-lbl">' + (esCurso ? '¡Que lo disfrutes!' : '📅 Salida: ' + u.fecha_viaje) + '</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div style="width:100%;background:rgba(255,255,255,.08);border-radius:20px;height:7px;overflow:hidden;">'
+      +   '<div style="height:100%;border-radius:20px;background:' + barColor + ';width:' + barW + '%;transition:width .7s ease;"></div>'
+      + '</div>'
+      + '</div>';
+  } else if (pct >= 80) {
+    viajeHtml =
+      '<div class="pkg-countdown" style="flex-direction:column;align-items:flex-start;gap:10px;cursor:pointer;" onclick="elegirFechaViaje()">'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+      +   '<div class="pkg-countdown-icon" style="font-size:2rem;">📅</div>'
+      +   '<div>'
+      +     '<div class="pkg-countdown-num" style="font-size:1.3rem;color:#6ee7b7;">¡Podés elegir tu fecha!</div>'
+      +     '<div class="pkg-countdown-lbl">Tocá aquí para reservar la fecha de tu viaje</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div style="width:100%;background:rgba(255,255,255,.08);border-radius:20px;height:7px;overflow:hidden;">'
+      +   '<div style="height:100%;border-radius:20px;background:linear-gradient(90deg,#10b981,#6ee7b7);width:100%;transition:width .7s ease;"></div>'
+      + '</div>'
+      + '</div>';
+  } else {
+    var faltan2  = total - pagadas;
+    var barPct2  = Math.round((pct / 80) * 100);
+    viajeHtml =
+      '<div class="pkg-countdown" style="flex-direction:column;align-items:flex-start;gap:10px;">'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+      +   '<div class="pkg-countdown-icon" style="font-size:2rem;">🎯</div>'
+      +   '<div>'
+      +     '<div class="pkg-countdown-num" style="font-size:1.3rem;">' + pct + '% del plan</div>'
+      +     '<div class="pkg-countdown-lbl">¡' + faltan2 + ' cuota' + (faltan2 !== 1 ? 's' : '') + ' más para elegir la fecha de tu viaje!</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div style="width:100%;background:rgba(255,255,255,.08);border-radius:20px;height:7px;overflow:hidden;">'
+      +   '<div style="height:100%;border-radius:20px;background:linear-gradient(90deg,#1a5bb5,#7eb8ff);width:' + Math.min(barPct2, 99) + '%;transition:width .7s ease;"></div>'
+      + '</div>'
+      + '</div>';
+  }
+
   var progressHtml =
     '<div class="pkg-progress-wrap">'
     + '<div class="pkg-progress-header">'
@@ -1939,7 +1959,7 @@ function renderDestInfo() {
     +   '<div class="dest-tag">' + d.emoji + ' ' + d.tag + '</div>'
     +   '<div class="dest-immersive-title">Tu pr\xf3ximo destino: <span>' + d.name + '</span></div>'
     +   '<p class="dest-emotional-text">' + d.emotional + '</p>'
-    +   countdownHtml
+    +   viajeHtml
     +   progressHtml
     + '</div>'
     + '<div class="dest-highlights-strip">' + hlHtml + '</div>'
