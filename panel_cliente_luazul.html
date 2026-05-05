@@ -2032,11 +2032,33 @@ async function renderCuotas() {
   var html = '';
   for (var i = 1; i <= total; i++) {
     var estadoPago = cuotaEstado[i];
-    var st = (estadoPago === 'aprobado' || estadoPago === 'pagada') ? 'paid'
-           : (estadoPago === 'en_revision' || estadoPago === 'pendiente') ? 'pending'
-           : 'future';
-    var stLabel = st === 'paid' ? 'Pagada \u2705' : (st === 'pending' ? 'En revisi\u00f3n \u23F3' : 'Pendiente');
-    var tieneComp = !!(estadoPago === 'aprobado' || estadoPago === 'pagada' || estadoPago === 'en_revision' || estadoPago === 'pendiente');
+    var st, stLabel, badgeClass, tieneComp = false;
+
+    if (estadoPago === 'aprobado' || estadoPago === 'pagada') {
+      st = 'paid';
+      stLabel = 'Pagada \u2705';
+      badgeClass = 'paid';
+      tieneComp = true;
+    }
+    else if (estadoPago === 'en_revision') {
+      st = 'pending';
+      stLabel = 'En revisi\u00f3n \u23F3';
+      badgeClass = 'pending';
+      tieneComp = true;
+    }
+    else if (estadoPago === 'pendiente') {
+      st = 'pending';
+      stLabel = 'Pendiente';
+      badgeClass = 'pending';
+      tieneComp = false;
+    }
+    else {
+      st = 'future';
+      stLabel = 'Pendiente';
+      badgeClass = 'future';
+      tieneComp = false;
+    }
+
     var comprobanteUrl = (pagos || []).find(function(p){ return p.numero_cuota === i; });
     comprobanteUrl = comprobanteUrl ? comprobanteUrl.comprobante_url : null;
 
@@ -2045,21 +2067,23 @@ async function renderCuotas() {
     var mes = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
 
     var uploadBtn = '';
-    if (st === 'future') {
+    if (st === 'future' || (estadoPago === 'pendiente' && !tieneComp)) {
       // Cuota 1 sin ningún pago registrado → CTA especial de activación del plan
       if (i === 1 && cuotasPagadasReal === 0 && !tieneComp) {
-        uploadBtn = '<button onclick="iniciarFlujoPrimeraCuota()" style="padding:12px 20px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.88rem;cursor:pointer;animation:pulse-btn 2s infinite;letter-spacing:.3px;">\uD83D\uDE80 Activar mi plan (pagar 1\u00B3 cuota + firmar contrato)</button>';
+        uploadBtn = '<button onclick="iniciarFlujoPrimeraCuota()" style="padding:12px 20px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.88rem;cursor:pointer;animation:pulse-btn 2s infinite;letter-spacing:.3px;">\uD83D\uDE80 Activar mi plan (pagar 1\u00AA cuota + firmar contrato)</button>';
       } else {
-        uploadBtn = '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;animation:pulse-btn 2s infinite;">\uD83D\uDCCE Adjuntar comprobante</button>'
+        uploadBtn = '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">\uD83D\uDCCE Adjuntar comprobante</button>'
           + '<button onclick="abrirPanelPago(' + i + ')" style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;margin-left:6px;">\uD83D\uDCB3 Pagar cuota</button>';
       }
-    } else if (st === 'pending') {
+    } else if (estadoPago === 'en_revision') {
       uploadBtn = comprobanteUrl
         ? '<button onclick="verComprobanteUrl(\'' + comprobanteUrl + '\',' + i + ')" style="padding:5px 11px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fcd34d;border-radius:8px;font-size:.72rem;cursor:pointer;">\uD83D\uDCC4 Ver comprobante</button>'
           + '<button onclick="uploadComp(' + i + ')" style="padding:5px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(180,200,240,.6);border-radius:8px;font-size:.72rem;cursor:pointer;margin-left:4px;">\u21BA Reemplazar</button>'
         : '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">\uD83D\uDCCE Adjuntar comprobante</button>';
-    } else if (st === 'paid' && comprobanteUrl) {
-      uploadBtn = '<button onclick="verComprobanteUrl(\'' + comprobanteUrl + '\',' + i + ')" style="padding:5px 11px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#6ee7b7;border-radius:8px;font-size:.72rem;cursor:pointer;">\uD83D\uDCC4 Ver comprobante</button>';
+    } else if (estadoPago === 'aprobado' || estadoPago === 'pagada') {
+      if (comprobanteUrl) {
+        uploadBtn = '<button onclick="verComprobanteUrl(\'' + comprobanteUrl + '\',' + i + ')" style="padding:5px 11px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#6ee7b7;border-radius:8px;font-size:.72rem;cursor:pointer;">\uD83D\uDCC4 Ver comprobante</button>';
+      }
     }
 
     html += '<div class="cuota-row" id="cuota-row-' + i + '" style="flex-wrap:wrap;gap:8px;">'
