@@ -1602,7 +1602,7 @@ async function renderDashboard() {
     // Estado 3: tiene fecha elegida → mostrar % del plan + fecha como subtítulo
     var diff = Math.ceil((new Date(u.fecha_viaje) - new Date()) / (1000*60*60*24));
     var esCurso = diff <= 0;
-    diasEl.textContent    = esCurso ? '🎉' : '✈️';
+    diasEl.textContent    = esCurso ? '🎉' : '🌴';
     diasLabel.textContent = esCurso ? '¡Viaje en curso!' : 'Mi viaje';
     diasValor.textContent = esCurso ? '¡Ya!' : pct + '%';
     diasSub.textContent   = esCurso ? '¡Que lo disfrutes!' : '📅 Salida: ' + u.fecha_viaje;
@@ -1666,17 +1666,33 @@ function renderPaquete() {
     return '<span class="chip">' + c + '</span>';
   }).join('');
 
+  var pagadasPkg  = parseInt(u.cuotas_pagadas) || 0;
+  var totalPkg    = parseInt(u.cuotas_total)   || 10;
+  var pctPkg      = (pagadasPkg / totalPkg) * 100;
+  var puedeVerFecha = pctPkg >= 80;
+
+  var fechaItem;
+  if (u.fecha_viaje) {
+    fechaItem = {label:'📅 Fecha de viaje', value: u.fecha_viaje};
+  } else if (puedeVerFecha) {
+    fechaItem = {label:'📅 Fecha de viaje', value: '¡Ya podés elegirla!', clickable: true};
+  } else {
+    var faltanPkg = totalPkg - pagadasPkg;
+    fechaItem = {label:'📅 Fecha de viaje', value: '🔒 Disponible al 80% · faltan ' + faltanPkg + ' cuota' + (faltanPkg !== 1 ? 's' : '')};
+  }
+
   var infos = [
     {label:'💰 Total del plan', value: u.total_usd ? 'USD ' + u.total_usd : '—'},
     {label:'💳 Cuota mensual',  value: u.monto_cuota ? 'USD ' + u.monto_cuota : '—'},
-    {label:'📅 Fecha de viaje', value: u.fecha_viaje || 'Por confirmar'},
+    fechaItem,
     {label:'🏝️ Destino',       value: u.destino || '—'},
     {label:'👥 Pasajeros',      value: u.personas ? u.personas + ' personas' : '—'},
     {label:'🌙 Noches',         value: u.noches || '—'},
   ];
 
   document.getElementById('pkgInfoGrid').innerHTML = infos.map(function(item){
-    return '<div class="info-item glass"><div class="ilabel">' + item.label + '</div><div class="ivalue">' + item.value + '</div></div>';
+    var style = item.clickable ? ' style="cursor:pointer;color:#6ee7b7;" onclick="elegirFechaViaje()"' : '';
+    return '<div class="info-item glass"><div class="ilabel">' + item.label + '</div><div class="ivalue"' + style + '>' + item.value + '</div></div>';
   }).join('');
   // Render immersive destination section
   renderDestInfo();
@@ -1761,7 +1777,7 @@ var DEST_INFO = {
     tag: 'La Ciudad Maravillosa · Brasil',
     lat: -22.90, lon: -43.17, tz: 'America/Sao_Paulo',
     emotional: 'Muy pronto vas a estar parado frente al <strong>Cristo Redentor</strong> con toda la Ciudad Maravillosa a tus pies — la bahía, las montañas, Copacabana, el horizonte infinito. Ese momento que parece de película ya está reservado para vos. Seguí avanzando: cada cuota te acerca más a Río de Janeiro.',
-    highlights: ['🏖️ Copacabana y la vida carioca', '🌿 Naturaleza dentro de la ciudad', '🎭 Cultura y arte incomparables', '✈️ Hub de conexiones', '🎸 Samba y energía única'],
+    highlights: ['🏖️ Copacabana y la vida carioca', '🌿 Naturaleza dentro de la ciudad', '🎭 Cultura y arte incomparables', '🌐 Hub de conexiones', '🎸 Samba y energía única'],
     attractions: [
       {icon:'🌟', name:'Cristo Redentor', desc:'El ícono más famoso de Brasil desde el Corcovado'},
       {icon:'🚡', name:'Pan de Azúcar', desc:'Teleférico con vista sobre la Bahía de Guanabara'},
@@ -1892,7 +1908,7 @@ function renderDestInfo() {
       + '<div style="display:flex;align-items:center;gap:10px;">'
       +   '<div class="pkg-countdown-icon"><img src="images/mariposa-avatar.png" alt="" style="width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(126,184,255,.5));"></div>'
       +   '<div>'
-      +     '<div class="pkg-countdown-num" style="font-size:1.4rem;">' + (esCurso ? '🎉 ¡Viaje en curso!' : '✈️ ' + pct + '% del plan') + '</div>'
+      +     '<div class="pkg-countdown-num" style="font-size:1.4rem;">' + (esCurso ? '🎉 ¡Viaje en curso!' : '🌴 ' + pct + '% del plan') + '</div>'
       +     '<div class="pkg-countdown-lbl">' + (esCurso ? '¡Que lo disfrutes!' : '📅 Salida: ' + u.fecha_viaje) + '</div>'
       +   '</div>'
       + '</div>'
