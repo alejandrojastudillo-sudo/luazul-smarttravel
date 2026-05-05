@@ -919,10 +919,15 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
           <div class="stat-value" id="statAbonado">—</div>
           <div class="stat-sub" id="statAbonadoSub">—</div>
         </div>
-        <div class="stat-card glass">
-          <div class="stat-icon">📅</div>
-          <div class="stat-label">Días para el viaje</div>
-          <div class="stat-value" id="statDias">—</div>
+        <div class="stat-card glass" id="cardViaje" style="cursor:default;" onclick="cardViajeClick()">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <div class="stat-label" id="statDiasLabel">Mi viaje</div>
+            <div style="font-size:1.1rem;" id="statDias">🎯</div>
+          </div>
+          <div class="stat-value" id="statDiasValor" style="font-size:1.4rem;margin-bottom:2px;">—</div>
+          <div style="margin:8px 0 6px;background:rgba(255,255,255,.08);border-radius:20px;height:7px;overflow:hidden;">
+            <div id="statDiasBar" style="height:100%;border-radius:20px;background:linear-gradient(90deg,#1a5bb5,#7eb8ff);width:0%;transition:width .7s cubic-bezier(.4,0,.2,1);"></div>
+          </div>
           <div class="stat-sub" id="statDiasSub">—</div>
         </div>
       </div>
@@ -1297,6 +1302,14 @@ function generarNumeroContrato() {
   return 'LZ-' + ano + '-' + idStr;
 }
 
+async function cardViajeClick() {
+  if (!currentUser) return;
+  var pagadas = parseInt(currentUser.cuotas_pagadas) || 0;
+  var total   = parseInt(currentUser.cuotas_total)   || 10;
+  var pct     = (pagadas / total) * 100;
+  if (pct >= 80 && !currentUser.fecha_viaje) elegirFechaViaje();
+}
+
 async function elegirFechaViaje() {
   if (!currentUser) return;
   var pagadas = parseInt(currentUser.cuotas_pagadas) || 0;
@@ -1577,28 +1590,46 @@ async function renderDashboard() {
   document.getElementById('statAbonado').textContent    = 'USD ' + abonado.toFixed(0);
   document.getElementById('statAbonadoSub').textContent = 'de USD ' + totalUsd.toFixed(0) + ' total';
 
-  // Días para el viaje — regla del 80%
-  var diasEl  = document.getElementById('statDias');
-  var diasSub = document.getElementById('statDiasSub');
+  // Tarjeta "Mi viaje" con barra de progreso motivacional
+  var diasEl    = document.getElementById('statDias');
+  var diasValor = document.getElementById('statDiasValor');
+  var diasSub   = document.getElementById('statDiasSub');
+  var diasBar   = document.getElementById('statDiasBar');
+  var diasLabel = document.getElementById('statDiasLabel');
+  var cardViaje = document.getElementById('cardViaje');
+
   if (u.fecha_viaje && u.fecha_viaje !== '') {
+    // Estado 3: tiene fecha elegida → countdown de días
     var diff = Math.ceil((new Date(u.fecha_viaje) - new Date()) / (1000*60*60*24));
-    diasEl.textContent  = diff > 0 ? diff : '🎉';
-    diasSub.textContent = diff > 0 ? u.fecha_viaje : '¡Viaje en curso!';
+    var esCurso = diff <= 0;
+    diasEl.textContent    = esCurso ? '🎉' : '✈️';
+    diasLabel.textContent = esCurso ? '¡Viaje en curso!' : 'Días para tu viaje';
+    diasValor.textContent = esCurso ? '¡Ya!' : diff;
+    diasSub.textContent   = esCurso ? '¡Que lo disfrutes!' : 'Salida: ' + u.fecha_viaje;
+    // Barra: cuánto del plan está pago (va hasta 100%)
+    setTimeout(function(){ if(diasBar) diasBar.style.width = Math.min(pct, 100) + '%'; }, 200);
+    diasBar.style.background = esCurso ? 'linear-gradient(90deg,#10b981,#6ee7b7)' : 'linear-gradient(90deg,#1a5bb5,#7eb8ff)';
+    if (cardViaje) cardViaje.style.cursor = 'default';
   } else if (pct >= 80) {
-    diasEl.textContent  = '📅';
-    diasSub.textContent = '¡Ya podés elegir tu fecha!';
-    if (diasEl) diasEl.style.cursor = 'pointer';
-    if (diasSub) diasSub.style.cursor = 'pointer';
-    diasEl.onclick  = elegirFechaViaje;
-    diasSub.onclick = elegirFechaViaje;
+    // Estado 2: puede elegir fecha → invitarlo a clickear
+    diasEl.textContent    = '📅';
+    diasLabel.textContent = '¡Fecha disponible!';
+    diasValor.textContent = '¡Elegí!';
+    diasSub.textContent   = 'Tocá para reservar tu fecha de viaje';
+    setTimeout(function(){ if(diasBar) diasBar.style.width = '100%'; }, 200);
+    diasBar.style.background = 'linear-gradient(90deg,#10b981,#6ee7b7)';
+    if (cardViaje) cardViaje.style.cursor = 'pointer';
   } else {
+    // Estado 1: < 80% → barra motivacional hacia el hito del 80%
     var faltanCuotas = total - pagadas;
-    diasEl.textContent  = '🎯';
-    diasSub.textContent = '¡' + faltanCuotas + ' cuota' + (faltanCuotas !== 1 ? 's' : '') + ' más y podrás elegir tu fecha de viaje! (' + pct + '%)';
-    if (diasEl) diasEl.style.cursor = 'default';
-    if (diasSub) diasSub.style.cursor = 'default';
-    diasEl.onclick  = null;
-    diasSub.onclick = null;
+    var barPct = Math.round((pct / 80) * 100); // progreso hacia el 80%
+    diasEl.textContent    = '🎯';
+    diasLabel.textContent = 'Tu viaje';
+    diasValor.textContent = pct + '%';
+    diasSub.textContent   = '¡' + faltanCuotas + ' cuota' + (faltanCuotas !== 1 ? 's' : '') + ' más para elegir tu fecha!';
+    setTimeout(function(){ if(diasBar) diasBar.style.width = Math.min(barPct, 99) + '%'; }, 200);
+    diasBar.style.background = 'linear-gradient(90deg,#1a5bb5,#7eb8ff)';
+    if (cardViaje) cardViaje.style.cursor = 'default';
   }
 
   document.getElementById('progLabel').textContent = 'Cuotas abonadas: ' + pagadas + ' / ' + total;
