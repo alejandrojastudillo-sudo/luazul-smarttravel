@@ -2069,21 +2069,25 @@ async function renderCuotas() {
 
     var uploadBtn = '';
     if (st === 'future' || (estadoPago === 'pendiente' && !tieneComp)) {
-      // Cuota 1 sin ningún pago registrado → CTA especial de activación del plan
+      // Si es la primera cuota y nunca se ha pagado ninguna (cuotasPagadasReal === 0)
       if (i === 1 && cuotasPagadasReal === 0 && !tieneComp) {
-        uploadBtn = '<button onclick="iniciarFlujoPrimeraCuota()" style="padding:12px 20px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.88rem;cursor:pointer;animation:pulse-btn 2s infinite;letter-spacing:.3px;">\uD83D\uDE80 Activar mi plan (pagar 1\u00AA cuota + firmar contrato)</button>';
+        uploadBtn = '<button onclick="iniciarFlujoPrimeraCuota()" style="padding:12px 20px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.88rem;cursor:pointer;animation:pulse-btn 2s infinite;letter-spacing:.3px;">\ud83d\ude80 Activar mi plan (pagar 1\u00aa cuota + firmar contrato)</button>';
+      } else if (cuotasPagadasReal === 0 && i > 1) {
+        // Si a\u00fan no se ha pagado la cuota 1, no permitir pagar cuotas futuras
+        uploadBtn = '<div style="color:var(--yellow);font-size:.75rem;padding:6px;background:rgba(245,158,11,.1);border-radius:8px;">\ud83d\udd12 Primero activa tu plan (cuota 1)</div>';
       } else {
-        uploadBtn = '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">\uD83D\uDCCE Adjuntar comprobante</button>'
-          + '<button onclick="abrirPanelPago(' + i + ')" style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;margin-left:6px;">\uD83D\uDCB3 Pagar cuota</button>';
+        // Cuotas normales (despu\u00e9s de haber pagado la cuota 1)
+        uploadBtn = '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">\ud83d\udcce Adjuntar comprobante</button>'
+          + '<button onclick="abrirPanelPago(' + i + ')" style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;margin-left:6px;">\ud83d\udcb3 Pagar cuota</button>';
       }
     } else if (estadoPago === 'en_revision') {
       uploadBtn = comprobanteUrl
-        ? '<button onclick="verComprobanteUrl(\'' + comprobanteUrl + '\',' + i + ')" style="padding:5px 11px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fcd34d;border-radius:8px;font-size:.72rem;cursor:pointer;">\uD83D\uDCC4 Ver comprobante</button>'
-          + '<button onclick="uploadComp(' + i + ')" style="padding:5px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(180,200,240,.6);border-radius:8px;font-size:.72rem;cursor:pointer;margin-left:4px;">\u21BA Reemplazar</button>'
-        : '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">\uD83D\uDCCE Adjuntar comprobante</button>';
+        ? '<button onclick="verComprobanteUrl(\'' + comprobanteUrl + '\',' + i + ')" style="padding:5px 11px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fcd34d;border-radius:8px;font-size:.72rem;cursor:pointer;">\ud83d\udcc4 Ver comprobante</button>'
+          + '<button onclick="uploadComp(' + i + ')" style="padding:5px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(180,200,240,.6);border-radius:8px;font-size:.72rem;cursor:pointer;margin-left:4px;">\u21ba Reemplazar</button>'
+        : '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">\ud83d\udcce Adjuntar comprobante</button>';
     } else if (estadoPago === 'aprobado' || estadoPago === 'pagada') {
       if (comprobanteUrl) {
-        uploadBtn = '<button onclick="verComprobanteUrl(\'' + comprobanteUrl + '\',' + i + ')" style="padding:5px 11px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#6ee7b7;border-radius:8px;font-size:.72rem;cursor:pointer;">\uD83D\uDCC4 Ver comprobante</button>';
+        uploadBtn = '<button onclick="verComprobanteUrl(\'' + comprobanteUrl + '\',' + i + ')" style="padding:5px 11px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#6ee7b7;border-radius:8px;font-size:.72rem;cursor:pointer;">\ud83d\udcc4 Ver comprobante</button>';
       }
     }
 
@@ -2714,12 +2718,12 @@ function _firmaEstaVacia() {
 
 async function guardarFirmaDigital() {
   if (_firmaEstaVacia()) {
-    document.getElementById('firmaMsg').textContent = '⚠️ Dibujá tu firma antes de confirmar.';
+    document.getElementById('firmaMsg').textContent = '\u26a0\ufe0f Dibuj\u00e1 tu firma antes de confirmar.';
     return;
   }
   var btn = document.getElementById('btnGuardarFirma');
   btn.disabled = true;
-  btn.textContent = '⏳ Guardando...';
+  btn.textContent = '\u23f3 Guardando...';
   document.getElementById('firmaMsg').textContent = '';
 
   try {
@@ -2748,7 +2752,7 @@ async function guardarFirmaDigital() {
     if (updateErr) throw updateErr;
 
     // 3. Generar PDF del contrato (usando el HTML del contrato actual)
-    // Asegurar que el contrato esté renderizado aunque el cliente nunca haya visitado esa página
+    // Asegurar que el contrato est\u00e9 renderizado aunque el cliente nunca haya visitado esa p\u00e1gina
     if (typeof renderContrato === 'function') renderContrato();
     const contratoHTML = document.getElementById('contratoDoc').cloneNode(true);
     // Eliminar elementos interactivos que no deben ir en el PDF
@@ -2756,7 +2760,7 @@ async function guardarFirmaDigital() {
     if (btnFirmar) btnFirmar.remove();
     const checkbox = contratoHTML.querySelector('#aceptoContrato');
     if (checkbox && checkbox.parentNode) checkbox.parentNode.remove();
-    // Agregar estilos para impresión/PDF
+    // Agregar estilos para impresi\u00f3n/PDF
     const style = document.createElement('style');
     style.textContent = `
       body { font-family: 'Montserrat', sans-serif; margin: 20px; color: #000; }
@@ -2804,13 +2808,13 @@ async function guardarFirmaDigital() {
       }, { onConflict: 'cliente_id' });
     if (contratoInsertErr) throw contratoInsertErr;
 
-    // Actualizar sesión local
+    // Actualizar sesi\u00f3n local
     currentUser.firma_url = firmaPublicUrl;
     sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
 
-    document.getElementById('firmaMsg').textContent = '✅ ¡Firma y contrato guardados! Plan activado.';
-    btn.textContent = '✅ Guardada';
-    showCompToast('🎉 ¡Plan activado! Comprobante, firma y contrato registrados correctamente.', 'ok');
+    document.getElementById('firmaMsg').textContent = '\u2705 \u00a1Firma y contrato guardados! Plan activado.';
+    btn.textContent = '\u2705 Guardada';
+    showCompToast('\ud83c\udf89 \u00a1Plan activado! Comprobante, firma y contrato registrados correctamente.', 'ok');
 
     setTimeout(function(){
       cerrarFirmaDigital();
@@ -2818,12 +2822,11 @@ async function guardarFirmaDigital() {
     }, 1800);
   } catch (err) {
     console.error(err);
-    document.getElementById('firmaMsg').textContent = '❌ Error: ' + (err.message || err);
+    document.getElementById('firmaMsg').textContent = '\u274c Error: ' + (err.message || err);
     btn.disabled = false;
-    btn.textContent = '✅ Confirmar firma';
+    btn.textContent = '\u2705 Confirmar firma';
   }
 }
-
 function compartirRef() {
   var u = currentUser;
   var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
