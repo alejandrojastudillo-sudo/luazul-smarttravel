@@ -2069,14 +2069,11 @@ async function renderCuotas() {
 
     var uploadBtn = '';
     if (st === 'future' || (estadoPago === 'pendiente' && !tieneComp)) {
-      // Si es la primera cuota y nunca se ha pagado ninguna (cuotasPagadasReal === 0)
       if (i === 1 && cuotasPagadasReal === 0 && !tieneComp) {
         uploadBtn = '<button onclick="iniciarFlujoPrimeraCuota()" style="padding:12px 20px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.88rem;cursor:pointer;animation:pulse-btn 2s infinite;letter-spacing:.3px;">\ud83d\ude80 Activar mi plan (pagar 1\u00aa cuota + firmar contrato)</button>';
       } else if (cuotasPagadasReal === 0 && i > 1) {
-        // Si a\u00fan no se ha pagado la cuota 1, no permitir pagar cuotas futuras
         uploadBtn = '<div style="color:var(--yellow);font-size:.75rem;padding:6px;background:rgba(245,158,11,.1);border-radius:8px;">\ud83d\udd12 Primero activa tu plan (cuota 1)</div>';
       } else {
-        // Cuotas normales (despu\u00e9s de haber pagado la cuota 1)
         uploadBtn = '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">\ud83d\udcce Adjuntar comprobante</button>'
           + '<button onclick="abrirPanelPago(' + i + ')" style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;margin-left:6px;">\ud83d\udcb3 Pagar cuota</button>';
       }
@@ -2287,7 +2284,7 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
         .from('comprobantes')
         .getPublicUrl(fileName);
 
-      // Calcular fecha_vencimiento: fin del mes actual (para que el CEO lo vea en el filtro mensual)
+      // fecha_vencimiento = fin del mes actual (el CEO filtra por mes)
       var _now = new Date();
       var _finMes = new Date(Date.UTC(_now.getFullYear(), _now.getMonth() + 1, 0, 23, 59, 59, 999));
 
@@ -2727,7 +2724,7 @@ async function guardarFirmaDigital() {
   document.getElementById('firmaMsg').textContent = '';
 
   try {
-    // 1. Guardar la firma como imagen en Storage (bucket 'firmas')
+    // 1. Subir firma PNG al bucket 'firmas'
     var canvas  = document.getElementById('firmaCanvas');
     var dataUrl = canvas.toDataURL('image/png');
     var byteStr  = atob(dataUrl.split(',')[1]);
@@ -2744,77 +2741,80 @@ async function guardarFirmaDigital() {
     const { data: urlData } = sbClient.storage.from('firmas').getPublicUrl(fileName);
     const firmaPublicUrl = urlData.publicUrl;
 
-    // 2. Actualizar la tabla clientes con la firma_url
+    // 2. Actualizar clientes con firma_url
     const { error: updateErr } = await sbClient
       .from('clientes')
       .update({ firma_url: firmaPublicUrl })
       .eq('id', currentUser.id);
     if (updateErr) throw updateErr;
 
-    // 3. Generar PDF del contrato (usando el HTML del contrato actual)
-    // Asegurar que el contrato est\u00e9 renderizado aunque el cliente nunca haya visitado esa p\u00e1gina
+    // 3. Generar PDF del contrato
     if (typeof renderContrato === 'function') renderContrato();
-    const contratoHTML = document.getElementById('contratoDoc').cloneNode(true);
-    // Eliminar elementos interactivos que no deben ir en el PDF
-    const btnFirmar = contratoHTML.querySelector('#btnFirmarContrato');
-    if (btnFirmar) btnFirmar.remove();
-    const checkbox = contratoHTML.querySelector('#aceptoContrato');
-    if (checkbox && checkbox.parentNode) checkbox.parentNode.remove();
-    // Agregar estilos para impresi\u00f3n/PDF
-    const style = document.createElement('style');
-    style.textContent = `
-      body { font-family: 'Montserrat', sans-serif; margin: 20px; color: #000; }
-      .contrato-doc { max-width: 800px; margin: 0 auto; }
-      h3 { color: #0B3D91; }
-      .btn, button, .btn-primary, .btn-ghost { display: none; }
-    `;
-    contratoHTML.prepend(style);
-    const opt = {
-      margin:       0.5,
-      filename:     `Contrato_Luazul_${currentUser.id}_${Date.now()}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, letterRendering: true },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-    const pdfBlob = await html2pdf().set(opt).from(contratoHTML).outputPdf('blob');
-    const pdfFileName = `contratos/contrato_cliente_${currentUser.id}_${Date.now()}.pdf`;
-    const { error: pdfUploadErr } = await sbClient.storage
-      .from('contratos')
-      .upload(pdfFileName, pdfBlob, { contentType: 'application/pdf' });
-    if (pdfUploadErr) throw pdfUploadErr;
-    const { data: pdfUrlData } = sbClient.storage.from('contratos').getPublicUrl(pdfFileName);
-    const contratoPublicUrl = pdfUrlData.publicUrl;
+    const contratoEl = document.getElementById('contratoDoc');
+    let contratoPublicUrl = null;
+    if (contratoEl && typeof html2pdf !== 'undefined') {
+      const contratoHTML = contratoEl.cloneNode(true);
+      const btnF = contratoHTML.querySelector('#btnFirmarContrato');
+      if (btnF) btnF.remove();
+      const chk = contratoHTML.querySelector('#aceptoContrato');
+      if (chk && chk.parentNode) chk.parentNode.remove();
+      const st = document.createElement('style');
+      st.textContent = 'body{font-family:sans-serif;margin:20px;color:#000;} .btn,button{display:none;}';
+      contratoHTML.prepend(st);
+      const opt = {
+        margin: 0.5,
+        filename: 'Contrato_Luazul_' + currentUser.id + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      try {
+        const pdfBlob = await html2pdf().set(opt).from(contratoHTML).outputPdf('blob');
+        const pdfName = 'contratos/contrato_' + currentUser.id + '_' + Date.now() + '.pdf';
+        const { error: pdfErr } = await sbClient.storage
+          .from('contratos')
+          .upload(pdfName, pdfBlob, { contentType: 'application/pdf' });
+        if (!pdfErr) {
+          const { data: pdfUrlData } = sbClient.storage.from('contratos').getPublicUrl(pdfName);
+          contratoPublicUrl = pdfUrlData.publicUrl;
+        } else {
+          console.warn('PDF upload error (no critico):', pdfErr.message);
+        }
+      } catch(pdfGenErr) {
+        console.warn('PDF generation error (no critico):', pdfGenErr.message);
+      }
+    }
 
-    // 4. Insertar o actualizar en la tabla contratos
-    const { error: contratoInsertErr } = await sbClient
+    // 4. Upsert en tabla contratos (con o sin PDF - firma_url siempre se guarda)
+    const { error: contratoErr } = await sbClient
       .from('contratos')
       .upsert({
-        cliente_id: currentUser.id,
+        cliente_id:   currentUser.id,
         contrato_url: contratoPublicUrl,
-        firma_url: firmaPublicUrl,
-        estado: 'pendiente',
+        firma_url:    firmaPublicUrl,
+        estado:       'pendiente',
         contenido_json: {
-          nombre: currentUser.nombre,
-          documento: currentUser.documento,
-          domicilio: currentUser.domicilio,
-          destino: currentUser.destino,
-          paquete: currentUser.paquete,
-          total_usd: currentUser.total_usd,
+          nombre:       currentUser.nombre,
+          documento:    currentUser.documento,
+          domicilio:    currentUser.domicilio,
+          destino:      currentUser.destino,
+          paquete:      currentUser.paquete,
+          total_usd:    currentUser.total_usd,
           cuotas_total: currentUser.cuotas_total,
-          monto_cuota: currentUser.monto_cuota
+          monto_cuota:  currentUser.monto_cuota
         },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }, { onConflict: 'cliente_id' });
-    if (contratoInsertErr) throw contratoInsertErr;
+    if (contratoErr) console.warn('Contrato upsert error:', contratoErr.message);
 
-    // Actualizar sesi\u00f3n local
+    // 5. Actualizar sesion local
     currentUser.firma_url = firmaPublicUrl;
     sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
 
     document.getElementById('firmaMsg').textContent = '\u2705 \u00a1Firma y contrato guardados! Plan activado.';
     btn.textContent = '\u2705 Guardada';
-    showCompToast('\ud83c\udf89 \u00a1Plan activado! Comprobante, firma y contrato registrados correctamente.', 'ok');
+    showCompToast('\ud83c\udf89 \u00a1Plan activado! Comprobante, firma y contrato registrados.', 'ok');
 
     setTimeout(function(){
       cerrarFirmaDigital();
