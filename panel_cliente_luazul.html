@@ -2715,16 +2715,16 @@ function _firmaEstaVacia() {
 
 async function guardarFirmaDigital() {
   if (_firmaEstaVacia()) {
-    document.getElementById('firmaMsg').textContent = '\u26a0\ufe0f Dibuj\u00e1 tu firma antes de confirmar.';
+    document.getElementById('firmaMsg').textContent = '⚠️ Dibujá tu firma antes de confirmar.';
     return;
   }
   var btn = document.getElementById('btnGuardarFirma');
   btn.disabled = true;
-  btn.textContent = '\u23f3 Guardando...';
+  btn.textContent = '⏳ Guardando...';
   document.getElementById('firmaMsg').textContent = '';
 
   try {
-    // 1. Subir firma PNG al bucket 'firmas'
+    // 1. Guardar la firma como imagen en Storage
     var canvas  = document.getElementById('firmaCanvas');
     var dataUrl = canvas.toDataURL('image/png');
     var byteStr  = atob(dataUrl.split(',')[1]);
@@ -2741,52 +2741,67 @@ async function guardarFirmaDigital() {
     const { data: urlData } = sbClient.storage.from('firmas').getPublicUrl(fileName);
     const firmaPublicUrl = urlData.publicUrl;
 
-    // 2. Actualizar clientes con firma_url
+    // 2. Actualizar la tabla clientes con la firma_url
     const { error: updateErr } = await sbClient
       .from('clientes')
       .update({ firma_url: firmaPublicUrl })
       .eq('id', currentUser.id);
     if (updateErr) throw updateErr;
 
-    // 3. Generar PDF del contrato
-    if (typeof renderContrato === 'function') renderContrato();
-    const contratoEl = document.getElementById('contratoDoc');
-    let contratoPublicUrl = null;
-    if (contratoEl && typeof html2pdf !== 'undefined') {
-      const contratoHTML = contratoEl.cloneNode(true);
-      const btnF = contratoHTML.querySelector('#btnFirmarContrato');
-      if (btnF) btnF.remove();
-      const chk = contratoHTML.querySelector('#aceptoContrato');
-      if (chk && chk.parentNode) chk.parentNode.remove();
-      const st = document.createElement('style');
-      st.textContent = 'body{font-family:sans-serif;margin:20px;color:#000;} .btn,button{display:none;}';
-      contratoHTML.prepend(st);
-      const opt = {
-        margin: 0.5,
-        filename: 'Contrato_Luazul_' + currentUser.id + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, letterRendering: true },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-      };
-      try {
-        const pdfBlob = await html2pdf().set(opt).from(contratoHTML).outputPdf('blob');
-        const pdfName = 'contratos/contrato_' + currentUser.id + '_' + Date.now() + '.pdf';
-        const { error: pdfErr } = await sbClient.storage
-          .from('contratos')
-          .upload(pdfName, pdfBlob, { contentType: 'application/pdf' });
-        if (!pdfErr) {
-          const { data: pdfUrlData } = sbClient.storage.from('contratos').getPublicUrl(pdfName);
-          contratoPublicUrl = pdfUrlData.publicUrl;
-        } else {
-          console.warn('PDF upload error (no critico):', pdfErr.message);
-        }
-      } catch(pdfGenErr) {
-        console.warn('PDF generation error (no critico):', pdfGenErr.message);
-      }
+    // 3. Generar PDF del contrato (asegurar que el contrato esté renderizado)
+    if (typeof renderContrato === 'function') {
+      renderContrato();
     }
+    const originalContrato = document.getElementById('contratoDoc');
+    if (!originalContrato) throw new Error('No se encontró el elemento del contrato');
+    const contratoClone = originalContrato.cloneNode(true);
+    const btnFirmar = contratoClone.querySelector('#btnFirmarContrato');
+    if (btnFirmar) btnFirmar.remove();
+    const checkbox = contratoClone.querySelector('#aceptoContrato');
+    if (checkbox && checkbox.parentNode) checkbox.parentNode.remove();
+    const style = document.createElement('style');
+    style.textContent = `
+      body {
+        font-family: 'Montserrat', 'Times New Roman', serif;
+        margin: 20px;
+        padding: 20px;
+        background: white !important;
+        color: black !important;
+      }
+      .contrato-doc {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        color: black;
+        font-size: 12pt;
+        line-height: 1.5;
+      }
+      h1, h2, h3, h4 { color: #0B3D91 !important; }
+      .btn, button, .btn-primary, .btn-ghost, .modal-close, .firma-actions { display: none !important; }
+      .dest-immersive, .dest-highlights-strip, .dest-attr-row, .dest-weather-wrap { display: none !important; }
+      .contrato-doc p, .contrato-doc li { color: black !important; }
+    `;
+    contratoClone.prepend(style);
+    contratoClone.style.maxHeight = 'none';
+    contratoClone.style.overflow = 'visible';
+    const opt = {
+      margin:       0.5,
+      filename:     'Contrato_Luazul_' + currentUser.id + '_' + Date.now() + '.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, letterRendering: true, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    const pdfBlob = await html2pdf().set(opt).from(contratoClone).outputPdf('blob');
+    const pdfFileName = 'contratos/contrato_cliente_' + currentUser.id + '_' + Date.now() + '.pdf';
+    const { error: pdfUploadErr } = await sbClient.storage
+      .from('contratos')
+      .upload(pdfFileName, pdfBlob, { contentType: 'application/pdf' });
+    if (pdfUploadErr) throw pdfUploadErr;
+    const { data: pdfUrlData } = sbClient.storage.from('contratos').getPublicUrl(pdfFileName);
+    const contratoPublicUrl = pdfUrlData.publicUrl;
 
-    // 4. Upsert en tabla contratos (con o sin PDF - firma_url siempre se guarda)
-    const { error: contratoErr } = await sbClient
+    // 4. Insertar o actualizar en la tabla contratos
+    const { error: contratoInsertErr } = await sbClient
       .from('contratos')
       .upsert({
         cliente_id:   currentUser.id,
@@ -2806,15 +2821,15 @@ async function guardarFirmaDigital() {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }, { onConflict: 'cliente_id' });
-    if (contratoErr) console.warn('Contrato upsert error:', contratoErr.message);
+    if (contratoInsertErr) throw contratoInsertErr;
 
-    // 5. Actualizar sesion local
+    // Actualizar sesión local
     currentUser.firma_url = firmaPublicUrl;
     sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
 
-    document.getElementById('firmaMsg').textContent = '\u2705 \u00a1Firma y contrato guardados! Plan activado.';
-    btn.textContent = '\u2705 Guardada';
-    showCompToast('\ud83c\udf89 \u00a1Plan activado! Comprobante, firma y contrato registrados.', 'ok');
+    document.getElementById('firmaMsg').textContent = '✅ ¡Firma y contrato guardados! Plan activado.';
+    btn.textContent = '✅ Guardada';
+    showCompToast('🎉 ¡Plan activado! Comprobante, firma y contrato registrados correctamente.', 'ok');
 
     setTimeout(function(){
       cerrarFirmaDigital();
@@ -2822,9 +2837,9 @@ async function guardarFirmaDigital() {
     }, 1800);
   } catch (err) {
     console.error(err);
-    document.getElementById('firmaMsg').textContent = '\u274c Error: ' + (err.message || err);
+    document.getElementById('firmaMsg').textContent = '❌ Error: ' + (err.message || err);
     btn.disabled = false;
-    btn.textContent = '\u2705 Confirmar firma';
+    btn.textContent = '✅ Confirmar firma';
   }
 }
 function compartirRef() {
