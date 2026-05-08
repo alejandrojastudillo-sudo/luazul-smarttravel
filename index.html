@@ -434,17 +434,17 @@
             <div class="preview-mini">
                 <div style="font-size:1.8rem;margin-bottom:8px;">💑</div>
                 <h3>Escapada en Pareja</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;">USD 870 · 10 cuotas</p>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-pareja-index">—</p>
             </div>
             <div class="preview-mini">
                 <div style="font-size:1.8rem;margin-bottom:8px;">👫</div>
                 <h3>4 Amigos</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;">USD 1.450 · 10 cuotas</p>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-4amigos-index">—</p>
             </div>
             <div class="preview-mini">
                 <div style="font-size:1.8rem;margin-bottom:8px;">👥</div>
                 <h3>6 Amigos</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;">USD 1.740 · 10 cuotas</p>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-6amigos-index">—</p>
             </div>
         </div>
         <a href="ofertas.html" class="view-all-btn">🏖️ Ver todos los paquetes →</a>
@@ -458,15 +458,15 @@
             <p style="color:rgba(200,220,255,.85);font-size:1rem;margin-bottom:24px;">Calculá cuánto pagarías por mes según el destino y la cantidad de cuotas que prefieras. Sin compromisos.</p>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px;">
                 <div style="background:rgba(11,61,145,.3);border:1px solid rgba(100,160,255,.2);border-radius:16px;padding:18px;text-align:center;">
-                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;">USD 87</div>
+                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;" id="cuota-pareja-index">—</div>
                     <div style="font-size:.78rem;color:rgba(200,220,255,.7);margin-top:4px;">por mes · 2 personas</div>
                 </div>
                 <div style="background:rgba(11,61,145,.3);border:1px solid rgba(100,160,255,.2);border-radius:16px;padding:18px;text-align:center;">
-                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;">USD 145</div>
+                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;" id="cuota-4amigos-index">—</div>
                     <div style="font-size:.78rem;color:rgba(200,220,255,.7);margin-top:4px;">por mes · 4 personas</div>
                 </div>
                 <div style="background:rgba(11,61,145,.3);border:1px solid rgba(100,160,255,.2);border-radius:16px;padding:18px;text-align:center;">
-                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;">USD 174</div>
+                    <div style="font-size:1.6rem;font-weight:900;color:#7eb8ff;" id="cuota-6amigos-index">—</div>
                     <div style="font-size:.78rem;color:rgba(200,220,255,.7);margin-top:4px;">por mes · 6 personas</div>
                 </div>
             </div>
@@ -524,7 +524,7 @@
     </div>
 </footer>
 
-<script src="js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="mariposa-chat.js"></script>
 
 
@@ -592,6 +592,38 @@ function closeMobileNav() {
     document.getElementById('navBurger').classList.remove('open');
     document.body.style.overflow = '';
 }
+</script>
+
+<script>
+// Cargar precios dinámicos para index.html
+(function() {
+    var sbIdxClient = supabase.createClient('https://yunvqgaljopirzvjrntc.supabase.co', 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB');
+    sbIdxClient.from('catalogo_precios').select('*').eq('activo', true).then(function(res) {
+        if (res.error) return;
+        var catalogo = res.data || [];
+        var pareja = catalogo.find(function(p) { return p.paquete === 'Escapada en Pareja' && p.personas === 2; });
+        var cuatro = catalogo.find(function(p) { return p.paquete === 'Paquete 4 Amigos' && p.personas === 4; });
+        var seis   = catalogo.find(function(p) { return p.paquete === 'Paquete 6 Amigos' && p.personas === 6; });
+        if (pareja) {
+            var el1 = document.getElementById('precio-pareja-index');
+            if (el1) el1.innerHTML = 'USD ' + pareja.precio_usd + ' · 10 cuotas';
+            var el1b = document.getElementById('cuota-pareja-index');
+            if (el1b) el1b.innerHTML = 'USD ' + Math.floor(pareja.precio_usd / 10 * 100) / 100;
+        }
+        if (cuatro) {
+            var el2 = document.getElementById('precio-4amigos-index');
+            if (el2) el2.innerHTML = 'USD ' + cuatro.precio_usd + ' · 10 cuotas';
+            var el2b = document.getElementById('cuota-4amigos-index');
+            if (el2b) el2b.innerHTML = 'USD ' + Math.floor(cuatro.precio_usd / 10 * 100) / 100;
+        }
+        if (seis) {
+            var el3 = document.getElementById('precio-6amigos-index');
+            if (el3) el3.innerHTML = 'USD ' + seis.precio_usd + ' · 10 cuotas';
+            var el3b = document.getElementById('cuota-6amigos-index');
+            if (el3b) el3b.innerHTML = 'USD ' + Math.floor(seis.precio_usd / 10 * 100) / 100;
+        }
+    });
+})();
 </script>
 </body>
 </html>
