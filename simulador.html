@@ -80,38 +80,21 @@
         <h2>📊 Calculá tu <span>Plan</span></h2>
         <p class="section-desc">Elegí tu destino y cantidad de cuotas para ver exactamente cuánto pagarías por mes. Sin letra chica, sin sorpresas.</p>
         <div class="simulator">
-            <div class="simulator-box">
-                <div class="select-group">
-                    <select id="destinoSim" onchange="calcular()">
-                        <option value="cabofrio2_2">🏖️ Cabo Frío – 2 personas</option>
-                        <option value="cabofrio4_4" selected>🏖️ Cabo Frío – 4 personas</option>
-                        <option value="cabofrio6_6">🏖️ Cabo Frío – 6 personas</option>
-                        <option value="arraial2_2">🌊 Arraial do Cabo – 2 personas</option>
-                        <option value="arraial4_4">🌊 Arraial do Cabo – 4 personas</option>
-                        <option value="buzios2_2">⛵ Búzios – 2 personas</option>
-                        <option value="buzios4_4">⛵ Búzios – 4 personas</option>
-                        <option value="rio2_2">🌆 Copacabana – 2 personas</option>
-                        <option value="rio4_4">🌆 Copacabana – 4 personas</option>
-                    </select>
-                    <select id="cuotasSim" onchange="calcular()">
-                        <option value="6">6 cuotas</option>
-                        <option value="10" selected>10 cuotas</option>
-                        <option value="12">12 cuotas</option>
-                        <option value="18">18 cuotas</option>
-                    </select>
+            <div class="simulator-box" id="simulatorBox">
+                <div class="select-group" id="selectGroup">
+                    <p style="color:rgba(200,220,255,.6);">Cargando destinos...</p>
                 </div>
                 <div class="result-sim">
                     <div class="result-item">
                         <span class="result-label">Por persona / mes</span>
-                        <span class="result-value" id="cuotaMensual">USD 37.99</span>
+                        <span class="result-value" id="cuotaMensual">—</span>
                     </div>
                     <div class="result-item">
                         <span class="result-label">Por día / persona ☕</span>
-                        <span class="result-value" id="porDia" style="font-size:1.1rem;color:rgba(200,220,255,.8);">USD 1.26</span>
+                        <span class="result-value" id="porDia" style="font-size:1.1rem;color:rgba(200,220,255,.8);">—</span>
                     </div>
                 </div>
-                <p class="sim-note" id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;">4 personas · 10 cuotas</p>
-                
+                <p class="sim-note" id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;">Seleccioná un destino y paquete</p>
                 <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="text-align:center;border-radius:14px;">🔵 Comenzar ahora</a>
             </div>
         </div>
@@ -186,6 +169,7 @@
     </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/app.js"></script>
 <script src="mariposa-chat.js"></script>
 
