@@ -170,8 +170,168 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/app.js"></script>
 <script src="mariposa-chat.js"></script>
+<script>
+// ========== LUAZUL SIMULADOR DINÁMICO ==========
+// Conexión a Supabase
+var SUPABASE_URL_SIM = 'https://yunvqgaljopirzvjrntc.supabase.co';
+var SUPABASE_KEY_SIM = 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB';
+var sbSimClient = supabase.createClient(SUPABASE_URL_SIM, SUPABASE_KEY_SIM);
+
+var catalogoSim = [];
+var destinosMapSim = {};
+var paquetesPorDestinoSim = {};
+
+async function initSimulador() {
+    var selectGroup = document.getElementById('selectGroup');
+    if (!selectGroup) return;
+
+    try {
+        var res = await sbSimClient
+            .from('catalogo_precios')
+            .select('*')
+            .eq('activo', true)
+            .order('orden');
+        if (res.error) throw res.error;
+        catalogoSim = res.data || [];
+        if (catalogoSim.length === 0) throw new Error('No hay destinos activos');
+
+        // Estructurar datos
+        catalogoSim.forEach(function(item) {
+            if (!destinosMapSim[item.slug]) {
+                destinosMapSim[item.slug] = item.nombre_destino;
+                paquetesPorDestinoSim[item.slug] = [];
+            }
+            paquetesPorDestinoSim[item.slug].push(item);
+        });
+
+        // Crear selects
+        construirSelectsSim();
+    } catch (err) {
+        selectGroup.innerHTML = '<p style="color:#f87171;">❌ Error: ' + err.message + '</p>';
+        console.error(err);
+    }
+}
+
+function construirSelectsSim() {
+    var container = document.getElementById('selectGroup');
+    if (!container) return;
+
+    var destinosHtml = '<select id="destinoSelect" class="web-select" onchange="cargarPaquetesSim()">';
+    destinosHtml += '<option value="">Seleccionar destino...</option>';
+    var entries = Object.entries(destinosMapSim);
+    for (var i = 0; i < entries.length; i++) {
+        destinosHtml += '<option value="' + entries[i][0] + '">' + entries[i][1] + '</option>';
+    }
+    destinosHtml += '</select>';
+
+    destinosHtml += '<select id="paqueteSelect" class="web-select" onchange="calcularSim()" disabled><option value="">Primero selecciona un destino</option></select>';
+
+    destinosHtml += '<select id="cuotasSelect" class="web-select" onchange="calcularSim()">';
+    destinosHtml += '<option value="6">6 cuotas</option>';
+    destinosHtml += '<option value="10" selected>10 cuotas</option>';
+    destinosHtml += '<option value="12">12 cuotas</option>';
+    destinosHtml += '<option value="18">18 cuotas</option>';
+    destinosHtml += '</select>';
+
+    container.innerHTML = destinosHtml;
+}
+
+function cargarPaquetesSim() {
+    var destinoSlug = document.getElementById('destinoSelect').value;
+    var paqueteSelect = document.getElementById('paqueteSelect');
+    if (!destinoSlug) {
+        paqueteSelect.innerHTML = '<option value="">Primero selecciona un destino</option>';
+        paqueteSelect.disabled = true;
+        document.getElementById('simSubLabel').innerText = 'Seleccioná un destino y paquete';
+        document.getElementById('cuotaMensual').innerText = '—';
+        document.getElementById('porDia').innerText = '—';
+        return;
+    }
+
+    var paquetes = paquetesPorDestinoSim[destinoSlug] || [];
+    if (paquetes.length === 0) {
+        paqueteSelect.innerHTML = '<option value="">No hay paquetes para este destino</option>';
+        paqueteSelect.disabled = true;
+        return;
+    }
+
+    var options = '<option value="">Seleccionar paquete...</option>';
+    for (var i = 0; i < paquetes.length; i++) {
+        var p = paquetes[i];
+        options += '<option value="' + p.id + '" data-precio="' + p.precio_usd + '" data-personas="' + p.personas + '" data-noches="' + p.noches + '">' + p.paquete + ' · ' + p.personas + ' pers. · USD ' + p.precio_usd + '</option>';
+    }
+    paqueteSelect.innerHTML = options;
+    paqueteSelect.disabled = false;
+    calcularSim();
+}
+
+function calcularSim() {
+    var paqueteSelect = document.getElementById('paqueteSelect');
+    var cuotasSelect = document.getElementById('cuotasSelect');
+    var selectedOption = paqueteSelect.options[paqueteSelect.selectedIndex];
+    if (!selectedOption || !selectedOption.value) {
+        document.getElementById('simSubLabel').innerText = 'Seleccioná un paquete';
+        document.getElementById('cuotaMensual').innerText = '—';
+        document.getElementById('porDia').innerText = '—';
+        return;
+    }
+
+    var precioTotal = parseFloat(selectedOption.getAttribute('data-precio'));
+    var personas = parseInt(selectedOption.getAttribute('data-personas'), 10);
+    var cuotas = parseInt(cuotasSelect.value, 10);
+    if (isNaN(precioTotal) || isNaN(personas) || isNaN(cuotas)) return;
+
+    var cuotaTotal = Math.floor(precioTotal / cuotas * 100) / 100;
+    var cuotaPorPersona = cuotaTotal / personas;
+    var porDia = (cuotaPorPersona / 30).toFixed(2);
+
+    document.getElementById('cuotaMensual').innerHTML = 'USD ' + cuotaPorPersona.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('porDia').innerHTML = 'USD ' + porDia;
+    document.getElementById('simSubLabel').innerHTML = personas + (personas === 1 ? ' persona' : ' personas') + ' · ' + cuotas + ' cuotas · USD ' + cuotaTotal.toLocaleString('es-AR') + ' por mes (total)';
+}
+
+// Estilos inline para los selects del simulador
+(function() {
+    var estilo = document.createElement('style');
+    estilo.textContent = '\
+    .web-select {\
+        background-color: #0c1628;\
+        color: #e8eeff;\
+        border: 1px solid rgba(255,255,255,0.13);\
+        border-radius: 12px;\
+        padding: 12px 16px;\
+        font-family: inherit;\
+        font-size: 0.95rem;\
+        width: 100%;\
+        cursor: pointer;\
+        margin-bottom: 0.5rem;\
+    }\
+    .web-select option {\
+        background-color: #0c1628;\
+        color: #e8eeff;\
+    }\
+    .web-select:disabled {\
+        opacity: 0.6;\
+        cursor: not-allowed;\
+    }\
+    @media (min-width: 768px) {\
+        .select-group {\
+            display: flex;\
+            gap: 1rem;\
+            flex-wrap: wrap;\
+        }\
+        .web-select {\
+            flex: 1;\
+            margin-bottom: 0;\
+        }\
+    }';
+    document.head.appendChild(estilo);
+})();
+
+// Iniciar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', initSimulador);
+</script>
 
 <!-- AGENT SELECTOR MODAL -->
 <div class="agent-overlay" id="agentOverlay" onclick="closeAgentsOutside(event)">
