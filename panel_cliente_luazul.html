@@ -2103,34 +2103,68 @@ async function renderCuotas() {
 }
 
 // ── PANEL DE PAGO DE CUOTA ──────────────────────────────────────────────────
-var TASAS_CONVERSION = {
-  'ARS': { nombre: '🇦🇷 Peso argentino',  simbolo: '$',   tasa: 1280 },
-  'CLP': { nombre: '🇨🇱 Peso chileno',    simbolo: '$',   tasa: 970  },
-  'UYU': { nombre: '🇺🇾 Peso uruguayo',   simbolo: '$',   tasa: 40   },
-  'PYG': { nombre: '🇵🇾 Guaraní',         simbolo: '₲',   tasa: 7800 },
-  'BRL': { nombre: '🇧🇷 Real brasileño',  simbolo: 'R$',  tasa: 5.75 },
-  'USD': { nombre: '🇺🇸 Dólar',           simbolo: 'USD', tasa: 1    },
-};
 
-function abrirPanelPago(numCuota) {
+// ======================== DIVISAS DINÁMICAS ========================
+async function obtenerTasasDivisas() {
+    try {
+        const { data, error } = await sbClient
+            .from('exchange_rates')
+            .select('moneda_destino, cotizacion_venta, margen_porcentaje')
+            .eq('activo', true);
+        if (error) throw error;
+        const tasas = {};
+        data.forEach(row => {
+            tasas[row.moneda_destino] = {
+                nombre: getNombreMoneda(row.moneda_destino),
+                simbolo: getSimboloMoneda(row.moneda_destino),
+                tasa: row.cotizacion_venta,
+                margen: row.margen_porcentaje
+            };
+        });
+        return tasas;
+    } catch (err) {
+        console.error('Error cargando tasas:', err);
+        return null;
+    }
+}
+
+function getNombreMoneda(code) {
+    const nombres = { 'ARS': '🇦🇷 Peso argentino', 'CLP': '🇨🇱 Peso chileno', 'UYU': '🇺🇾 Peso uruguayo', 'PYG': '🇵🇾 Guaraní', 'BRL': '🇧🇷 Real brasileño', 'USD': '🇺🇸 Dólar' };
+    return nombres[code] || code;
+}
+
+function getSimboloMoneda(code) {
+    const simbolos = { 'ARS': '$', 'CLP': '$', 'UYU': '$', 'PYG': '₲', 'BRL': 'R$', 'USD': 'USD' };
+    return simbolos[code];
+}
+
+async function abrirPanelPago(numCuota) {
   var u = currentUser;
   var monto = parseFloat(u.monto_cuota) || 0;
 
-  // Load payment accounts from localStorage (set by admin)
+  // Cargar tasas actualizadas
+  var tasas = await obtenerTasasDivisas();
+  if (!tasas) {
+    showCompToast('❌ No se pudieron cargar las tasas de cambio. Intentá nuevamente.', 'warn');
+    return;
+  }
+  window.tasasDivisas = tasas;
+
+  // Construir selector de monedas
+  var monedaOpts = '';
+  for (var code in tasas) {
+    var t = tasas[code];
+    monedaOpts += '<option value="' + code + '"' + (code === 'ARS' ? ' selected' : '') + '>' + t.nombre + '</option>';
+  }
+
+  // Cargar cuentas bancarias desde localStorage (o usar por defecto)
   var cuentasRaw = localStorage.getItem('luazul_cuentas_pago');
   var cuentas = cuentasRaw ? JSON.parse(cuentasRaw) : [];
-
-  // Cuenta PIX oficial Luazul
   if (!cuentas.length) {
     cuentas = [
       { alias: 'luazul.turismobr@gmail.com', cbu: 'luazul.turismobr@gmail.com', titular: 'Luazul Turismo', banco: 'Nubank 🇧🇷 · PIX' }
     ];
   }
-
-  // Build currency selector
-  var monedaOpts = Object.keys(TASAS_CONVERSION).map(function(k) {
-    return '<option value="' + k + '"' + (k === 'ARS' ? ' selected' : '') + '>' + TASAS_CONVERSION[k].nombre + '</option>';
-  }).join('');
 
   // Build accounts list
   var cuentasHtml = cuentas.map(function(ct, i) {
@@ -2174,7 +2208,7 @@ function abrirPanelPago(numCuota) {
     +       '<div style="font-size:1.15rem;font-weight:800;color:#fbbf24;" id="pagoConversion">$ —</div>'
     +     '</div>'
     +   '</div>'
-    +   '<div style="font-size:.65rem;color:var(--text-muted);margin-top:8px;text-align:center;">⚠️ Tipo de cambio referencial. El monto a transferir siempre es en USD.</div>'
+    +   '<div style="font-size:.65rem;color:var(--text-muted);margin-top:8px;text-align:center;">⚠️ Cotización referencial. El monto final puede variar según impuestos y tu entidad bancaria.</div>'
     + '</div>'
     // Cuentas
     + '<div style="font-size:.75rem;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🏦 Cuentas habilitadas para el pago</div>'
@@ -2227,14 +2261,14 @@ function copiarPago(elId, btn) {
 function actualizarConversion(montoUSD) {
   var sel = document.getElementById('pagoMonedaSel');
   var out = document.getElementById('pagoConversion');
-  if (!sel || !out) return;
+  if (!sel || !out || !window.tasasDivisas) return;
   var code = sel.value;
-  var t = TASAS_CONVERSION[code];
+  var t = window.tasasDivisas[code];
   if (!t) return;
   if (code === 'USD') {
     out.textContent = 'USD ' + montoUSD.toFixed(2);
   } else {
-    var equiv = (montoUSD * t.tasa).toLocaleString('es-AR', {maximumFractionDigits: 0});
+    var equiv = (montoUSD * t.tasa).toLocaleString('es-AR', { maximumFractionDigits: 0 });
     out.textContent = t.simbolo + ' ' + equiv;
   }
 }
