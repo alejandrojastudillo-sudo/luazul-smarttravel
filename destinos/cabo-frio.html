@@ -229,65 +229,25 @@
         <div class="dest-section-sub">📊 Simulador de cuotas</div>
         <h2 class="dest-section-title">Calculá <span>tu plan</span></h2>
         <div class="dest-simulator">
-            <div class="sim-controls">
-                <div class="sim-field">
-                    <label>Personas</label>
-                    <select id="dSimPersonas" onchange="dCalcSim()">
-                            <option value="cabofrio2_2">2 personas</option>
-                            <option value="cabofrio4_4">4 personas</option>
-                            <option value="cabofrio6_6">6 personas</option>
-                    </select>
+            <div class="simulator-box" id="simulatorBox">
+                <div class="select-group" id="selectGroup">
+                    <p style="color:rgba(200,220,255,.6);">Cargando destinos...</p>
                 </div>
-                <div class="sim-field">
-                    <label>Cuotas</label>
-                    <select id="dSimCuotas" onchange="dCalcSim()">
-                        <option value="6">6 cuotas</option>
-                        <option value="10" selected>10 cuotas</option>
-                        <option value="12">12 cuotas</option>
-                        <option value="18">18 cuotas</option>
-                    </select>
+                <div class="sim-result">
+                    <div class="sim-result-box highlight" style="flex:1;">
+                        <span class="sim-val" id="cuotaMensual">—</span>
+                        <span class="sim-label">Por persona / mes</span>
+                    </div>
+                    <div class="sim-result-box" style="flex:1;">
+                        <span class="sim-val" id="porDia" style="font-size:1.3rem;color:rgba(200,220,255,.8);">—</span>
+                        <span class="sim-label">Por día / persona ☕</span>
+                    </div>
                 </div>
+                <p class="sim-note" id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;">Seleccioná un paquete</p>
+                <p class="sim-note">Precios en dólares (USD) · Sin costos ocultos</p>
+                <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="text-align:center;border-radius:14px;display:inline-block;margin-top:12px;">🔵 Comenzar ahora</a>
             </div>
-            <div class="sim-result">
-                <div class="sim-result-box highlight" style="flex:1;">
-                    <span class="sim-val" id="dSimCuota">USD 37.99</span>
-                    <span class="sim-label">Por persona / mes</span>
-                </div>
-                <div class="sim-result-box" style="flex:1;">
-                    <span class="sim-val" id="dSimDia" style="font-size:1.3rem;">USD 1.26</span>
-                    <span class="sim-label">Por día / persona ☕</span>
-                </div>
-            </div>
-            <p id="dSimSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;margin-top:8px;">4 personas · 10 cuotas</p>
-            <p class="sim-note">Precios en dólares (USD) · Sin costos ocultos</p>
-            <a href="../simulador.html" class="view-all-btn" style="margin-top:20px;display:inline-block;">📊 Ver simulador completo →</a>
         </div>
-        <script>
-        (function(){
-            var TOTALES = {'cabofrio2':1100,'cabofrio4':1500,'cabofrio6':2000};
-            var INTERESES = {'6':0,'10':0,'12':0.02,'18':0.05};
-            window.dCalcSim = function() {
-                var p = document.getElementById('dSimPersonas');
-                var c = document.getElementById('dSimCuotas');
-                if (!p || !c) return;
-                var parts = p.value.split('_');
-                var key   = parts[0];
-                var pax   = parseInt(parts[1]) || 1;
-                var nc    = parseInt(c.value);
-                var tasa  = INTERESES[c.value] || 0;
-                var base  = TOTALES[key] || 1500;
-                var total = Math.round(base * (1 + tasa));
-                var cuotaTot   = Math.round(total / nc);
-                var porPersona = cuotaTot / pax;
-                var mostrar    = (Math.floor(porPersona * 100 - 1) / 100).toFixed(2);
-                var porDia     = (porPersona / 30).toFixed(2);
-                document.getElementById('dSimCuota').textContent = 'USD ' + mostrar;
-                document.getElementById('dSimDia').textContent   = 'USD ' + porDia;
-                document.getElementById('dSimSubLabel').textContent = pax + ' persona' + (pax > 1 ? 's' : '') + ' · ' + nc + ' cuotas';
-            };
-            dCalcSim();
-        })();
-        </script>
     </section>
 
 </div><!-- /container -->
@@ -355,6 +315,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/app.js"></script>
 <script src="../mariposa-chat.js"></script>
 <script>
@@ -486,6 +447,30 @@ function closeMobileNav() {
   } else {
     loadClima();
   }
+})();
+</script>
+<script>
+// Filtra el simulador para mostrar solo el destino actual
+(function() {
+    var SLUG = 'cabofrio';
+    var delay = 600;
+    function intentarPreseleccionar() {
+        var destinoSelect = document.getElementById('destinoSelect');
+        if (!destinoSelect || !destinoSelect.options || destinoSelect.options.length <= 1) {
+            if (delay < 4000) { setTimeout(intentarPreseleccionar, delay); delay *= 1.5; }
+            return;
+        }
+        destinoSelect.value = SLUG;
+        destinoSelect.dispatchEvent(new Event('change'));
+        destinoSelect.style.display = 'none';
+        var label = destinoSelect.closest('.sim-field') || destinoSelect.previousElementSibling;
+        if (label && label.tagName === 'LABEL') label.style.display = 'none';
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { setTimeout(intentarPreseleccionar, 500); });
+    } else {
+        setTimeout(intentarPreseleccionar, 500);
+    }
 })();
 </script>
 </body>
