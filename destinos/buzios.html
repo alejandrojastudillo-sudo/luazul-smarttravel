@@ -548,27 +548,21 @@ function closeMobileNav() {
 })();
 </script>
 <script>
-// Filtra el simulador para mostrar solo el destino actual
+// Filtra el simulador para mostrar solo el destino actual, después de que el simulador esté listo
 (function() {
     var SLUG = 'buzios';
-    var delay = 600;
-    function intentarPreseleccionar() {
+    var observer = new MutationObserver(function(mutations, obs) {
         var destinoSelect = document.getElementById('destinoSelect');
-        if (!destinoSelect || !destinoSelect.options || destinoSelect.options.length <= 1) {
-            if (delay < 4000) { setTimeout(intentarPreseleccionar, delay); delay *= 1.5; }
-            return;
+        if (destinoSelect && destinoSelect.options.length > 1) {
+            destinoSelect.value = SLUG;
+            destinoSelect.dispatchEvent(new Event('change'));
+            destinoSelect.style.display = 'none';
+            var label = destinoSelect.closest('.sim-field') || destinoSelect.previousElementSibling;
+            if (label && label.tagName === 'LABEL') label.style.display = 'none';
+            obs.disconnect();
         }
-        destinoSelect.value = SLUG;
-        destinoSelect.dispatchEvent(new Event('change'));
-        destinoSelect.style.display = 'none';
-        var label = destinoSelect.closest('.sim-field') || destinoSelect.previousElementSibling;
-        if (label && label.tagName === 'LABEL') label.style.display = 'none';
-    }
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() { setTimeout(intentarPreseleccionar, 500); });
-    } else {
-        setTimeout(intentarPreseleccionar, 500);
-    }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
 })();
 </script>
 </body>
