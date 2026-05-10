@@ -240,6 +240,9 @@ function construirSelectsSim() {
 function cargarPaquetesSim() {
     var destinoSlug = document.getElementById('destinoSelect').value;
     var paqueteSelect = document.getElementById('paqueteSelect');
+    var cuotasSelect = document.getElementById('cuotasSelect');
+    var cuotasValue = cuotasSelect ? cuotasSelect.value : '10'; // guardar valor actual
+
     if (!destinoSlug) {
         paqueteSelect.innerHTML = '<option value="">Primero selecciona un destino</option>';
         paqueteSelect.disabled = true;
@@ -263,6 +266,12 @@ function cargarPaquetesSim() {
     }
     paqueteSelect.innerHTML = options;
     paqueteSelect.disabled = false;
+
+    // Restaurar el valor de cuotas si existe
+    if (cuotasSelect && cuotasValue) {
+        cuotasSelect.value = cuotasValue;
+    }
+
     calcularSim();
 }
 
@@ -280,10 +289,14 @@ function calcularSim() {
     var precioTotal = parseFloat(selectedOption.getAttribute('data-precio'));
     var personas = parseInt(selectedOption.getAttribute('data-personas'), 10);
     var cuotas = parseInt(cuotasSelect.value, 10);
-    if (isNaN(precioTotal) || isNaN(personas) || isNaN(cuotas)) return;
 
-    var cuotaTotal = Math.floor(precioTotal / cuotas * 100) / 100;
-    var cuotaPorPersona = cuotaTotal / personas;
+    if (isNaN(precioTotal) || isNaN(personas) || isNaN(cuotas) || cuotas === 0) {
+        document.getElementById('simSubLabel').innerText = 'Error en los datos del paquete';
+        return;
+    }
+
+    var cuotaTotal = Math.round((precioTotal / cuotas) * 100) / 100;
+    var cuotaPorPersona = Math.round((cuotaTotal / personas) * 100) / 100;
     var porDia = (cuotaPorPersona / 30).toFixed(2);
 
     document.getElementById('cuotaMensual').innerHTML = 'USD ' + cuotaPorPersona.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
