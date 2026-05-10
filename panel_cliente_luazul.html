@@ -2020,9 +2020,12 @@ async function renderCuotas() {
     if (p.estado === 'aprobado' || p.estado === 'pagada') cuotasPagadasReal++;
   });
 
-  // Actualizar cuotas_pagadas con el valor real
-  u.cuotas_pagadas = cuotasPagadasReal;
-  sessionStorage.setItem('luazul_session', JSON.stringify(u));
+  // Actualizar currentUser.cuotas_pagadas con el valor real desde la BD
+  if (currentUser && currentUser.cuotas_pagadas !== cuotasPagadasReal) {
+    currentUser.cuotas_pagadas = cuotasPagadasReal;
+    sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
+    renderDashboard(); // actualizar stats
+  }
 
   var pendientes = total - cuotasPagadasReal;
 
@@ -2318,6 +2321,19 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
         .from('comprobantes')
         .getPublicUrl(fileName);
 
+      // Verificar si el pago ya está aprobado
+      const { data: pagoExistente } = await sbClient
+        .from('pagos')
+        .select('estado')
+        .eq('cliente_id', currentUser.id)
+        .eq('numero_cuota', cuotaNum)
+        .maybeSingle();
+
+      if (pagoExistente && (pagoExistente.estado === 'aprobado' || pagoExistente.estado === 'pagada')) {
+        showCompToast('⚠️ Esta cuota ya fue aprobada. No se puede reemplazar el comprobante.', 'warn');
+        return;
+      }
+
       // fecha_vencimiento = fin del mes actual (el CEO filtra por mes)
       var _now = new Date();
       var _finMes = new Date(Date.UTC(_now.getFullYear(), _now.getMonth() + 1, 0, 23, 59, 59, 999));
@@ -2416,14 +2432,26 @@ function showCompToast(msg, type) {
 }
 
 // ── VOUCHER ──
-function renderVoucher() {
+async function renderVoucher() {
   var u = currentUser;
   var total   = parseInt(u.cuotas_total)   || 10;
   var pagadas = parseInt(u.cuotas_pagadas) || 0;
   var pct = (pagadas / total) * 100;
   var container = document.getElementById('voucherContainer');
 
-  if (pct >= 80 || u.voucher_url) {
+  // Obtener estado del contrato
+  let contratoAutorizado = false;
+  try {
+    const { data: contrato } = await sbClient
+      .from('contratos')
+      .select('estado')
+      .eq('cliente_id', u.id)
+      .maybeSingle();
+    contratoAutorizado = contrato && contrato.estado === 'autorizado_ceo';
+  } catch(e) { console.warn(e); }
+  const disponible = (pct >= 80 || u.voucher_url) && contratoAutorizado && u.firma_url;
+
+  if (disponible) {
     // Voucher available
     var dlBtn = u.voucher_url
       ? '<a href="' + u.voucher_url + '" target="_blank" class="btn btn-primary" style="margin-top:20px;">📥 Descargar Voucher PDF</a>'
@@ -2748,6 +2776,10 @@ function _firmaEstaVacia() {
 }
 
 async function guardarFirmaDigital() {
+  if (currentUser.firma_url) {
+    showCompToast('⚠️ Ya has firmado el contrato anteriormente.', 'warn');
+    return;
+  }
   if (_firmaEstaVacia()) {
     document.getElementById('firmaMsg').textContent = '⚠️ Dibujá tu firma antes de confirmar.';
     return;
