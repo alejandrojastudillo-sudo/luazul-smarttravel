@@ -2060,9 +2060,9 @@ async function renderCuotas() {
     if (p.estado === 'aprobado' || p.estado === 'pagada') cuotasPagadasReal++;
   });
 
-  // Verificar si existe un pago pendiente para la cuota 1
+  // Verificar si existe un pago pendiente CON comprobante para la cuota 1
   const pagoCuota1 = (pagos || []).find(function(p){ return p.numero_cuota === 1; });
-  const pagoCuota1Pendiente = pagoCuota1 && (pagoCuota1.estado === 'pendiente' || pagoCuota1.estado === 'en_revision');
+  const pagoCuota1Pendiente = pagoCuota1 && pagoCuota1.comprobante_url && (pagoCuota1.estado === 'pendiente' || pagoCuota1.estado === 'en_revision');
 
   // Actualizar currentUser.cuotas_pagadas con el valor real desde la BD
   if (currentUser && currentUser.cuotas_pagadas !== cuotasPagadasReal) {
@@ -2573,20 +2573,6 @@ function renderContrato() {
   var numeroContrato = generarNumeroContrato();
   var fechaFirma     = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'long', year:'numeric' });
 
-  // Bloque fecha de viaje según regla del 80%
-  var fechaViajeHtml = '';
-  if (u.fecha_viaje) {
-    fechaViajeHtml = '<p><strong>Fecha de viaje elegida:</strong> ' + escapeHtml(u.fecha_viaje) + '</p>';
-  } else if (puedeElegirFecha) {
-    fechaViajeHtml = '<button class="btn btn-primary" onclick="elegirFechaViaje()" style="margin:10px 0;">📅 Elegir mi fecha de viaje ahora</button>';
-  } else {
-    var faltanContrato = totalCuotas - pagadas;
-    fechaViajeHtml = '<div style="background:rgba(126,184,255,.1);border-radius:12px;padding:12px;margin:16px 0;">'
-      + '<div style="font-weight:800;color:#7eb8ff;">🌟 Tu viaje está más cerca de lo que crees</div>'
-      + '<p style="margin:8px 0 0;">Abonaste <strong>' + pagadas + ' de ' + totalCuotas + ' cuotas (' + Math.round(pct) + '%)</strong>. ¡Te faltan solo <strong>' + faltanContrato + ' cuota' + (faltanContrato !== 1 ? 's' : '') + '</strong> para poder elegir la fecha de tu viaje soñado!</p>'
-      + '</div>';
-  }
-
   container.innerHTML = '<div class="contrato-doc glass" style="max-height:70vh;overflow-y:auto;padding:32px;">'
     + '<div style="text-align:center;margin-bottom:24px;">'
     +   '<div style="font-size:1.8rem;font-weight:900;">CONTRATO DE ADHESIÓN</div>'
@@ -2612,15 +2598,18 @@ function renderContrato() {
     + '<h3>TERCERA: PLAN DE PAGO</h3>'
     + '<p>El precio total del plan asciende a <strong>USD ' + escapeHtml(totalUSD) + '</strong>, abonado en <strong>' + escapeHtml(String(cuotasTotal)) + '</strong> cuotas mensuales de <strong>USD ' + escapeHtml(montoCuota) + '</strong> cada una. EL CLIENTE pagará cada cuota en su moneda local al tipo de cambio referencial publicado en el panel al momento del pago.</p>'
 
-    + '<h3>CUARTA: LIBERTAD TOTAL PARA ELEGIR LA FECHA DE VIAJE</h3>'
-    + '<p>EL CLIENTE puede elegir su fecha de viaje una vez completado el 100% del plan. Desde el 80% abonado se habilita una pre-validación tentativa. LA EMPRESA confirmará la fecha en un máximo de 30 días corridos desde el pago total.</p>'
-    + fechaViajeHtml
+    + '<h3>CUARTA: FECHA DE VIAJE</h3>'
+    + '<p>La fecha de viaje ser\u00E1 elegida por EL CLIENTE \u00FAnicamente cuando haya cancelado la totalidad del plan (100% de las cuotas). Una vez alcanzado dicho hito, EL CLIENTE deber\u00E1 comunicar su fecha deseada a LA EMPRESA con una anticipaci\u00F3n m\u00EDnima de 60 d\u00EDas respecto de la fecha solicitada. LA EMPRESA se compromete a confirmar la fecha en un plazo m\u00E1ximo de 15 d\u00EDas h\u00E1biles, sujeto a disponibilidad de plazas en los destinos y hoteles pactados.</p>'
+    + '<p>Durante el per\u00EDodo de pago del plan, EL CLIENTE no podr\u00E1 exigir ni solicitar una fecha de viaje definitiva, entendi\u00E9ndose que cualquier comunicaci\u00F3n previa al 100% del pago es meramente informativa y no generar\u00E1 obligaci\u00F3n para LA EMPRESA. La fecha de viaje quedar\u00E1 expresamente consignada en el Voucher que se generar\u00E1 autom\u00E1ticamente al momento de la confirmaci\u00F3n.</p>'
+    + '<p>En caso de que EL CLIENTE haya alcanzado el 80% del plan, podr\u00E1 solicitar una pre-reserva tentativa, pero dicha pre-reserva no implicar\u00E1 compromiso de cupo ni fecha garantizada hasta tanto no se complete el pago total.</p>'
 
     + '<h3>QUINTA: MORA CERO — SIN INTERESES</h3>'
     + '<p>Ante cuotas impagas no se aplicará interés punitorio ni multa. El plan quedará pausado hasta la regularización; la única consecuencia será el corrimiento equivalente de la fecha de viaje. El cliente no perderá ningún monto ya abonado.</p>'
 
-    + '<h3>SEXTA: FUERZA MAYOR</h3>'
-    + '<p>Ante evento de fuerza mayor debidamente acreditado, EL CLIENTE podrá reprogramar el viaje dentro de los 18 meses siguientes o recibir crédito por el 100% abonado, válido por 12 meses.</p>'
+    + '<h3>SEXTA: FUERZA MAYOR Y EVENTOS EXTRAORDINARIOS</h3>'
+    + '<p><strong>6.1.</strong> No se considerará incumplimiento de ninguna de las partes si la demora o el incumplimiento es causado por un evento de fuerza mayor, entendiéndose por tal: guerras declaradas o no, disturbios civiles, embargos, bloqueos, huelgas, epidemias, pandemias, cuarentenas obligatorias, cierres de fronteras por autoridades sanitarias, incendios, inundaciones, terremotos, tornados, huracanes, erupciones volcánicas, tormentas solares, restricciones gubernamentales de viaje, actos de terrorismo, sabotaje, fallos en redes eléctricas o de comunicaciones que afecten a la empresa o a sus proveedores.</p>'
+    + '<p><strong>6.2.</strong> Ante un evento de fuerza mayor, LA EMPRESA suspenderá temporalmente el plan sin generar intereses ni penalidades. EL CLIENTE podrá retomar el plan en las mismas condiciones una vez cesado el evento. Si el evento se prolonga más de 6 meses, cualquiera de las partes puede resolver el contrato, y LA EMPRESA devolverá el 100% de lo abonado en un plazo de 60 días.</p>'
+    + '<p><strong>6.3.</strong> En caso de catástrofe que impida definitivamente la prestación del servicio turístico en el destino elegido, LA EMPRESA ofrecerá al CLIENTE un destino alternativo de similar categoría o el resarcimiento del 100% de lo abonado, a elección del CLIENTE.</p>''
 
     + '<h3>SÉPTIMA: CANCELACIÓN</h3>'
     + '<p>Si EL CLIENTE cancela voluntariamente o permanece inactivo más de 6 meses consecutivos, LA EMPRESA devolverá el 50% de lo abonado en hasta 3 cuotas mensuales. El 50% restante cubre gastos administrativos y comisiones ejecutadas.</p>'
@@ -2636,6 +2625,15 @@ function renderContrato() {
 
     + '<h3>UNDÉCIMA: ACEPTACIÓN Y FIRMA DIGITAL</h3>'
     + '<p>EL CLIENTE declara haber leído, comprendido y aceptado la totalidad de las cláusulas. La aceptación se perfecciona mediante la casilla de aceptación y la firma digital, con plena validez legal conforme a la Ley 25.506 de Argentina y legislación brasileña equivalente.</p>'
+
+    + '<h3>DUODÉCIMA: DERECHO DE ARREPENTIMIENTO</h3>'
+    + '<p>EL CLIENTE podrá rescindir este contrato dentro de los 7 (siete) días hábiles contados desde su firma, sin expresión de causa y sin penalidad alguna. Para ello, deberá notificar por escrito a LA EMPRESA mediante email a <strong>info@luazul.travel</strong>. En tal caso, LA EMPRESA reintegrará el 100% del monto abonado en un plazo máximo de 10 (diez) días hábiles.</p>'
+
+    + '<h3>DECIMOTERCERA: PROTECCIÓN DE DATOS PERSONALES</h3>'
+    + '<p>Los datos personales del CLIENTE serán tratados conforme a la Ley 25.326 de Argentina y, en lo que corresponda, a la LGPD de Brasil. LA EMPRESA no cederá los datos a terceros sin consentimiento expreso del CLIENTE, salvo requerimiento judicial. EL CLIENTE podrá ejercer los derechos de acceso, rectificación, actualización, supresión y oposición escribiendo a <strong>datos@luazul.travel</strong>.</p>'
+
+    + '<h3>DECIMOCUARTA: JURISDICCIÓN Y LEY APLICABLE</h3>'
+    + '<p>Cualquier controversia derivada del presente contrato será resuelta por los tribunales ordinarios de la Ciudad de Río de Janeiro, Brasil, renunciando las partes a cualquier otro fuero que pudiera corresponderles. El idioma del contrato es el español, y en caso de traducción, prevalecerá la versión en español.</p>'
 
     + '<div style="background:rgba(255,255,255,.05);border-radius:12px;padding:20px;margin:20px 0;">'
     +   '<label style="display:flex;align-items:center;gap:12px;cursor:pointer;">'
@@ -2934,11 +2932,11 @@ async function guardarFirmaDigital() {
       +   '<p>Este contrato reemplaza todo acuerdo verbal previo. Ninguna modificaci\u00F3n ser\u00E1 v\u00E1lida sin constancia escrita y firma digital de ambas partes.</p>'
       +   '<h2>UND\u00C9CIMA: ACEPTACI\u00D3N Y FIRMA DIGITAL</h2>'
       +   '<p>EL CLIENTE declara haber le\u00EDdo, comprendido y aceptado la totalidad de las cl\u00E1usulas. La aceptaci\u00F3n se perfecciona mediante la casilla de aceptaci\u00F3n y la firma digital, con plena validez legal conforme a la Ley 25.506 de Argentina y legislaci\u00F3n brasile\u00F1a equivalente.</p>'
-      +   '<h2>CL\u00C1USULA DE ARREPENTIMIENTO</h2>'
+      +   '<h2>DUOD\u00C9CIMA: DERECHO DE ARREPENTIMIENTO</h2>'
       +   '<p>EL CLIENTE podr\u00E1 rescindir este contrato dentro de los 7 (siete) d\u00EDas h\u00E1biles contados desde su firma, sin expresi\u00F3n de causa y sin penalidad alguna. Para ello, deber\u00E1 notificar por escrito a LA EMPRESA mediante email a <strong>info@luazul.travel</strong>. En tal caso, LA EMPRESA reintegrar\u00E1 el 100% del monto abonado en un plazo m\u00E1ximo de 10 (diez) d\u00EDas h\u00E1biles.</p>'
-      +   '<h2>CL\u00C1USULA DE PROTECCI\u00D3N DE DATOS PERSONALES</h2>'
+      +   '<h2>DECIMOTERCERA: PROTECCI\u00D3N DE DATOS PERSONALES</h2>'
       +   '<p>Los datos personales del CLIENTE ser\u00E1n tratados conforme a la Ley 25.326 de Argentina y, en lo que corresponda, a la LGPD de Brasil. LA EMPRESA no ceder\u00E1 los datos a terceros sin consentimiento expreso del CLIENTE, salvo requerimiento judicial. EL CLIENTE podr\u00E1 ejercer los derechos de acceso, rectificaci\u00F3n, actualizaci\u00F3n, supresi\u00F3n y oposici\u00F3n escribiendo a <strong>datos@luazul.travel</strong>.</p>'
-      +   '<h2>CL\u00C1USULA DE JURISDICCI\u00D3N Y LEY APLICABLE</h2>'
+      +   '<h2>DECIMOCUARTA: JURISDICCI\u00D3N Y LEY APLICABLE</h2>'
       +   '<p>Cualquier controversia derivada del presente contrato ser\u00E1 resuelta por los tribunales ordinarios de la Ciudad de R\u00EDo de Janeiro, Brasil, renunciando las partes a cualquier otro fuero que pudiera corresponderles. El idioma del contrato es el espa\u00F1ol, y en caso de traducci\u00F3n, prevalecer\u00E1 la versi\u00F3n en espa\u00F1ol.</p>'
       +   '<div class="sign-box">'
       +     '<div>Firma digital del cliente</div>'
