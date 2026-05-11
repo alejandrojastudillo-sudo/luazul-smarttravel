@@ -2868,10 +2868,6 @@ async function guardarFirmaDigital() {
 
     // 3. Generar PDF del contrato construyendo HTML directamente (sin dependencias del DOM)
     var u = currentUser;
-    var pagadasContrato = parseInt(u.cuotas_pagadas) || 0;
-    var totalCuotasContrato = parseInt(u.cuotas_total) || 10;
-    var pctContrato = (pagadasContrato / totalCuotasContrato) * 100;
-    var puedeElegirFechaContrato = pctContrato >= 80;
 
     var nombreContrato = u.nombre || '___________________';
     var documentoContrato = u.documento || '___________________';
@@ -2883,20 +2879,6 @@ async function guardarFirmaDigital() {
     var montoCuotaContrato = u.monto_cuota ? parseFloat(u.monto_cuota).toFixed(2) : '_______';
     var numeroContrato = generarNumeroContrato();
     var fechaFirmaContrato = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'long', year:'numeric' });
-
-    // Bloque fecha de viaje
-    var fechaViajeHtmlContrato = '';
-    if (u.fecha_viaje) {
-      fechaViajeHtmlContrato = '<p><strong>Fecha de viaje elegida:</strong> ' + escapeHtml(u.fecha_viaje) + '</p>';
-    } else if (puedeElegirFechaContrato) {
-      var faltanC = totalCuotasContrato - pagadasContrato;
-      fechaViajeHtmlContrato = '<div style="background:rgba(126,184,255,.1);border-radius:12px;padding:12px;margin:16px 0;">'
-        + '<div style="font-weight:800;color:#7eb8ff;">\u{1F31F} Tu viaje est\u00E1 m\u00E1s cerca de lo que crees</div>'
-        + '<p style="margin:8px 0 0;">Abonaste <strong>' + pagadasContrato + ' de ' + totalCuotasContrato + ' cuotas (' + Math.round(pctContrato) + '%)</strong>. \u00A1Te faltan solo <strong>' + faltanC + ' cuota(s)</strong> para poder elegir la fecha de tu viaje so\u00F1ado!</p>'
-        + '</div>';
-    } else {
-      fechaViajeHtmlContrato = '';
-    }
 
     var htmlContrato = '<!DOCTYPE html>'
       + '<html><head><meta charset="UTF-8"><title>Contrato LUAZUL</title>'
@@ -2913,6 +2895,7 @@ async function guardarFirmaDigital() {
       +   '.sign-box{text-align:center;border-top:1px solid #333;padding-top:8px;margin-top:60px;width:100%;}'
       +   '.clause{background:#f9f9f9;padding:10px 14px;border-left:3px solid #0B3D91;margin-bottom:8px;font-size:0.88rem;}'
       +   '.footer{text-align:center;margin-top:40px;font-size:0.72rem;color:#888;border-top:1px solid #ddd;padding-top:10px;}'
+      +   '.page-break{page-break-before:always;}'
       + '</style></head><body>'
       + '<div class="contrato">'
       +   '<h1>CONTRATO DE ADHESI\u00D3N</h1>'
@@ -2931,9 +2914,10 @@ async function guardarFirmaDigital() {
       +   '</ul>'
       +   '<h2>TERCERA: PLAN DE PAGO</h2>'
       +   '<p>El precio total del plan asciende a <strong>USD ' + escapeHtml(totalUSDContrato) + '</strong>, abonado en <strong>' + escapeHtml(String(cuotasTotalContrato)) + '</strong> cuotas mensuales de <strong>USD ' + escapeHtml(montoCuotaContrato) + '</strong> cada una. EL CLIENTE pagar\u00E1 cada cuota en su moneda local al tipo de cambio referencial publicado en el panel al momento del pago.</p>'
-      +   '<h2>CUARTA: LIBERTAD TOTAL PARA ELEGIR LA FECHA DE VIAJE</h2>'
-      +   '<p>EL CLIENTE puede elegir su fecha de viaje una vez completado el 100% del plan. Desde el 80% abonado se habilita una pre-validaci\u00F3n tentativa. LA EMPRESA confirmar\u00E1 la fecha en un m\u00E1ximo de 30 d\u00EDas corridos desde el pago total.</p>'
-      +   fechaViajeHtmlContrato
+      +   '<h2>CUARTA: FECHA DE VIAJE</h2>'
+      +   '<p>La fecha de viaje ser\u00E1 elegida por EL CLIENTE \u00FAnicamente cuando haya cancelado la totalidad del plan (100% de las cuotas). Una vez alcanzado dicho hito, EL CLIENTE deber\u00E1 comunicar su fecha deseada a LA EMPRESA con una anticipaci\u00F3n m\u00EDnima de 60 d\u00EDas respecto de la fecha solicitada. LA EMPRESA se compromete a confirmar la fecha en un plazo m\u00E1ximo de 15 d\u00EDas h\u00E1biles, sujeto a disponibilidad de plazas en los destinos y hoteles pactados.</p>'
+      +   '<p>Durante el per\u00EDodo de pago del plan, EL CLIENTE no podr\u00E1 exigir ni solicitar una fecha de viaje definitiva, entendi\u00E9ndose que cualquier comunicaci\u00F3n previa al 100% del pago es meramente informativa y no generar\u00E1 obligaci\u00F3n para LA EMPRESA. La fecha de viaje quedar\u00E1 expresamente consignada en el Voucher que se generar\u00E1 autom\u00E1ticamente al momento de la confirmaci\u00F3n.</p>'
+      +   '<p>En caso de que EL CLIENTE haya alcanzado el 80% del plan, podr\u00E1 solicitar una pre-reserva tentativa, pero dicha pre-reserva no implicar\u00E1 compromiso de cupo ni fecha garantizada hasta tanto no se complete el pago total.</p>'
       +   '<h2>QUINTA: MORA CERO \u2014 SIN INTERESES</h2>'
       +   '<p>Ante cuotas impagas no se aplicar\u00E1 inter\u00E9s punitorio ni multa. El plan quedar\u00E1 pausado hasta la regularizaci\u00F3n; la \u00FAnica consecuencia ser\u00E1 el corrimiento equivalente de la fecha de viaje. El cliente no perder\u00E1 ning\u00FAn monto ya abonado.</p>'
       +   '<h2>SEXTA: FUERZA MAYOR</h2>'
@@ -2960,7 +2944,7 @@ async function guardarFirmaDigital() {
       + '</div></body></html>';
 
     var optContrato = {
-      margin:       0.5,
+      margin:       0.7,
       filename:     'Contrato_Luazul_' + currentUser.id + '_' + Date.now() + '.pdf',
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2, letterRendering: true, useCORS: true },
