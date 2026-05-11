@@ -2060,6 +2060,10 @@ async function renderCuotas() {
     if (p.estado === 'aprobado' || p.estado === 'pagada') cuotasPagadasReal++;
   });
 
+  // Verificar si existe un pago pendiente para la cuota 1
+  const pagoCuota1 = (pagos || []).find(function(p){ return p.numero_cuota === 1; });
+  const pagoCuota1Pendiente = pagoCuota1 && (pagoCuota1.estado === 'pendiente' || pagoCuota1.estado === 'en_revision');
+
   // Actualizar currentUser.cuotas_pagadas con el valor real desde la BD
   if (currentUser && currentUser.cuotas_pagadas !== cuotasPagadasReal) {
     currentUser.cuotas_pagadas = cuotasPagadasReal;
@@ -2113,7 +2117,11 @@ async function renderCuotas() {
     var uploadBtn = '';
     if (st === 'future' || (estadoPago === 'pendiente' && !tieneComp)) {
       if (i === 1 && cuotasPagadasReal === 0 && !tieneComp) {
-        uploadBtn = '<button onclick="iniciarFlujoPrimeraCuota()" style="padding:12px 20px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.88rem;cursor:pointer;animation:pulse-btn 2s infinite;letter-spacing:.3px;">\ud83d\ude80 Activar mi plan (pagar 1\u00aa cuota + firmar contrato)</button>';
+        if (pagoCuota1Pendiente) {
+          uploadBtn = '<div style="padding:12px 20px;background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);border-radius:12px;color:#fb923c;font-size:.85rem;font-weight:700;text-align:center;">\u23F3 Pago enviado, en revisi\u00F3n. \u00A1En breve se acreditar\u00E1!</div>';
+        } else {
+          uploadBtn = '<button onclick="iniciarFlujoPrimeraCuota()" style="padding:12px 20px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.88rem;cursor:pointer;animation:pulse-btn 2s infinite;letter-spacing:.3px;">\ud83d\ude80 Activar mi plan (pagar 1\u00aa cuota + firmar contrato)</button>';
+        }
       } else if (cuotasPagadasReal === 0 && i > 1) {
         uploadBtn = '<div style="color:var(--yellow);font-size:.75rem;padding:6px;background:rgba(245,158,11,.1);border-radius:8px;">\ud83d\udd12 Primero activa tu plan (cuota 1)</div>';
       } else {
@@ -2346,8 +2354,11 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
       showCompToast('\u26A0\uFE0F El archivo es demasiado grande. M\u00E1ximo 5MB.', 'warn');
       return;
     }
+    // Deshabilitar botón del modal de pago (si existe) para evitar doble clic
+    var btnPago = document.querySelector('#payModal button[onclick*="enviarComprobante"]') || document.querySelector('#payModal button[onclick*="uploadComp"]');
+    if (btnPago) { btnPago.disabled = true; btnPago.textContent = '\u23F3 Subiendo...'; }
     var rowBtn = document.querySelector('#cuota-row-' + cuotaNum + ' button');
-    if (rowBtn) { rowBtn.disabled = true; rowBtn.textContent = '\u23F3 Subiendo...'; }
+    if (rowBtn && rowBtn !== btnPago) { rowBtn.disabled = true; rowBtn.textContent = '\u23F3 Subiendo...'; }
     try {
       var ext      = file.name.split('.').pop();
       var fileName = 'comprobantes/cliente_' + currentUser.id + '_cuota_' + cuotaNum + '_' + Date.now() + '.' + ext;
@@ -2417,7 +2428,8 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
     } catch (err) {
       console.error(err);
       showCompToast('\u274C Error al subir comprobante: ' + (err.message || err), 'warn');
-      if (rowBtn) { rowBtn.disabled = false; rowBtn.textContent = '\uD83D\uDCCE Adjuntar comprobante'; }
+      if (btnPago) { btnPago.disabled = false; btnPago.textContent = '\u2705 Confirmar Pago'; }
+      if (rowBtn && rowBtn !== btnPago) { rowBtn.disabled = false; rowBtn.textContent = '\uD83D\uDCCE Adjuntar comprobante'; }
     }
   };
   input.click();
@@ -2854,50 +2866,107 @@ async function guardarFirmaDigital() {
       .eq('id', currentUser.id);
     if (updateErr) throw updateErr;
 
-    // 3. Generar PDF del contrato (asegurar que el contrato esté renderizado)
-    if (typeof renderContrato === 'function') {
-      renderContrato();
+    // 3. Generar PDF del contrato construyendo HTML directamente (sin dependencias del DOM)
+    var u = currentUser;
+    var pagadasContrato = parseInt(u.cuotas_pagadas) || 0;
+    var totalCuotasContrato = parseInt(u.cuotas_total) || 10;
+    var pctContrato = (pagadasContrato / totalCuotasContrato) * 100;
+    var puedeElegirFechaContrato = pctContrato >= 80;
+
+    var nombreContrato = u.nombre || '___________________';
+    var documentoContrato = u.documento || '___________________';
+    var domicilioContrato = u.domicilio || '___________________';
+    var emailContrato = u.email || '___________________';
+    var telefonoContrato = u.telefono1 || u.telefono || u.telefono2 || '___________________';
+    var totalUSDContrato = u.total_usd ? parseFloat(u.total_usd).toFixed(2) : '__________';
+    var cuotasTotalContrato = u.cuotas_total || '____';
+    var montoCuotaContrato = u.monto_cuota ? parseFloat(u.monto_cuota).toFixed(2) : '_______';
+    var numeroContrato = generarNumeroContrato();
+    var fechaFirmaContrato = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'long', year:'numeric' });
+
+    // Bloque fecha de viaje
+    var fechaViajeHtmlContrato = '';
+    if (u.fecha_viaje) {
+      fechaViajeHtmlContrato = '<p><strong>Fecha de viaje elegida:</strong> ' + escapeHtml(u.fecha_viaje) + '</p>';
+    } else if (puedeElegirFechaContrato) {
+      var faltanC = totalCuotasContrato - pagadasContrato;
+      fechaViajeHtmlContrato = '<div style="background:rgba(126,184,255,.1);border-radius:12px;padding:12px;margin:16px 0;">'
+        + '<div style="font-weight:800;color:#7eb8ff;">\u{1F31F} Tu viaje est\u00E1 m\u00E1s cerca de lo que crees</div>'
+        + '<p style="margin:8px 0 0;">Abonaste <strong>' + pagadasContrato + ' de ' + totalCuotasContrato + ' cuotas (' + Math.round(pctContrato) + '%)</strong>. \u00A1Te faltan solo <strong>' + faltanC + ' cuota(s)</strong> para poder elegir la fecha de tu viaje so\u00F1ado!</p>'
+        + '</div>';
+    } else {
+      fechaViajeHtmlContrato = '';
     }
-    const originalContrato = document.getElementById('contratoDoc');
-    if (!originalContrato) throw new Error('No se encontró el elemento del contrato');
-    const contratoClone = originalContrato.cloneNode(true);
-    const btnFirmar = contratoClone.querySelector('#btnFirmarContrato');
-    if (btnFirmar) btnFirmar.remove();
-    const checkbox = contratoClone.querySelector('#aceptoContrato');
-    if (checkbox && checkbox.parentNode) checkbox.parentNode.remove();
-    const style = document.createElement('style');
-    style.textContent = `
-      body {
-        font-family: 'Montserrat', 'Times New Roman', serif;
-        margin: 20px;
-        padding: 20px;
-        background: white !important;
-        color: black !important;
-      }
-      .contrato-doc {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        color: black;
-        font-size: 12pt;
-        line-height: 1.5;
-      }
-      h1, h2, h3, h4 { color: #0B3D91 !important; }
-      .btn, button, .btn-primary, .btn-ghost, .modal-close, .firma-actions { display: none !important; }
-      .dest-immersive, .dest-highlights-strip, .dest-attr-row, .dest-weather-wrap { display: none !important; }
-      .contrato-doc p, .contrato-doc li { color: black !important; }
-    `;
-    contratoClone.prepend(style);
-    contratoClone.style.maxHeight = 'none';
-    contratoClone.style.overflow = 'visible';
-    const opt = {
+
+    var htmlContrato = '<!DOCTYPE html>'
+      + '<html><head><meta charset="UTF-8"><title>Contrato LUAZUL</title>'
+      + '<style>'
+      +   'body{font-family:"Times New Roman",Times,serif;margin:40px;padding:20px;background:#fff;color:#000;font-size:12pt;line-height:1.5;}'
+      +   '.contrato{max-width:800px;margin:0 auto;}'
+      +   'h1,h2,h3,h4{color:#0B3D91;}'
+      +   'h1{text-align:center;font-size:1.4rem;border-bottom:2px solid #0B3D91;padding-bottom:10px;}'
+      +   'h2{font-size:1rem;margin-top:24px;}'
+      +   'p{margin:8px 0;}'
+      +   'ul{margin:8px 0 8px 20px;}'
+      +   '.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;}'
+      +   '.btn,button{display:none;}'
+      +   '.sign-box{text-align:center;border-top:1px solid #333;padding-top:8px;margin-top:60px;width:100%;}'
+      +   '.clause{background:#f9f9f9;padding:10px 14px;border-left:3px solid #0B3D91;margin-bottom:8px;font-size:0.88rem;}'
+      +   '.footer{text-align:center;margin-top:40px;font-size:0.72rem;color:#888;border-top:1px solid #ddd;padding-top:10px;}'
+      + '</style></head><body>'
+      + '<div class="contrato">'
+      +   '<h1>CONTRATO DE ADHESI\u00D3N</h1>'
+      +   '<h2 style="text-align:center;">AL PLAN DE AHORRO TUR\u00CDSTICO \"LUAZUL SMART TRAVEL\"</h2>'
+      +   '<p>En la ciudad de R\u00EDo de Janeiro, Rep\u00FAblica Federativa de Brasil, a los <strong>' + new Date().getDate() + '</strong> d\u00EDas del mes de <strong>' + new Date().toLocaleString('es-AR',{month:'long'}) + '</strong> de <strong>' + new Date().getFullYear() + '</strong>, comparecen ante el presente instrumento, por una parte, <strong>LUAZUL TURISMO E EXCHANGE LTDA.</strong>, sociedad legalmente constituida e inscrita en el Ministerio de Turismo de Brasil bajo el CADASTUR N\u00B0 54.728.334/0001-05, con CNPJ/MF N\u00B0 54.728.334/0001-05, en adelante denominada \"LA EMPRESA\"; y por la otra parte, el se\u00F1or o se\u00F1ora <strong>' + escapeHtml(nombreContrato) + '</strong>, titular del documento de identidad N\u00B0 <strong>' + escapeHtml(documentoContrato) + '</strong>, con domicilio real en <strong>' + escapeHtml(domicilioContrato) + '</strong>, correo electr\u00F3nico <strong>' + escapeHtml(emailContrato) + '</strong>, tel\u00E9fono <strong>' + escapeHtml(telefonoContrato) + '</strong>, en adelante denominado \"EL CLIENTE\". Ambas partes acuerdan celebrar el presente contrato de adhesi\u00F3n al plan de ahorro tur\u00EDstico.</p>'
+      +   '<h2>PRIMERA: RESPALDO LEGAL Y CALIDAD DEL SERVICIO</h2>'
+      +   '<p>LA EMPRESA garantiza a EL CLIENTE que su actividad se encuentra plenamente autorizada por el Ministerio de Turismo de Brasil, acreditada en el CADASTUR (www.cadasturturismo.gov.br). El presente plan facilita la adquisici\u00F3n programada del paquete tur\u00EDstico en la Costa do Sol (Cabo Fr\u00EDo, Arraial do Cabo, B\u00FAzios) y/o R\u00EDo de Janeiro, asegurando la congelaci\u00F3n de los beneficios y tarifas pactadas.</p>'
+      +   '<h2>SEGUNDA: BENEFICIOS QUE DISFRUTAR\u00C1 EL CLIENTE</h2>'
+      +   '<p>Una vez completado el pago total (100%), LA EMPRESA proveer\u00E1:</p>'
+      +   '<ul>'
+      +     '<li><strong>Alojamiento:</strong> 7 noches en hotel 4 estrellas frente al mar, con desayuno incluido.</li>'
+      +     '<li><strong>Traslados privados:</strong> Aeropuerto-hotel-aeropuerto, sin compartir con otros pasajeros.</li>'
+      +     '<li><strong>Dos tours a elecci\u00F3n:</strong> Del cat\u00E1logo disponible (barco en Arraial, city tour, B\u00FAzios, buggy en Cabo Fr\u00EDo, etc.), sujeto a disponibilidad en la fecha confirmada.</li>'
+      +     '<li><strong>Asistencia 24/7 en espa\u00F1ol</strong> por WhatsApp durante la estad\u00EDa.</li>'
+      +     '<li><strong>Voucher autom\u00E1tico</strong> al alcanzar el 100% del pago, con todos los detalles del servicio.</li>'
+      +   '</ul>'
+      +   '<h2>TERCERA: PLAN DE PAGO</h2>'
+      +   '<p>El precio total del plan asciende a <strong>USD ' + escapeHtml(totalUSDContrato) + '</strong>, abonado en <strong>' + escapeHtml(String(cuotasTotalContrato)) + '</strong> cuotas mensuales de <strong>USD ' + escapeHtml(montoCuotaContrato) + '</strong> cada una. EL CLIENTE pagar\u00E1 cada cuota en su moneda local al tipo de cambio referencial publicado en el panel al momento del pago.</p>'
+      +   '<h2>CUARTA: LIBERTAD TOTAL PARA ELEGIR LA FECHA DE VIAJE</h2>'
+      +   '<p>EL CLIENTE puede elegir su fecha de viaje una vez completado el 100% del plan. Desde el 80% abonado se habilita una pre-validaci\u00F3n tentativa. LA EMPRESA confirmar\u00E1 la fecha en un m\u00E1ximo de 30 d\u00EDas corridos desde el pago total.</p>'
+      +   fechaViajeHtmlContrato
+      +   '<h2>QUINTA: MORA CERO \u2014 SIN INTERESES</h2>'
+      +   '<p>Ante cuotas impagas no se aplicar\u00E1 inter\u00E9s punitorio ni multa. El plan quedar\u00E1 pausado hasta la regularizaci\u00F3n; la \u00FAnica consecuencia ser\u00E1 el corrimiento equivalente de la fecha de viaje. El cliente no perder\u00E1 ning\u00FAn monto ya abonado.</p>'
+      +   '<h2>SEXTA: FUERZA MAYOR</h2>'
+      +   '<p>Ante evento de fuerza mayor debidamente acreditado, EL CLIENTE podr\u00E1 reprogramar el viaje dentro de los 18 meses siguientes o recibir cr\u00E9dito por el 100% abonado, v\u00E1lido por 12 meses.</p>'
+      +   '<h2>S\u00C9PTIMA: CANCELACI\u00D3N</h2>'
+      +   '<p>Si EL CLIENTE cancela voluntariamente o permanece inactivo m\u00E1s de 6 meses consecutivos, LA EMPRESA devolver\u00E1 el 50% de lo abonado en hasta 3 cuotas mensuales. El 50% restante cubre gastos administrativos y comisiones ejecutadas.</p>'
+      +   '<h2>OCTAVA: EXCLUSI\u00D3N DE VUELOS</h2>'
+      +   '<p>Los vuelos a\u00E9reos no forman parte de este contrato. En caso de No Show, los servicios no utilizados se considerar\u00E1n ejecutados sin derecho a reembolso, salvo reagendaci\u00F3n aceptada dentro de las 24 hs.</p>'
+      +   '<h2>NOVENA: NOTIFICACIONES</h2>'
+      +   '<p>Todas las comunicaciones se realizar\u00E1n por email o WhatsApp a los datos registrados. EL CLIENTE se obliga a mantenerlos actualizados.</p>'
+      +   '<h2>D\u00C9CIMA: INTEGRIDAD DEL CONTRATO</h2>'
+      +   '<p>Este contrato reemplaza todo acuerdo verbal previo. Ninguna modificaci\u00F3n ser\u00E1 v\u00E1lida sin constancia escrita y firma digital de ambas partes.</p>'
+      +   '<h2>UND\u00C9CIMA: ACEPTACI\u00D3N Y FIRMA DIGITAL</h2>'
+      +   '<p>EL CLIENTE declara haber le\u00EDdo, comprendido y aceptado la totalidad de las cl\u00E1usulas. La aceptaci\u00F3n se perfecciona mediante la casilla de aceptaci\u00F3n y la firma digital, con plena validez legal conforme a la Ley 25.506 de Argentina y legislaci\u00F3n brasile\u00F1a equivalente.</p>'
+      +   '<div class="sign-box">'
+      +     '<div>Firma digital del cliente</div>'
+      +     '<div><img src="' + firmaPublicUrl + '" style="max-width:200px;max-height:80px;margin-top:10px;" /></div>'
+      +     '<div>' + escapeHtml(nombreContrato) + '<br/>DNI: ' + escapeHtml(documentoContrato) + '</div>'
+      +   '</div>'
+      +   '<div class="footer">'
+      +     'N\u00FAmero de Contrato: <strong>' + escapeHtml(numeroContrato) + '</strong><br/>'
+      +     'Firmado digitalmente el d\u00EDa ' + escapeHtml(fechaFirmaContrato)
+      +   '</div>'
+      + '</div></body></html>';
+
+    var optContrato = {
       margin:       0.5,
       filename:     'Contrato_Luazul_' + currentUser.id + '_' + Date.now() + '.pdf',
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2, letterRendering: true, useCORS: true },
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-    const pdfBlob = await html2pdf().set(opt).from(contratoClone).outputPdf('blob');
+    var pdfBlob = await html2pdf().set(optContrato).from(htmlContrato).outputPdf('blob');
     const pdfFileName = 'contratos/contrato_cliente_' + currentUser.id + '_' + Date.now() + '.pdf';
     const { error: pdfUploadErr } = await sbClient.storage
       .from('contratos')
@@ -2932,6 +3001,10 @@ async function guardarFirmaDigital() {
     // Actualizar sesión local
     currentUser.firma_url = firmaPublicUrl;
     sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
+
+    // Actualizar las vistas para reflejar el estado pendiente
+    await renderCuotas();
+    await renderDashboard();
 
     document.getElementById('firmaMsg').textContent = '✅ ¡Firma y contrato guardados! Plan activado.';
     btn.textContent = '✅ Guardada';
