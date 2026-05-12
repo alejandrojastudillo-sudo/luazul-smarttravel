@@ -2468,9 +2468,11 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
       await renderCuotas();
       await renderDashboard();
 
-      // Si es la primera cuota: cerrar modal de pago y abrir firma digital
+      // Cerrar modal de pago siempre
+      cerrarPanelPago();
+
+      // Si es la primera cuota: abrir firma digital
       if (esPrimeraCuota) {
-        cerrarPanelPago();
         setTimeout(function(){ abrirFirmaDigital(); }, 400);
       }
     } catch (err) {
