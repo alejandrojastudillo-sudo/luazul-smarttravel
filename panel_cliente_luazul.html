@@ -1563,6 +1563,12 @@ async function showApp() {
   renderContrato();
   await renderReferidos();
   goPage('dashboard');
+
+  // ── Auto-refresh de cuotas cada 30s para detectar rechazos/aprobaciones ──
+  if (window._cuotasRefreshTimer) clearInterval(window._cuotasRefreshTimer);
+  window._cuotasRefreshTimer = setInterval(function(){
+    if (currentUser) renderCuotas();
+  }, 30000);
 }
 
 function goPage(name) {
@@ -1581,6 +1587,14 @@ function goPage(name) {
   if (titleEl) titleEl.textContent = titles[name] || name;
   // Cerrar sidebar en mobile al navegar
   closeSidebar();
+
+  // ── Auto-refresh al navegar a ciertas páginas ──
+  if (name === 'cuotas' || name === 'dashboard') {
+    renderCuotas();
+    if (name === 'dashboard') renderDashboard();
+  }
+  if (name === 'contrato') renderContrato();
+  if (name === 'voucher') renderVoucher();
 }
 
 // ── SIDEBAR MOBILE ──
