@@ -2535,11 +2535,29 @@ function showCompToast(msg, type) {
 
 // ── VOUCHER ──
 async function renderVoucher() {
+  var container = document.getElementById('voucherContainer');
+  // ── Re-fetch datos frescos del cliente para detectar voucher_url actualizado ──
   var u = currentUser;
+  try {
+    var { data: freshData } = await sbClient
+      .from('clientes')
+      .select('cuotas_total, cuotas_pagadas, voucher_url, firma_url, destino, paquete, fecha_viaje, personas, noches, nombre')
+      .eq('id', u.id)
+      .single();
+    if (freshData) {
+      // Actualizar campos relevantes en currentUser
+      if (freshData.cuotas_pagadas !== undefined) u.cuotas_pagadas = freshData.cuotas_pagadas;
+      if (freshData.cuotas_total !== undefined) u.cuotas_total = freshData.cuotas_total;
+      if (freshData.voucher_url !== undefined) u.voucher_url = freshData.voucher_url;
+      if (freshData.firma_url !== undefined) u.firma_url = freshData.firma_url;
+      currentUser = u;
+      sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
+    }
+  } catch(e) { console.warn('[renderVoucher] refresh error', e); }
+
   var total   = parseInt(u.cuotas_total)   || 10;
   var pagadas = parseInt(u.cuotas_pagadas) || 0;
   var pct = (pagadas / total) * 100;
-  var container = document.getElementById('voucherContainer');
 
   // Obtener estado del contrato
   let contratoAutorizado = false;
