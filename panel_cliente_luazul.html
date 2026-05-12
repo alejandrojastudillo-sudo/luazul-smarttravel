@@ -278,6 +278,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .cuota-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .9rem; flex-shrink: 0; }
 .cuota-num.paid { background: var(--green-glass); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
 .cuota-num.pending { background: var(--yellow-glass); color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
+.cuota-num.rejected { background: rgba(248,113,113,.12); color: #fca5a5; border: 1px solid rgba(248,113,113,.3); }
 .cuota-num.future { background: rgba(100,160,255,.1); color: var(--text-muted); border: 1px solid var(--border); }
 .cuota-info { flex: 1; }
 .cuota-desc { font-size: .9rem; font-weight: 600; }
@@ -285,10 +286,12 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .cuota-amount { font-size: 1.1rem; font-weight: 800; }
 .cuota-amount.paid { color: #6ee7b7; }
 .cuota-amount.pending { color: #fcd34d; }
+.cuota-amount.rejected { color: #fca5a5; }
 .cuota-amount.future { color: var(--text-muted); }
 .cuota-status { font-size: .75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
 .cuota-status.paid { background: var(--green-glass); color: #6ee7b7; }
 .cuota-status.pending { background: var(--yellow-glass); color: #fcd34d; }
+.cuota-status.rejected { background: rgba(248,113,113,.12); color: #fca5a5; }
 .cuota-status.future { background: rgba(100,160,255,.1); color: var(--text-muted); }
 
 /* ── PAQUETE ── */
@@ -2047,22 +2050,28 @@ async function renderCuotas() {
   // Obtener los pagos reales desde Supabase
   const { data: pagos, error } = await sbClient
     .from('pagos')
-    .select('numero_cuota, estado, comprobante_url, monto_usd')
+    .select('numero_cuota, estado, comprobante_url, monto_usd, aprobado_por')
     .eq('cliente_id', u.id)
     .order('numero_cuota', { ascending: true });
 
   if (error) console.warn('Error al cargar pagos:', error);
 
-  // Mapa de estado por número de cuota
+  // Mapa de estado por número de cuota (+ motivo de rechazo si existe)
   const cuotaEstado = {};
+  const cuotaMotivoRechazo = {};
   (pagos || []).forEach(function(p) {
     cuotaEstado[p.numero_cuota] = p.estado;
     if (p.estado === 'aprobado' || p.estado === 'pagada') cuotasPagadasReal++;
+    // Extraer motivo de rechazo desde aprobado_por (formato: CEO_rechazado|Motivo)
+    if (p.aprobado_por && p.aprobado_por.indexOf('CEO_rechazado|') === 0) {
+      cuotaMotivoRechazo[p.numero_cuota] = p.aprobado_por.substring('CEO_rechazado|'.length);
+    }
   });
 
   // Verificar si existe un pago pendiente CON comprobante para la cuota 1
   const pagoCuota1 = (pagos || []).find(function(p){ return p.numero_cuota === 1; });
   const pagoCuota1Pendiente = pagoCuota1 && pagoCuota1.comprobante_url && (pagoCuota1.estado === 'pendiente' || pagoCuota1.estado === 'en_revision');
+  const pagoCuota1Rechazado = pagoCuota1 && pagoCuota1.estado === 'rechazado';
 
   // Actualizar currentUser.cuotas_pagadas con el valor real desde la BD
   if (currentUser && currentUser.cuotas_pagadas !== cuotasPagadasReal) {
@@ -2087,6 +2096,12 @@ async function renderCuotas() {
       stLabel = 'Pagada \u2705';
       badgeClass = 'paid';
       tieneComp = true;
+    }
+    else if (estadoPago === 'rechazado') {
+      st = 'rejected';
+      stLabel = 'Rechazado \u274C';
+      badgeClass = 'rejected';
+      tieneComp = false;
     }
     else if (estadoPago === 'en_revision') {
       st = 'pending';
@@ -2115,7 +2130,26 @@ async function renderCuotas() {
     var mes = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
 
     var uploadBtn = '';
-    if (st === 'future' || (estadoPago === 'pendiente' && !tieneComp)) {
+    if (estadoPago === 'rechazado') {
+      // ── PAGO RECHAZADO: mostrar motivo + permitir reenviar ──
+      var motivo = cuotaMotivoRechazo[i] || '';
+      var motivoHtml = motivo
+        ? '<div style="padding:6px 10px;margin-bottom:6px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);border-radius:8px;font-size:.7rem;color:#fb923c;">\uD83D\uDCAC Motivo: ' + motivo.replace(/</g,'&lt;') + '</div>'
+        : '';
+      if (i === 1) {
+        // Cuota 1 rechazada: reenviar comprobante + re-firmar contrato
+        uploadBtn = '<div style="padding:8px 12px;margin-bottom:8px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;font-size:.72rem;color:#fca5a5;">\u274C Comprobante rechazado. Volvé a adjuntar el comprobante y firm\u00E1 el contrato nuevamente.</div>'
+          + motivoHtml
+          + '<button onclick="iniciarFlujoPrimeraCuota()" style="padding:12px 20px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.88rem;cursor:pointer;animation:pulse-btn 2s infinite;letter-spacing:.3px;">\ud83d\ude80 Reenviar cuota 1 (comprobante + firma)</button>';
+      } else {
+        // Cuota >1 rechazada: solo reenviar comprobante
+        uploadBtn = '<div style="padding:6px 10px;margin-bottom:6px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;font-size:.7rem;color:#fca5a5;">\u274C Comprobante rechazado</div>'
+          + motivoHtml
+          + '<button onclick="uploadComp(' + i + ')" style="padding:6px 14px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;">\ud83d\udcce Reenviar comprobante</button>'
+          + '<button onclick="abrirPanelPago(' + i + ')" style="padding:6px 14px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;margin-left:6px;">\ud83d\udcb3 Pagar cuota</button>';
+      }
+    }
+    else if (st === 'future' || (estadoPago === 'pendiente' && !tieneComp)) {
       if (i === 1 && cuotasPagadasReal === 0 && !tieneComp) {
         if (pagoCuota1Pendiente) {
           uploadBtn = '<div style="padding:12px 20px;background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);border-radius:12px;color:#fb923c;font-size:.85rem;font-weight:700;text-align:center;">\u23F3 Pago enviado, en revisi\u00F3n. \u00A1En breve se acreditar\u00E1!</div>';
@@ -2826,9 +2860,27 @@ function _firmaEstaVacia() {
 }
 
 async function guardarFirmaDigital() {
+  // ── Verificar si hay un pago activo (no aprobado) para cuota 1 → permitir re-firma ──
+  // FIX: Antes solo buscaba 'rechazado', pero uploadComp() cambia estado a 'pendiente' ANTES
+  // de que se llame a guardarFirmaDigital(). Ahora busca cualquier estado no aprobado.
   if (currentUser.firma_url) {
-    showCompToast('⚠️ Ya has firmado el contrato anteriormente.', 'warn');
-    return;
+    try {
+      const { data: pagoActivo } = await sbClient
+        .from('pagos')
+        .select('estado')
+        .eq('cliente_id', currentUser.id)
+        .eq('numero_cuota', 1)
+        .in('estado', ['rechazado', 'pendiente', 'en_revision'])
+        .maybeSingle();
+      if (!pagoActivo) {
+        showCompToast('⚠️ Ya has firmado el contrato anteriormente.', 'warn');
+        return;
+      }
+      // Hay pago activo (rechazado/pendiente/en_revision) → permitir re-firma
+    } catch(e) {
+      showCompToast('⚠️ Ya has firmado el contrato anteriormente.', 'warn');
+      return;
+    }
   }
   if (_firmaEstaVacia()) {
     document.getElementById('firmaMsg').textContent = '⚠️ Dibujá tu firma antes de confirmar.';
