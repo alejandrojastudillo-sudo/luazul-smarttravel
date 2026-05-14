@@ -355,8 +355,9 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .voucher-qr {
   width: 100px; height: 100px; background: white; border-radius: 10px;
   margin: 20px auto 0; display: flex; align-items: center; justify-content: center;
-  font-size: .65rem; color: #333; font-weight: 700;
+  font-size: .65rem; color: #333; font-weight: 700; overflow: hidden;
 }
+.voucher-qr canvas, .voucher-qr img { display: block !important; }
 .voucher-locked {
   background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3);
   border-radius: 16px; padding: 28px; text-align: center; color: #fcd34d;
@@ -777,6 +778,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -2567,7 +2569,7 @@ async function renderVoucher() {
       .select('estado')
       .eq('cliente_id', u.id)
       .maybeSingle();
-    contratoAutorizado = contrato && contrato.estado === 'autorizado_ceo';
+    contratoAutorizado = contrato && (contrato.estado === 'autorizado_ceo' || contrato.estado === 'firmado');
   } catch(e) { console.warn(e); }
   const disponible = (pct >= 80 || u.voucher_url) && contratoAutorizado && u.firma_url;
   const voucherGenerado = !!u.voucher_url; // El CEO generó el voucher manualmente
@@ -2585,9 +2587,18 @@ async function renderVoucher() {
       + '<div class="voucher-row"><span>Pasajeros</span><span>' + (u.personas || '—') + ' personas</span></div>'
       + '<div class="voucher-row"><span>Noches</span><span>' + (u.noches || '—') + ' noches</span></div>'
       + '<div class="voucher-row"><span>Estado</span><span style="color:#6ee7b7;font-weight:700;">✅ CONFIRMADO</span></div>'
-      + '<div class="voucher-qr">QR<br>VOUCHER</div>'
+      + '<div class="voucher-qr" id="qrVoucherCliente"></div>'
       + '<a href="' + u.voucher_url + '" target="_blank" class="btn btn-primary" style="margin-top:20px;">📥 Descargar Voucher PDF</a>'
       + '</div>';
+    // Generar QR real
+    setTimeout(function() {
+      var qrEl = document.getElementById('qrVoucherCliente');
+      if (qrEl && typeof QRCode !== 'undefined') {
+        try {
+          new QRCode(qrEl, { text: u.voucher_url || 'https://luazul.com/voucher/' + (u.id || ''), width: 80, height: 80, colorDark: '#0B3D91', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+        } catch(e) { console.warn('[QR]', e); }
+      }
+    }, 300);
   } else if (disponible) {
     // Voucher habilitado por pagos pero aún no generado por el CEO
     container.innerHTML = '<div class="voucher-card glass">'
@@ -2601,9 +2612,18 @@ async function renderVoucher() {
       + '<div class="voucher-row"><span>Pasajeros</span><span>' + (u.personas || '—') + ' personas</span></div>'
       + '<div class="voucher-row"><span>Noches</span><span>' + (u.noches || '—') + ' noches</span></div>'
       + '<div class="voucher-row"><span>Estado</span><span style="color:#6ee7b7;font-weight:700;">✅ CONFIRMADO</span></div>'
-      + '<div class="voucher-qr">QR<br>VOUCHER</div>'
+      + '<div class="voucher-qr" id="qrVoucherPendiente"></div>'
       + '<button class="btn btn-ghost" style="margin-top:20px;" onclick="window.open(\'https://wa.me/5492974726449\',\'_blank\')">💬 Solicitar voucher a Luazul Smart Travel</button>'
       + '</div>';
+    // Generar QR real para estado pendiente
+    setTimeout(function() {
+      var qrEl2 = document.getElementById('qrVoucherPendiente');
+      if (qrEl2 && typeof QRCode !== 'undefined') {
+        try {
+          new QRCode(qrEl2, { text: 'https://luazul.com/confirmar/' + (u.id || ''), width: 80, height: 80, colorDark: '#0B3D91', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+        } catch(e) { console.warn('[QR]', e); }
+      }
+    }, 300);
   } else {
     // Not available yet
     var restante = Math.ceil(80 - pct);
