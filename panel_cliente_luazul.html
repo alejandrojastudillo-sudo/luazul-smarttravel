@@ -2570,13 +2570,10 @@ async function renderVoucher() {
     contratoAutorizado = contrato && contrato.estado === 'autorizado_ceo';
   } catch(e) { console.warn(e); }
   const disponible = (pct >= 80 || u.voucher_url) && contratoAutorizado && u.firma_url;
+  const voucherGenerado = !!u.voucher_url; // El CEO generó el voucher manualmente
 
-  if (disponible) {
-    // Voucher available
-    var dlBtn = u.voucher_url
-      ? '<a href="' + u.voucher_url + '" target="_blank" class="btn btn-primary" style="margin-top:20px;">📥 Descargar Voucher PDF</a>'
-      : '<button class="btn btn-ghost" style="margin-top:20px;" onclick="window.open(\'https://wa.me/5492974726449\',\'_blank\')">💬 Solicitar voucher a Luazul Smart Travel</button>';
-
+  if (voucherGenerado) {
+    // El CEO ya generó el voucher — mostrar siempre con enlace de descarga
     container.innerHTML = '<div class="voucher-card glass">'
       + '<div class="voucher-badge"><img src="images/mariposa-avatar.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:6px;"> Voucher de viaje</div>'
       + '<div class="voucher-title">' + (u.destino || 'Cabo Frío') + '</div>'
@@ -2589,7 +2586,23 @@ async function renderVoucher() {
       + '<div class="voucher-row"><span>Noches</span><span>' + (u.noches || '—') + ' noches</span></div>'
       + '<div class="voucher-row"><span>Estado</span><span style="color:#6ee7b7;font-weight:700;">✅ CONFIRMADO</span></div>'
       + '<div class="voucher-qr">QR<br>VOUCHER</div>'
-      + dlBtn
+      + '<a href="' + u.voucher_url + '" target="_blank" class="btn btn-primary" style="margin-top:20px;">📥 Descargar Voucher PDF</a>'
+      + '</div>';
+  } else if (disponible) {
+    // Voucher habilitado por pagos pero aún no generado por el CEO
+    container.innerHTML = '<div class="voucher-card glass">'
+      + '<div class="voucher-badge"><img src="images/mariposa-avatar.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:6px;"> Voucher de viaje</div>'
+      + '<div class="voucher-title">' + (u.destino || 'Cabo Frío') + '</div>'
+      + '<div class="voucher-dest">LUAZUL SMART TRAVEL · 2026</div>'
+      + '<div class="voucher-divider"></div>'
+      + '<div class="voucher-row"><span>Titular</span><span>' + u.nombre + '</span></div>'
+      + '<div class="voucher-row"><span>Paquete</span><span>' + (u.paquete || '—') + '</span></div>'
+      + '<div class="voucher-row"><span>Fecha</span><span>' + (u.fecha_viaje || 'Por confirmar') + '</span></div>'
+      + '<div class="voucher-row"><span>Pasajeros</span><span>' + (u.personas || '—') + ' personas</span></div>'
+      + '<div class="voucher-row"><span>Noches</span><span>' + (u.noches || '—') + ' noches</span></div>'
+      + '<div class="voucher-row"><span>Estado</span><span style="color:#6ee7b7;font-weight:700;">✅ CONFIRMADO</span></div>'
+      + '<div class="voucher-qr">QR<br>VOUCHER</div>'
+      + '<button class="btn btn-ghost" style="margin-top:20px;" onclick="window.open(\'https://wa.me/5492974726449\',\'_blank\')">💬 Solicitar voucher a Luazul Smart Travel</button>'
       + '</div>';
   } else {
     // Not available yet
