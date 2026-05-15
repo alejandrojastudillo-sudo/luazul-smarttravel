@@ -1221,7 +1221,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
             <label>Detalle adicional (opcional)</label>
             <textarea id="solicitudMsg" placeholder="Contanos más sobre tu solicitud..."></textarea>
           </div>
-          <button class="btn btn-primary" onclick="enviarSolicitudWhatsApp()" style="width:100%;border-radius:12px;padding:15px;">
+          <button class="btn btn-primary" onclick="enviarSolicitud()" style="width:100%;border-radius:12px;padding:15px;">
             📲 Enviar por WhatsApp
           </button>
           <div class="success-msg" id="successMsg">
@@ -3088,13 +3088,10 @@ async function guardarFirmaDigital() {
     const { error: contratoInsertErr } = await sbClient
       .from('contratos')
       .upsert({
-        cliente_id:      currentUser.id,
-        vendedor_id:     currentUser.seller_id || null,
-        numero_contrato: generarNumeroContrato(),
-        contrato_url:    contratoPublicUrl,
-        firma_url:       firmaPublicUrl,
-        estado:          'pendiente',
-        firma_browser:   navigator.userAgent,
+        cliente_id:   currentUser.id,
+        contrato_url: contratoPublicUrl,
+        firma_url:    firmaPublicUrl,
+        estado:       'pendiente',
         contenido_json: {
           nombre:       currentUser.nombre,
           documento:    currentUser.documento,
@@ -3139,34 +3136,6 @@ function compartirRef() {
   var msg = encodeURIComponent('¡Hola! Te quiero recomendar Luazul Smart Travel 🦋🏖️ Usá mi código *' + code + '* para reservar tu paquete y viajamos juntos a Cabo Frío. Escribiles a https://wa.me/5492974726449');
   window.open('https://wa.me/?text=' + msg, '_blank');
 }
-
-// ── Enviar solicitud de extensión por WhatsApp ──
-function enviarSolicitudWhatsApp() {
-  var motivoEl = document.getElementById('solicitudMotivo');
-  var msgEl = document.getElementById('solicitudMsg');
-  var motivo = motivoEl ? motivoEl.value : '';
-  var detalle = msgEl ? msgEl.value : '';
-  if (!motivo) { showToast('Seleccioná un motivo', 'error'); return; }
-  var nombre = currentUser ? (currentUser.nombre || 'Cliente') : 'Cliente';
-  var doc = currentUser ? (currentUser.documento || '') : '';
-  var msg = encodeURIComponent(
-    '🦋 *SOLICITUD DE EXTENSIÓN DE PLAN*\n\n' +
-    'Cliente: ' + nombre + '\n' +
-    (doc ? 'Documento: ' + doc + '\n' : '') +
-    'Motivo: ' + motivo + '\n' +
-    (detalle ? 'Detalle: ' + detalle + '\n' : '')
-  );
-  window.open('https://wa.me/5492974726449?text=' + msg, '_blank');
-  var successEl = document.getElementById('successMsg');
-  if (successEl) successEl.style.display = 'block';
-}
-
-// ── Cerrar setup guide (legacy) ──
-function closeSetup() {
-  var setupEl = document.getElementById('setupGuide');
-  if (setupEl) setupEl.style.display = 'none';
-}
-function saveApiUrl() { closeSetup(); }
 </script>
 
 <!-- ══════════════ MODAL FECHA VIAJE + MODAL FIRMA DIGITAL ══════════════ -->
