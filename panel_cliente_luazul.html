@@ -2577,17 +2577,10 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
         });
       } catch(ne) { console.warn('Notificaci\u00F3n no enviada:', ne.message); }
 
-      // FIX-F24: Programar nudges automáticos para cuota 1
-      if (cuotaNum === 1) {
-        try {
-          await sbClient.rpc('programar_nudges_cuota1', {
-            p_cliente_id: currentUser.id
-          });
-          console.log('[F24] Nudges programados para cuota 1');
-        } catch(nudgeErr) {
-          console.warn('[F24] Error programando nudges:', nudgeErr.message);
-        }
-      }
+      // Nudges: pendiente migración SQL
+      // if (cuotaNum === 1) {
+      //   await sbClient.rpc('programar_nudges_cuota1', { p_cliente_id: currentUser.id });
+      // }
 
       showCompToast('\u2705 Comprobante enviado. Tu asesor lo revisar\u00E1 pronto.', 'ok');
       await renderCuotas();
