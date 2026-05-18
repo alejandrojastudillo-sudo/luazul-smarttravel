@@ -759,6 +759,7 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 .btn-firma-guardar { background: linear-gradient(135deg, #1a5bb5, #0B3D91); color: #fff; }
 
 
+@media (max-width: 768px) {
   .dest-attr-row { grid-template-columns: repeat(2, 1fr); }
   .dest-attr-item:nth-child(3n) { border-right: 1px solid rgba(100,160,255,.1); }
   .dest-attr-item:nth-child(2n) { border-right: none; }
@@ -860,18 +861,14 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         <span class="icon">🎁</span> Mis Referidos
         <span class="nav-badge" id="referidosBadge" style="background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.3);">—</span>
       </div>
-      <div class="nav-section">Comunidad</div>
+      <div class="nav-section" style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(100,160,255,.1);">Comunidad</div>
       <div class="nav-item" onclick="window.open('comunidad.html','_blank')">
-        <span class="icon">🌊</span> Comunidad Luazul Smart Travel
+        <span class="icon">🌊</span> Comunidad
         <span class="nav-badge" id="novedadesBadge" style="display:none;background:rgba(255,80,80,.2);color:#ff8080;border:1px solid rgba(255,80,80,.3);">●</span>
       </div>
-      <div class="nav-section" style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(100,160,255,.1);">Sitio</div>
       <a class="nav-item" href="index.html" target="_blank" rel="noopener" style="color:rgba(126,184,255,.7);">
         <span class="icon">🌐</span> Ver sitio web
       </a>
-      <div class="nav-item" onclick="window.open('comunidad.html','_blank')">
-        <span class="icon">🌊</span> Comunidad
-      </div>
       <div class="nav-item" id="adminComunidadBtn" style="display:none;" onclick="window.open('comunidad-admin.html','_blank')">
         <span class="icon">✏️</span> Gestionar Comunidad
       </div>
@@ -1084,9 +1081,8 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         <div class="contrato-toolbar">
           <h2>📄 Contrato de Adhesión</h2>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <!-- FIX CONT-M-01: Botones duplicados unificados con funciones distintas -->
-            <button class="btn btn-primary" onclick="descargarContratoPDF()">📥 Descargar PDF</button>
-            <button class="btn btn-ghost" onclick="descargarContrato()">🖨️ Imprimir</button>
+            <button class="btn btn-primary" onclick="descargarContrato()">📥 Descargar PDF</button>
+            <button class="btn btn-ghost" onclick="descargarContrato()">🖨️ Imprimir / PDF</button>
             <button class="btn btn-ghost" onclick="window.open('https://wa.me/5492974726449','_blank')">💬 Consultar</button>
           </div>
         </div>
@@ -1322,7 +1318,6 @@ try {
 //  GLOBAL VARIABLES
 // ══════════════════════════════════════════════════════
 var currentUser = null;
-var _toastT = null; // M1: timeout cleanup para prevenir stacking de toasts
 
 function generarNumeroContrato() {
   if (!currentUser || !currentUser.id) return 'LZ-TEMP-' + Date.now();
@@ -1379,7 +1374,7 @@ async function guardarFecha(fecha) {
   currentUser.fecha_viaje = fecha;
   sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
   showToast('✅ Fecha de viaje guardada.', 'ok');
-  await renderContrato();
+  renderContrato();
   renderDashboard();
 }
 var allReferidos = [];
@@ -1564,19 +1559,45 @@ async function showApp() {
   renderPerfil();
   await renderCuotas();
   renderVoucher();
-  await renderContrato();
+  renderContrato();
   await renderReferidos();
   goPage('dashboard');
 
   // ── Auto-refresh de cuotas cada 30s para detectar rechazos/aprobaciones ──
   if (window._cuotasRefreshTimer) clearInterval(window._cuotasRefreshTimer);
-  // FIX H11: Guardar estado anterior para detectar cambios y mostrar toast
-  window._cliCuotaEstadosAnterior = {};
   window._cuotasRefreshTimer = setInterval(function(){
     if (currentUser) renderCuotas();
   }, 30000);
 }
 
+// ── SOLICITAR EXTENSIÓN (WhatsApp) ──
+function enviarSolicitud() {
+  var u = currentUser;
+  if (!u) { showToast('⚠️ Debes iniciar sesión', 'warn'); return; }
+  var tipo = (document.getElementById('solicitudTipo') || {}).value || 'Consulta general';
+  var msg = (document.getElementById('solicitudMsg') || {}).value || '';
+  var texto = '_ticketLUA_ ' + (u.nombre || '') + ' | ' + (u.email || '') + ' | ' + tipo + (msg ? ' | ' + msg : '');
+  var waUrl = 'https://wa.me/5492974726449?text=' + encodeURIComponent(texto);
+  window.open(waUrl, '_blank');
+  var successEl = document.getElementById('successMsg');
+  if (successEl) successEl.style.display = 'block';
+  setTimeout(function(){ if (successEl) successEl.style.display = 'none'; }, 5000);
+}
+
+// ── SETUP GUIDE (legacy) ──
+function saveApiUrl() {
+  var input = document.getElementById('apiUrlInput');
+  if (input && input.value) {
+    localStorage.setItem('luazul_api_url', input.value);
+    showToast('✅ URL guardada', 'success');
+  }
+}
+function closeSetup() {
+  var modal = document.getElementById('setupModal');
+  if (modal) modal.style.display = 'none';
+}
+
+// ── PAGE NAVIGATION ──
 function goPage(name) {
   // hide all pages
   var pages = document.querySelectorAll('.page');
@@ -1596,10 +1617,10 @@ function goPage(name) {
 
   // ── Auto-refresh al navegar a ciertas páginas ──
   if (name === 'cuotas' || name === 'dashboard') {
-    renderCuotas(true);
+    renderCuotas();
     if (name === 'dashboard') renderDashboard();
   }
-  if (name === 'contrato') await renderContrato();
+  if (name === 'contrato') renderContrato();
   if (name === 'voucher') renderVoucher();
 }
 
@@ -1633,10 +1654,11 @@ async function renderDashboard() {
   var totalUsd = parseFloat(u.total_usd)   || 0;
 
   // Obtener pagos reales desde Supabase
-  const { data: pagos } = await sbClient
-    .from('pagos')
-    .select('estado')
-    .eq('cliente_id', u.id);
+  var pagosRes = null;
+  try {
+    pagosRes = await sbClient.from('pagos').select('estado').eq('cliente_id', u.id);
+  } catch(err) { console.warn('Error cargando pagos dashboard:', err); }
+  var pagos = (pagosRes && pagosRes.data) || pagosRes.data || [];
 
   var pagadas    = (pagos || []).filter(function(p){ return p.estado === 'aprobado' || p.estado === 'pagada'; }).length;
   var pendientes = total - pagadas;
@@ -1651,6 +1673,20 @@ async function renderDashboard() {
   document.getElementById('statPagadasSub').textContent = 'de ' + total + ' cuotas';
   document.getElementById('statProxima').textContent    = pendientes > 0 ? 'USD ' + monto.toFixed(0) : '\u2705 Al d\u00eda';
   document.getElementById('statProximaSub').textContent = pendientes > 0 ? pendientes + ' cuotas restantes' : 'Plan completado';
+
+  // Mostrar equivalente en moneda local (ARS por defecto) en el dashboard
+  if (pendientes > 0) {
+    try {
+      var tasasDash = await obtenerTasasDivisas();
+      if (tasasDash) {
+        var tARS = tasasDash['ARS'] || tasasDash['BRL'] || null;
+        if (tARS) {
+          var equivLocal = (monto * tARS.tasa).toLocaleString('es-AR', { maximumFractionDigits: 0 });
+          document.getElementById('statProximaSub').textContent = pendientes + ' cuotas restantes \u00B7 ' + tARS.simbolo + ' ' + equivLocal;
+        }
+      }
+    } catch(e) { /* silencioso */ }
+  }
   document.getElementById('statAbonado').textContent    = 'USD ' + abonado.toFixed(0);
   document.getElementById('statAbonadoSub').textContent = 'de USD ' + totalUsd.toFixed(0) + ' total';
 
@@ -2060,7 +2096,7 @@ function renderDestInfo() {
 }
 
 // ── CUOTAS ──
-async function renderCuotas(skipDashRefresh) {
+async function renderCuotas() {
   var u = currentUser;
   if (!u) return;
   var total      = parseInt(u.cuotas_total)   || 10;
@@ -2088,50 +2124,16 @@ async function renderCuotas(skipDashRefresh) {
     }
   });
 
-  // FIX H11: Detectar cambios de estado desde el último poll y mostrar toast
-  var _prevEstados = window._cliCuotaEstadosAnterior || {};
-  var _cambios = [];
-  for (var _k in cuotaEstado) {
-    var _old = _prevEstados[_k];
-    var _new = cuotaEstado[_k];
-    if (_old && _old !== _new) {
-      if (_new === 'aprobado' || _new === 'pagada') {
-        _cambios.push({ cuota: _k, msg: '✅ ¡Cuota ' + _k + ' aprobada!' });
-      } else if (_new === 'rechazado') {
-        var _mot = cuotaMotivoRechazo[_k] || 'Sin especificar';
-        _cambios.push({ cuota: _k, msg: '❌ Cuota ' + _k + ' rechazada. Motivo: ' + _mot });
-      }
-    }
-  }
-  // Actualizar estados anteriores para el próximo ciclo
-  window._cliCuotaEstadosAnterior = Object.assign({}, cuotaEstado);
-  // Mostrar toasts de cambio (máximo 2 para no saturar)
-  if (_cambios.length > 0) {
-    _cambios.slice(0, 2).forEach(function(ch) {
-      if (typeof showCompToast === 'function') {
-        showCompToast(ch.msg, ch.msg.indexOf('✅') >= 0 ? 'ok' : 'warn');
-      } else {
-        showToast(ch.msg);
-      }
-    });
-    if (_cambios.length > 2) {
-      showToast('🔔 ' + _cambios.length + ' cambios en tus cuotas');
-    }
-  }
-
   // Verificar si existe un pago pendiente CON comprobante para la cuota 1
   const pagoCuota1 = (pagos || []).find(function(p){ return p.numero_cuota === 1; });
   const pagoCuota1Pendiente = pagoCuota1 && pagoCuota1.comprobante_url && (pagoCuota1.estado === 'pendiente' || pagoCuota1.estado === 'en_revision');
   const pagoCuota1Rechazado = pagoCuota1 && pagoCuota1.estado === 'rechazado';
 
   // Actualizar currentUser.cuotas_pagadas con el valor real desde la BD
-  // B5: Guard para evitar re-renderizado redundante si cuotas_pagadas no cambió realmente
   if (currentUser && currentUser.cuotas_pagadas !== cuotasPagadasReal) {
     currentUser.cuotas_pagadas = cuotasPagadasReal;
     sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
-    // Solo re-renderizar dashboard si estamos en la tab activa (evitar renderizado oculto)
-    var dashTab = document.getElementById('dashboardSection');
-    if (!skipDashRefresh && dashTab && dashTab.style.display !== 'none') renderDashboard();
+    renderDashboard(); // actualizar stats
   }
 
   var pendientes = total - cuotasPagadasReal;
@@ -2298,7 +2300,8 @@ async function abrirPanelPago(numCuota) {
 
   // Cargar cuentas bancarias desde localStorage (o usar por defecto)
   var cuentasRaw = localStorage.getItem('luazul_cuentas_pago');
-  var cuentas = cuentasRaw ? JSON.parse(cuentasRaw) : [];
+  var cuentas = [];
+  try { cuentas = cuentasRaw ? JSON.parse(cuentasRaw) : []; } catch(e) { console.warn('Error parseando cuentas:', e); }
   if (!cuentas.length) {
     cuentas = [
       { alias: 'luazul.turismobr@gmail.com', cbu: 'luazul.turismobr@gmail.com', titular: 'Luazul Turismo', banco: 'Nubank 🇧🇷 · PIX' }
@@ -2308,8 +2311,8 @@ async function abrirPanelPago(numCuota) {
   // Build accounts list
   var cuentasHtml = cuentas.map(function(ct, i) {
     return '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;margin-bottom:12px;">'
-      + '<div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">💳 Cuenta ' + (i+1) + (ct.banco ? ' — ' + ct.banco : '') + '</div>'
-      + (ct.titular ? '<div style="font-size:.82rem;color:#e2e8f0;margin-bottom:10px;">Titular: <strong>' + ct.titular + '</strong></div>' : '')
+      + '<div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">💳 Cuenta ' + (i+1) + (ct.banco ? ' — ' + escapeHtml(ct.banco) : '') + '</div>'
+      + (ct.titular ? '<div style="font-size:.82rem;color:#e2e8f0;margin-bottom:10px;">Titular: <strong>' + escapeHtml(ct.titular) + '</strong></div>' : '')
       + '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.25);border-radius:8px;padding:10px 14px;margin-bottom:8px;">'
       +   '<div><div style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Chave PIX</div>'
       +   '<div style="font-size:.95rem;font-weight:700;color:#a5f3fc;font-family:monospace;" id="pago-alias-' + i + '">' + (ct.alias || '—') + '</div></div>'
@@ -2438,12 +2441,6 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
   input.onchange = async function(e) {
     var file = e.target.files[0];
     if (!file) return;
-    // FIX F5: Validación MIME type (el accept del input es solo sugerencia del browser)
-    var tiposPermitidos = ['image/jpeg','image/png','image/webp','application/pdf'];
-    if (!tiposPermitidos.includes(file.type)) {
-      showCompToast('⚠️ Solo se permiten imágenes JPG/PNG/WEBP o PDF', 'warn');
-      return;
-    }
     if (file.size > 5 * 1024 * 1024) {
       showCompToast('\u26A0\uFE0F El archivo es demasiado grande. M\u00E1ximo 5MB.', 'warn');
       return;
@@ -2475,9 +2472,6 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
         .maybeSingle();
 
       if (pagoExistente && (pagoExistente.estado === 'aprobado' || pagoExistente.estado === 'pagada')) {
-        if (btnPago) { btnPago.disabled = false; btnPago.textContent = '✅ Confirmar Pago'; }
-        if (rowBtn && rowBtn !== btnPago) { rowBtn.disabled = false; rowBtn.textContent = '📎 Adjuntar comprobante'; }
-        cerrarPanelPago();
         showCompToast('⚠️ Esta cuota ya fue aprobada. No se puede reemplazar el comprobante.', 'warn');
         return;
       }
@@ -2514,7 +2508,7 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
       } catch(ne) { console.warn('Notificaci\u00F3n no enviada:', ne.message); }
 
       showCompToast('\u2705 Comprobante enviado. Tu asesor lo revisar\u00E1 pronto.', 'ok');
-      await renderCuotas(true);
+      await renderCuotas();
       await renderDashboard();
 
       // Cerrar modal de pago siempre
@@ -2536,11 +2530,14 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
 
 function verComprobanteUrl(url, cuotaNum) {
   if (!url) return;
+  // Sanitizar URL: solo permitir http/https
+  if (!/^https?:\/\//i.test(url)) { console.warn('URL bloqueada por seguridad'); return; }
   var w = window.open('', '_blank', 'width=600,height=520');
   var ext = (url.split('.').pop() || '').toLowerCase().split('?')[0];
+  var safeUrl = url.replace(/"/g, '&quot;').replace(/</g, '&lt;');
   var content = ext === 'pdf'
-    ? '<iframe src="' + url + '" style="width:100%;height:480px;border:none;border-radius:8px;"></iframe>'
-    : '<img src="' + url + '" style="max-width:96%;max-height:80vh;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);" loading="lazy">';
+    ? '<iframe src="' + safeUrl + '" style="width:100%;height:480px;border:none;border-radius:8px;"></iframe>'
+    : '<img src="' + safeUrl + '" style="max-width:96%;max-height:80vh;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);" loading="lazy">';
   w.document.write(
     '<html><body style="margin:0;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;padding:16px;">'
     + '<p style="color:#aaa;font-size:13px;font-family:sans-serif;">Cuota ' + cuotaNum + ' \u00B7 Comprobante adjunto</p>'
@@ -2563,26 +2560,23 @@ function lzToggle(inputId, btn) {
     : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
 }
 
-function showToast(msg, type) { clearTimeout(_toastT); showCompToast(msg, type || 'ok'); }
+function showToast(msg, type) { showCompToast(msg, type || 'ok'); }
 function showCompToast(msg, type) {
-  if (_toastT) clearTimeout(_toastT);
   var el = document.getElementById('compToast');
   if (!el) {
     el = document.createElement('div');
     el.id = 'compToast';
-    el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);z-index:999;padding:12px 22px;border-radius:12px;font-weight:700;font-size:.88rem;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;';
+    el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);z-index:999;padding:12px 22px;border-radius:12px;font-weight:700;font-size:.88rem;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;';
     document.body.appendChild(el);
   }
   el.textContent = msg;
   if (type === 'ok') {
     el.style.background = 'rgba(34,197,94,.2)'; el.style.border = '1px solid rgba(34,197,94,.4)'; el.style.color = '#6ee7b7';
-  } else if (type === 'error') {
-    el.style.background = 'rgba(239,68,68,.2)'; el.style.border = '1px solid rgba(239,68,68,.4)'; el.style.color = '#fca5a5';
   } else {
     el.style.background = 'rgba(234,179,8,.2)'; el.style.border = '1px solid rgba(234,179,8,.4)'; el.style.color = '#fcd34d';
   }
   el.style.transform = 'translateX(-50%) translateY(0)';
-  _toastT = setTimeout(function() { el.style.transform = 'translateX(-50%) translateY(70px)'; _toastT = null; }, 4000);
+  setTimeout(function() { el.style.transform = 'translateX(-50%) translateY(70px)'; }, 4000);
 }
 
 // ── VOUCHER ──
@@ -2703,17 +2697,11 @@ function field(val, fallback) {
   return '<span class="' + cls + '">' + (v || '_______________') + '</span>';
 }
 
-async function renderContrato() {
+function renderContrato() {
   var container = document.getElementById('contratoDoc');
   if (!container) return;
 
-  // Re-fetch fresh client data from Supabase
-  var freshData = await sbClient.from('clientes').select('*').eq('user_id', currentUser.user_id || currentUser.id).maybeSingle();
-  if (freshData && freshData.data) {
-    var u = freshData.data;
-  } else {
-    var u = currentUser; // fallback to cache
-  }
+  var u = currentUser;
   var pagadas     = parseInt(u.cuotas_pagadas) || 0;
   var totalCuotas = parseInt(u.cuotas_total)   || 10;
   var pct         = (pagadas / totalCuotas) * 100;
@@ -2754,9 +2742,6 @@ async function renderContrato() {
 
     + '<h3>TERCERA: PLAN DE PAGO</h3>'
     + '<p>El precio total del plan asciende a <strong>USD ' + escapeHtml(totalUSD) + '</strong>, abonado en <strong>' + escapeHtml(String(cuotasTotal)) + '</strong> cuotas mensuales de <strong>USD ' + escapeHtml(montoCuota) + '</strong> cada una. EL CLIENTE pagará cada cuota en su moneda local al tipo de cambio referencial publicado en el panel al momento del pago.</p>'
-    + '<br><br><b>DESTINO:</b> ' + escapeHtml(u.destino || '___________________') + '<br>'
-    + '<b>PAQUETE:</b> ' + escapeHtml(u.paquete || '___________________') + '<br>'
-    + '<b>DURACIÓN:</b> ' + escapeHtml(String(u.noches || '___')) + ' noches para ' + escapeHtml(String(u.personas || '___')) + ' personas'
 
     + '<h3>CUARTA: FECHA DE VIAJE</h3>'
     + '<p>La fecha de viaje ser\u00E1 elegida por EL CLIENTE \u00FAnicamente cuando haya cancelado la totalidad del plan (100% de las cuotas). Una vez alcanzado dicho hito, EL CLIENTE deber\u00E1 comunicar su fecha deseada a LA EMPRESA con una anticipaci\u00F3n m\u00EDnima de 60 d\u00EDas respecto de la fecha solicitada. LA EMPRESA se compromete a confirmar la fecha en un plazo m\u00E1ximo de 15 d\u00EDas h\u00E1biles, sujeto a disponibilidad de plazas en los destinos y hoteles pactados.</p>'
@@ -2810,7 +2795,7 @@ async function renderContrato() {
 
     + '<div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;text-align:center;font-size:.75rem;color:var(--text-muted);">'
     +   '<p>Número de Contrato: <strong>' + escapeHtml(numeroContrato) + '</strong></p>'
-    +   '<p>' + (u.firma_url ? 'Firmado digitalmente el día ' + escapeHtml(fechaFirma) : '') + '</p>'
+    +   '<p>Firmado digitalmente el día ' + escapeHtml(fechaFirma) + '</p>'
     + '</div>'
     + '</div>';
 
@@ -2850,36 +2835,6 @@ function descargarContrato() {
   ventana.document.close();
   ventana.focus();
   setTimeout(function(){ ventana.print(); }, 500);
-}
-
-// FIX CONT-M-01: Función separada para descargar PDF real (no solo imprimir)
-function descargarContratoPDF() {
-  var contenido = document.getElementById('contratoDoc');
-  if (!contenido) { showToast('No hay contrato para descargar.', 'warn'); return; }
-  showToast('⏳ Generando PDF...', 'info');
-  // Clonar y limpiar elementos interactivos
-  var copia = contenido.cloneNode(true);
-  var btnFirmar = copia.querySelector('#btnFirmarContrato');
-  if (btnFirmar) btnFirmar.remove();
-  var chkLabel = copia.querySelector('#aceptoContrato');
-  if (chkLabel && chkLabel.parentNode && chkLabel.parentNode.parentNode) chkLabel.parentNode.parentNode.remove();
-  var htmlContent = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Contrato Luazul</title>'
-    + '<style>body{font-family:Arial,sans-serif;margin:40px;color:#000;background:#fff;line-height:1.6;}'
-    + 'h3{color:#0B3D91;margin-top:24px;} ul{margin:8px 0 8px 20px;} p{margin:8px 0;}'
-    + 'button,.btn{display:none!important;} input[type=checkbox]{display:none;}'
-    + '</style></head><body>' + copia.outerHTML + '</body></html>';
-  var opt = {
-    margin: 0.7,
-    filename: 'Contrato_Luazul_' + (currentUser ? currentUser.id : 'descarga') + '.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(htmlContent).save().then(function() {
-    showToast('📥 PDF descargado correctamente');
-  }).catch(function(e) {
-    showToast('❌ Error al generar PDF: ' + (e.message || ''), 'warn');
-  });
 }
 
 // ── REFERIDOS ─────────────────────────────────────────────────────────────
@@ -2935,10 +2890,11 @@ async function renderReferidos() {
         var estadoColor = activo ? '#6ee7b7' : '#fca5a5';
         var estadoBg    = activo ? 'rgba(16,185,129,.1)' : 'rgba(239,68,68,.1)';
         var fecha = r.created_at ? r.created_at.slice(0,10) : (r.fecha || '');
+        var nomRef = escapeHtml(r.referido_nombre || r.nombre || r.email || '\u2014');
         return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;">'
           + '<div>'
-          +   '<div style="font-weight:600;font-size:.9rem;">' + (r.referido_nombre || r.nombre || r.email || '\u2014') + '</div>'
-          +   '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;">' + (r.paquete || '\u2014') + ' \u00B7 ' + fecha + '</div>'
+          +   '<div style="font-weight:600;font-size:.9rem;">' + nomRef + '</div>'
+          +   '<div style="font-size:.77rem;color:var(--text-muted);margin-top:2px;">' + escapeHtml(r.paquete || '\u2014') + ' \u00B7 ' + fecha + '</div>'
           + '</div>'
           + '<span style="font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;background:' + estadoBg + ';color:' + estadoColor + ';">' + (activo ? 'Confirmado' : 'Pendiente') + '</span>'
           + '</div>';
@@ -3009,7 +2965,7 @@ function limpiarFirmaDigital() {
 
 function _firmaEstaVacia() {
   var canvas = document.getElementById('firmaCanvas');
-  if (!canvas || !_firmaCtx) return true;
+  if (!canvas) return true;
   var px = _firmaCtx.getImageData(0, 0, canvas.width, canvas.height).data;
   for (var i = 3; i < px.length; i += 4) { if (px[i] > 10) return false; }
   return true;
@@ -3065,7 +3021,14 @@ async function guardarFirmaDigital() {
     const { data: urlData } = sbClient.storage.from('firmas').getPublicUrl(fileName);
     const firmaPublicUrl = urlData.publicUrl;
 
-    // 2. Generar PDF del contrato construyendo HTML directamente (sin dependencias del DOM)
+    // 2. Actualizar la tabla clientes con la firma_url
+    const { error: updateErr } = await sbClient
+      .from('clientes')
+      .update({ firma_url: firmaPublicUrl })
+      .eq('id', currentUser.id);
+    if (updateErr) throw updateErr;
+
+    // 3. Generar PDF del contrato construyendo HTML directamente (sin dependencias del DOM)
     var u = currentUser;
 
     var nombreContrato = u.nombre || '___________________';
@@ -3113,9 +3076,6 @@ async function guardarFirmaDigital() {
       +   '</ul>'
       +   '<h2>TERCERA: PLAN DE PAGO</h2>'
       +   '<p>El precio total del plan asciende a <strong>USD ' + escapeHtml(totalUSDContrato) + '</strong>, abonado en <strong>' + escapeHtml(String(cuotasTotalContrato)) + '</strong> cuotas mensuales de <strong>USD ' + escapeHtml(montoCuotaContrato) + '</strong> cada una. EL CLIENTE pagar\u00E1 cada cuota en su moneda local al tipo de cambio referencial publicado en el panel al momento del pago.</p>'
-      +   '<br><br><b>DESTINO:</b> ' + escapeHtml(u.destino || '___________________') + '<br>'
-      +   '<b>PAQUETE:</b> ' + escapeHtml(u.paquete || '___________________') + '<br>'
-      +   '<b>DURACI\u00D3N:</b> ' + escapeHtml(String(u.noches || '___')) + ' noches para ' + escapeHtml(String(u.personas || '___')) + ' personas'
       +   '<h2>CUARTA: FECHA DE VIAJE</h2>'
       +   '<p>La fecha de viaje ser\u00E1 elegida por EL CLIENTE \u00FAnicamente cuando haya cancelado la totalidad del plan (100% de las cuotas). Una vez alcanzado dicho hito, EL CLIENTE deber\u00E1 comunicar su fecha deseada a LA EMPRESA con una anticipaci\u00F3n m\u00EDnima de 60 d\u00EDas respecto de la fecha solicitada. LA EMPRESA se compromete a confirmar la fecha en un plazo m\u00E1ximo de 15 d\u00EDas h\u00E1biles, sujeto a disponibilidad de plazas en los destinos y hoteles pactados.</p>'
       +   '<p>Durante el per\u00EDodo de pago del plan, EL CLIENTE no podr\u00E1 exigir ni solicitar una fecha de viaje definitiva, entendi\u00E9ndose que cualquier comunicaci\u00F3n previa al 100% del pago es meramente informativa y no generar\u00E1 obligaci\u00F3n para LA EMPRESA. La fecha de viaje quedar\u00E1 expresamente consignada en el Voucher que se generar\u00E1 autom\u00E1ticamente al momento de la confirmaci\u00F3n.</p>'
@@ -3169,52 +3129,27 @@ async function guardarFirmaDigital() {
     const { data: pdfUrlData } = sbClient.storage.from('contratos').getPublicUrl(pdfFileName);
     const contratoPublicUrl = pdfUrlData.publicUrl;
 
-    // 4. Actualizar firma_url en clientes — SOLO después de que el PDF se subió exitosamente
-    const { error: updateErr } = await sbClient
-      .from('clientes')
-      .update({ firma_url: firmaPublicUrl })
-      .eq('id', currentUser.id);
-    if (updateErr) throw updateErr;
-
-    // 5. Insertar o actualizar en la tabla contratos
-    // FIX CONT-H-01: Agregar numero_contrato al upsert
-    // FIX CONT-H-02: Agregar vendedor_id al upsert
-    // FIX CONT-H-04: No sobreescribir created_at en upsert (preservar fecha original)
-    // FIX CONT-C-02: Agregar cliente_nombre para compatibilidad con panel CEO
-    const contratoPayload = {
-        cliente_id:     currentUser.id,
-        contrato_url:   contratoPublicUrl,
-        firma_url:      firmaPublicUrl,
-        estado:         'pendiente',
-        numero_contrato: numeroContrato,
-        vendedor_id:    currentUser.seller_id || null,
-        contenido_json: {
-          cliente_nombre: currentUser.nombre,
-          nombre:         currentUser.nombre,
-          documento:      currentUser.documento,
-          domicilio:      currentUser.domicilio,
-          destino:        currentUser.destino,
-          paquete:        currentUser.paquete,
-          total_usd:      currentUser.total_usd,
-          cuotas_total:   currentUser.cuotas_total,
-          monto_cuota:    currentUser.monto_cuota
-        },
-        updated_at: new Date().toISOString()
-      };
-    // FIX CONT-H-04: Verificar si ya existe para preservar created_at
-    const { data: existingCt } = await sbClient
-      .from('contratos')
-      .select('created_at')
-      .eq('cliente_id', currentUser.id)
-      .maybeSingle();
-    if (existingCt && existingCt.created_at) {
-      contratoPayload.created_at = existingCt.created_at;
-    } else {
-      contratoPayload.created_at = new Date().toISOString();
-    }
+    // 4. Insertar o actualizar en la tabla contratos
     const { error: contratoInsertErr } = await sbClient
       .from('contratos')
-      .upsert(contratoPayload, { onConflict: 'cliente_id' });
+      .upsert({
+        cliente_id:   currentUser.id,
+        contrato_url: contratoPublicUrl,
+        firma_url:    firmaPublicUrl,
+        estado:       'pendiente',
+        contenido_json: {
+          nombre:       currentUser.nombre,
+          documento:    currentUser.documento,
+          domicilio:    currentUser.domicilio,
+          destino:      currentUser.destino,
+          paquete:      currentUser.paquete,
+          total_usd:    currentUser.total_usd,
+          cuotas_total: currentUser.cuotas_total,
+          monto_cuota:  currentUser.monto_cuota
+        },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'cliente_id' });
     if (contratoInsertErr) throw contratoInsertErr;
 
     // Actualizar sesión local
@@ -3222,7 +3157,7 @@ async function guardarFirmaDigital() {
     sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
 
     // Actualizar las vistas para reflejar el estado pendiente
-    await renderCuotas(true);
+    await renderCuotas();
     await renderDashboard();
 
     document.getElementById('firmaMsg').textContent = '✅ ¡Firma y contrato guardados! Plan activado.';
@@ -3240,16 +3175,6 @@ async function guardarFirmaDigital() {
     btn.textContent = '✅ Confirmar firma';
   }
 }
-// FASE3-FIX5: Función enviarSolicitud() — antes no existía (causaba ReferenceError)
-function enviarSolicitud() {
-  var msgEl = document.getElementById('solicitudMsg');
-  var msg = (msgEl ? msgEl.value.trim() : '') || 'Solicito información sobre extensión de cuotas de mi plan Luazul Smart Travel.';
-  var nombre = currentUser ? (currentUser.nombre || currentUser.email || 'Cliente') : 'Cliente';
-  var fullMsg = '¡Hola Luazul! Soy ' + nombre + ', cliente Luazul Smart Travel. ' + msg;
-  window.open('https://wa.me/5492974726449?text=' + encodeURIComponent(fullMsg), '_blank');
-  if (msgEl) msgEl.value = '';
-}
-
 function compartirRef() {
   var u = currentUser;
   var code = 'LUA-' + (u.nombre || u.email || 'AMIGO').split(' ')[0].toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
