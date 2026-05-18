@@ -1533,12 +1533,67 @@ function loginSuccess(user) {
 
 async function doLogout() {
   if (sbClient) await sbClient.auth.signOut();
+  if (window._cuotasRefreshTimer) { clearInterval(window._cuotasRefreshTimer); window._cuotasRefreshTimer = null; }
   sessionStorage.removeItem('luazul_session');
   currentUser = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPass').value  = '';
+}
+
+// ══════════════════════════════════════════════════════
+//  FIX-F23a: AUTO-MORA CUOTA 1 (24h)
+// ══════════════════════════════════════════════════════
+async function _checkMoraCuota1() {
+  if (!currentUser || !currentUser.id) return;
+  // Solo verificar si el cliente está 'activo' y tiene 0 cuotas pagadas
+  if (currentUser.estado !== 'activo') return;
+  if ((parseInt(currentUser.cuotas_pagadas) || 0) > 0) return;
+
+  try {
+    var res = await sbClient.from('pagos')
+      .select('estado, fecha_vencimiento')
+      .eq('cliente_id', currentUser.id)
+      .eq('numero_cuota', 1)
+      .maybeSingle();
+
+    if (!res || !res.data) return; // No hay pago de cuota 1 aún
+    var pago = res.data;
+
+    // Solo marcar mora si está pendiente (no rechazado, no aprobado)
+    if (pago.estado !== 'pendiente') return;
+
+    // Verificar si fecha_vencimiento ya pasó
+    var venc = pago.fecha_vencimiento ? new Date(pago.fecha_vencimiento) : null;
+    if (!venc) return;
+
+    if (new Date() > venc) {
+      // Cuota 1 vencida → marcar cliente como 'atraso'
+      console.warn('[F23a] Cuota 1 vencida, marcando cliente como atraso. Vencimiento:', venc.toISOString());
+      await sbClient.from('clientes')
+        .update({ estado: 'atraso' })
+        .eq('id', currentUser.id);
+      currentUser.estado = 'atraso';
+      sessionStorage.setItem('luazul_session', JSON.stringify(currentUser));
+
+      // Notificar al asesor
+      try {
+        await sbClient.from('notificaciones').insert({
+          tipo: 'mora_cuota1',
+          mensaje: 'Cliente ' + (currentUser.nombre || currentUser.email) + ' no pagó la cuota 1 dentro del plazo (24h). Estado cambiado a ATRASO.',
+          destinatario_id: currentUser.seller_id || null,
+          cliente_id: currentUser.id,
+          leida: false,
+          created_at: new Date().toISOString()
+        });
+      } catch(notifErr) { console.warn('[F23a] Error notificación mora:', notifErr.message); }
+
+      renderDashboard();
+    }
+  } catch(err) {
+    console.warn('[F23a] Error verificando mora cuota 1:', err.message);
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -1563,10 +1618,14 @@ async function showApp() {
   await renderReferidos();
   goPage('dashboard');
 
+  // ── FIX-F23a: Auto-detección de mora para cuota 1 ──
+  // Si cuota 1 está pendiente y la fecha_vencimiento ya pasó → marcar cliente como 'atraso'
+  _checkMoraCuota1();
+
   // ── Auto-refresh de cuotas cada 30s para detectar rechazos/aprobaciones ──
   if (window._cuotasRefreshTimer) clearInterval(window._cuotasRefreshTimer);
   window._cuotasRefreshTimer = setInterval(function(){
-    if (currentUser) renderCuotas();
+    if (currentUser) { renderCuotas(); _checkMoraCuota1(); }
   }, 30000);
 }
 
@@ -1574,7 +1633,7 @@ async function showApp() {
 function enviarSolicitud() {
   var u = currentUser;
   if (!u) { showToast('⚠️ Debes iniciar sesión', 'warn'); return; }
-  var tipo = (document.getElementById('solicitudTipo') || {}).value || 'Consulta general';
+  var tipo = (document.getElementById('motivoSelect') || {}).value || 'Consulta general';
   var msg = (document.getElementById('solicitudMsg') || {}).value || '';
   var texto = '_ticketLUA_ ' + (u.nombre || '') + ' | ' + (u.email || '') + ' | ' + tipo + (msg ? ' | ' + msg : '');
   var waUrl = 'https://wa.me/5492974726449?text=' + encodeURIComponent(texto);
@@ -2422,14 +2481,14 @@ async function iniciarFlujoPrimeraCuota() {
   window._flujoEnProgreso = true;
   try {
     // Paso A: mostrar modal de pago con cuentas bancarias
-    abrirPanelPago(1);
+    await abrirPanelPago(1);
     // El usuario transfiere, luego hace click en "Ya transferí → adjuntar comprobante"
     // Ese botón llama a uploadComp(1, true), que al completar lanza abrirFirmaDigital()
+    // Lock se libera en uploadComp al completar/fallar, NO aquí.
   } catch (err) {
     console.error(err);
-    showToast('\u26A0\uFE0F Error al iniciar el proceso. Recargu\u00E1 la p\u00E1gina.', 'warn');
-  } finally {
     window._flujoEnProgreso = false;
+    showToast('\u26A0\uFE0F Error al iniciar el proceso. Recargu\u00E1 la p\u00E1gina.', 'warn');
   }
 }
 
@@ -2476,9 +2535,20 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
         return;
       }
 
-      // fecha_vencimiento = fin del mes actual (el CEO filtra por mes)
+      // FIX-F23a: fecha_vencimiento — cuota 1 = mañana 23:59 (mora automática a 24h)
+      // Cuotas 2+ = fin del mes actual (el CEO filtra por mes)
       var _now = new Date();
-      var _finMes = new Date(Date.UTC(_now.getFullYear(), _now.getMonth() + 1, 0, 23, 59, 59, 999));
+      var _vencimiento;
+      if (cuotaNum === 1) {
+        // Cuota 1: vencimiento mañana a las 23:59 local
+        var _maniana = new Date(_now);
+        _maniana.setDate(_maniana.getDate() + 1);
+        _maniana.setHours(23, 59, 59, 999);
+        _vencimiento = _maniana;
+      } else {
+        // Cuotas 2+: fin del mes actual
+        _vencimiento = new Date(Date.UTC(_now.getFullYear(), _now.getMonth() + 1, 0, 23, 59, 59, 999));
+      }
 
       const { error: upsertError } = await sbClient
         .from('pagos')
@@ -2490,7 +2560,7 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
           estado:            'pendiente',
           comprobante_url:   urlData.publicUrl,
           fecha_pago:        new Date().toISOString(),
-          fecha_vencimiento: _finMes.toISOString(),
+          fecha_vencimiento: _vencimiento.toISOString(),
           seller_id:         currentUser.seller_id || null
         }, { onConflict: 'cliente_id,numero_cuota' });
       if (upsertError) throw upsertError;
@@ -2507,6 +2577,18 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
         });
       } catch(ne) { console.warn('Notificaci\u00F3n no enviada:', ne.message); }
 
+      // FIX-F24: Programar nudges automáticos para cuota 1
+      if (cuotaNum === 1) {
+        try {
+          await sbClient.rpc('programar_nudges_cuota1', {
+            p_cliente_id: currentUser.id
+          });
+          console.log('[F24] Nudges programados para cuota 1');
+        } catch(nudgeErr) {
+          console.warn('[F24] Error programando nudges:', nudgeErr.message);
+        }
+      }
+
       showCompToast('\u2705 Comprobante enviado. Tu asesor lo revisar\u00E1 pronto.', 'ok');
       await renderCuotas();
       await renderDashboard();
@@ -2514,12 +2596,14 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
       // Cerrar modal de pago siempre
       cerrarPanelPago();
 
-      // Si es la primera cuota: abrir firma digital
+      // Si es la primera cuota: abrir firma digital y liberar lock
       if (esPrimeraCuota) {
+        window._flujoEnProgreso = false;
         setTimeout(function(){ abrirFirmaDigital(); }, 400);
       }
     } catch (err) {
       console.error(err);
+      if (esPrimeraCuota) window._flujoEnProgreso = false;
       showCompToast('\u274C Error al subir comprobante: ' + (err.message || err), 'warn');
       if (btnPago) { btnPago.disabled = false; btnPago.textContent = '\u2705 Confirmar Pago'; }
       if (rowBtn && rowBtn !== btnPago) { rowBtn.disabled = false; rowBtn.textContent = '\uD83D\uDCCE Adjuntar comprobante'; }
