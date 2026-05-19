@@ -2535,20 +2535,14 @@ async function uploadComp(cuotaNum, esPrimeraCuota) {
         return;
       }
 
-      // FIX-F23a: fecha_vencimiento — cuota 1 = mañana 23:59 (mora automática a 24h)
-      // Cuotas 2+ = fin del mes actual (el CEO filtra por mes)
-      var _now = new Date();
-      var _vencimiento;
-      if (cuotaNum === 1) {
-        // Cuota 1: vencimiento mañana a las 23:59 local
-        var _maniana = new Date(_now);
-        _maniana.setDate(_maniana.getDate() + 1);
-        _maniana.setHours(23, 59, 59, 999);
-        _vencimiento = _maniana;
-      } else {
-        // Cuotas 2+: fin del mes actual
-        _vencimiento = new Date(Date.UTC(_now.getFullYear(), _now.getMonth() + 1, 0, 23, 59, 59, 999));
-      }
+      // FIX-F23a: fecha_vencimiento progresivo basado en fecha_alta del cliente
+      // Cuota 1 = fecha_alta (día 0, vencida al crear)
+      // Cuota 2 = fecha_alta + 30 días
+      // Cuota N = fecha_alta + (N-1) × 30 días
+      var _fechaAlta = currentUser.fechaAlta ? new Date(currentUser.fechaAlta) : new Date();
+      var _vencimiento = new Date(_fechaAlta);
+      _vencimiento.setDate(_vencimiento.getDate() + ((cuotaNum - 1) * 30));
+      _vencimiento.setHours(23, 59, 59, 999);
 
       const { error: upsertError } = await sbClient
         .from('pagos')
