@@ -87,16 +87,16 @@
                 </div>
                 <div class="result-sim" style="margin-top:16px;">
                     <div class="result-item" style="border-bottom:1px solid rgba(100,160,255,.12);padding-bottom:14px;margin-bottom:14px;">
-                        <span class="result-label" style="display:none;">Total del plan</span>
-                        <span class="result-value" id="simTotal" style="display:none;">—</span>
+                        <span class="result-label">Tu cuota mensual</span>
+                        <span class="result-value" id="simTotal" style="font-size:1.5rem;color:#7eb8ff;">—</span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label" style="font-size:1rem;">Tu cuota mensual</span>
-                        <span class="result-value" id="cuotaMensual" style="font-size:2rem;color:#7eb8ff;">—</span>
+                        <span class="result-label">Por persona</span>
+                        <span class="result-value" id="cuotaMensual" style="font-size:1.1rem;color:rgba(200,220,255,.8);">—</span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label" style="opacity:.6;">Por día / persona</span>
-                        <span class="result-value" id="porDia" style="opacity:.6;">—</span>
+                        <span class="result-label" style="display:none;">Por día</span>
+                        <span class="result-value" id="porDia" style="display:none;">—</span>
                     </div>
                 </div>
                 <p class="sim-note" id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;">Elegí destino, noches y viajeros</p>
@@ -263,7 +263,7 @@ function calcSim(){
     var mFinal=0;mFinal+=pan*noches*m1*(_simCfg.menor_0_4_pct||0)/100;mFinal+=pan*noches*m2*(_simCfg.menor_5_11_pct||0)/100;mFinal+=pan*noches*m3*(_simCfg.menor_12_17_pct||0)/100;mFinal=Math.round(mFinal);
     var total=aFinal+mFinal,totPers=adultos+m1+m2+m3,cuotaTot=Math.round(total/cuotas*100)/100;
     var cuotaPers=totPers>0?Math.round(cuotaTot/totPers*100)/100:0,porDia=totPers>0?(cuotaPers/30).toFixed(2):'0.00';
-    elT.textContent='USD '+total.toLocaleString('es-AR');
+    elT.textContent='USD '+cuotaTot.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
     elC.textContent='USD '+cuotaPers.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
     elD.textContent='USD '+porDia;
     var lbl=adultos+' adulto'+(adultos>1?'s':'')+' · '+noches+' noche'+(noches>1?'s':'')+' · '+cuotas+' cuotas';

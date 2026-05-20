@@ -429,18 +429,14 @@ html{color-scheme:dark;}
 
     <!-- DESTINOS — PRECIOS DESDE USD/DÍA -->
     <section class="section">
-        <h2>🏖️ Viajá a Brasil <span>desde tu primera cuota</span></h2>
+        <h2>🏖️ Viajá a Brasil <span>en cuotas desde USD 1</span></h2>
         <p class="section-desc">Elegí tu destino y la cantidad de viajeros. Tu cuota mensual se calcula automáticamente.</p>
-        <div class="preview-grid" style="margin-top:28px;grid-template-columns:repeat(2,1fr);">
+        <div class="preview-grid" style="margin-top:28px;grid-template-columns:1fr;max-width:320px;margin-left:auto;margin-right:auto;">
             <div class="preview-mini">
-                <div style="font-size:1.8rem;margin-bottom:8px;">🏖️</div>
-                <h3>Cuota más baja</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-desde-index">—</p>
-            </div>
-            <div class="preview-mini">
-                <div style="font-size:1.8rem;margin-bottom:8px;">👥</div>
-                <h3>4 adultos · 7 noches</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-4amigos-index">—</p>
+                <div style="font-size:2.2rem;margin-bottom:10px;">🏖️</div>
+                <h3>Cuota desde</h3>
+                <p style="color:#7eb8ff;font-weight:800;margin-top:8px;font-size:1.1rem;" id="precio-desde-index">—</p>
+                <p style="color:rgba(200,220,255,.5);font-size:.72rem;margin-top:6px;">Plan para 4 adultos · 18 cuotas</p>
             </div>
         </div>
         <a href="simulador.html" class="view-all-btn">📊 Simulá tu plan →</a>
@@ -597,28 +593,22 @@ function closeMobileNav() {
         var seen={},unique=[];
         destinos.forEach(function(d){if(!seen[d.nombre_destino]){seen[d.nombre_destino]=true;unique.push(d);}});
         // Cuota más baja por persona/mes (destino más barato · 4 adultos · 18 cuotas)
-        var minPrecio=Infinity;
-        unique.forEach(function(d){if(d.precio_adulto_noche<minPrecio)minPrecio=d.precio_adulto_noche;});
+        var minPrecio=Infinity,destinoMasBarato='';
+        unique.forEach(function(d){if(d.precio_adulto_noche<minPrecio){minPrecio=d.precio_adulto_noche;destinoMasBarato=d.nombre_destino||'';}});
         var gBMin=0;
         if(4>=8)gBMin=cfg.grupo_8_mas_pct||0;else if(4>=6)gBMin=cfg.grupo_6_7_pct||0;else if(4>=4)gBMin=cfg.grupo_4_5_pct||0;
         var aDesde=minPrecio*4*7,aDtoDesde=Math.round(aDesde*gBMin/100),aFinalDesde=aDesde-aDtoDesde;
         var cuotaDesde=Math.round(aFinalDesde/18*100)/100,persDesde=Math.round(cuotaDesde/4*100)/100;
         var elDesde=document.getElementById('precio-desde-index');
-        if(elDesde)elDesde.innerHTML='USD '+persDesde.toFixed(2)+'/persona/mes';
-        // 4 adultos · 7 noches con dto grupo
-        var destino4=unique[0]||unique;var pan4=destino4.precio_adulto_noche||0;
-        var g4=cfg.grupo_4_5_pct||0,aBruto4=pan4*4*7,aDto4=Math.round(aBruto4*g4/100),aFinal4=aBruto4-aDto4;
-        var cuota4=Math.round(aFinal4/10*100)/100,pers4=Math.round(cuota4/4*100)/100;
-        var el4=document.getElementById('precio-4amigos-index');
-        if(el4)el4.innerHTML='USD '+pers4.toFixed(2)+'/persona/mes<br><span style="font-size:.78rem;opacity:.7;">'+destino4.nombre_destino+' · 10 cuotas · -'+g4+'% grupo</span>';
-        // Con menores eliminado del index — esa conversación la maneja el vendedor
+        if(elDesde)elDesde.innerHTML='USD '+persDesde.toFixed(2)+'<span style="font-size:.75rem;opacity:.7;"> /persona/mes</span>';
+        // Tarjeta 4 adultos eliminada — solo cuota más baja
         // Banner: mejor oferta por persona/mes (4 adultos, 18 cuotas, destino más barato)
         var gB=0;
         if(4>=8)gB=cfg.grupo_8_mas_pct||0;else if(4>=6)gB=cfg.grupo_6_7_pct||0;else if(4>=4)gB=cfg.grupo_4_5_pct||0;
         var aB=minPrecio*4*7,aDB=Math.round(aB*gB/100),aFB=aB-aDB;
         var cB=Math.round(aFB/18*100)/100,pP=Math.round(cB/4*100)/100;
         document.getElementById('precioDestacado').innerHTML='USD '+pP.toLocaleString('es-AR');
-        document.getElementById('detalleOferta').innerHTML=destino4.nombre_destino+' · 4 adultos · 7 noches · 18 cuotas · <strong>USD '+cB.toLocaleString('es-AR')+'</strong>/mes · Descuento grupo: -'+gB+'%';
+        document.getElementById('detalleOferta').innerHTML=destinoMasBarato+' · 4 adultos · 7 noches · 18 cuotas · <strong>USD '+cB.toLocaleString('es-AR')+'</strong>/mes · Descuento grupo: -'+gB+'%';
     });\n})();
 </script>
 </body>
