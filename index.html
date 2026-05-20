@@ -27,6 +27,76 @@
 <style>
 html{color-scheme:dark;}
 
+/* ── CUOTA GLOW CARD ── */
+.cuota-glow-card{
+  position:relative;
+  background:linear-gradient(135deg,rgba(11,61,145,.45),rgba(5,30,90,.6));
+  border:1.5px solid rgba(126,184,255,.3);
+  border-radius:24px;
+  padding:40px 32px;
+  text-align:center;
+  overflow:hidden;
+  transition:border-color .4s,box-shadow .4s;
+}
+.cuota-glow-card::before{
+  content:'';
+  position:absolute;inset:-2px;
+  border-radius:26px;
+  background:conic-gradient(from 0deg,transparent 0%,rgba(126,184,255,.15) 25%,transparent 50%,rgba(56,189,248,.12) 75%,transparent 100%);
+  animation:glowRotate 6s linear infinite;
+  z-index:0;
+}
+.cuota-glow-card::after{
+  content:'';
+  position:absolute;inset:1.5px;
+  border-radius:23px;
+  background:linear-gradient(135deg,rgba(5,18,55,.97),rgba(10,30,80,.97));
+  z-index:1;
+}
+.cuota-glow-card>*{position:relative;z-index:2;}
+@keyframes glowRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.cuota-glow-card:hover{
+  border-color:rgba(126,184,255,.55);
+  box-shadow:0 0 40px rgba(126,184,255,.15),0 0 80px rgba(56,189,248,.08);
+}
+.cuota-hero-amount{
+  font-size:3rem;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 0 30px rgba(126,184,255,.5),0 0 60px rgba(56,189,248,.25);
+ line-height:1.1;
+ margin:12px 0 8px;
+ animation:amountPulse 3s ease-in-out infinite;
+}
+@keyframes amountPulse{
+  0%,100%{text-shadow:0 0 30px rgba(126,184,255,.5),0 0 60px rgba(56,189,248,.25)}
+  50%{text-shadow:0 0 45px rgba(126,184,255,.7),0 0 90px rgba(56,189,248,.35)}
+}
+.cuota-hero-label{
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:rgba(126,184,255,.7);
+}
+.cuota-hero-sub{
+  font-size:.9rem;
+  color:rgba(200,220,255,.65);
+  margin-top:8px;
+}
+.cuota-hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:18px;
+  padding:6px 16px;
+  background:rgba(16,185,129,.1);
+  border:1px solid rgba(16,185,129,.25);
+  border-radius:30px;
+  font-size:.72rem;
+  font-weight:700;
+  color:#34d399;
+  letter-spacing:.5px;
+}
+
 /* ── DESTINATION CARDS ── */
 .dest-grid {
   display:grid;
@@ -427,19 +497,19 @@ html{color-scheme:dark;}
         <a href="tours.html" class="view-all-btn">🌟 Ver todos los tours →</a>
     </section>
 
-    <!-- DESTINOS — PRECIOS DESDE USD/DÍA -->
+    <!-- DESTINOS — CUOTA MÁS BAJA -->
     <section class="section">
-        <h2>🏖️ Viajá a Brasil <span>en cuotas desde USD 1</span></h2>
+        <h2>🏖️ Viajá a Brasil <span>en cuotas accesibles</span></h2>
         <p class="section-desc">Elegí tu destino y la cantidad de viajeros. Tu cuota mensual se calcula automáticamente.</p>
-        <div class="preview-grid" style="margin-top:28px;grid-template-columns:1fr;max-width:320px;margin-left:auto;margin-right:auto;">
-            <div class="preview-mini">
-                <div style="font-size:2.2rem;margin-bottom:10px;">🏖️</div>
-                <h3>Cuota desde</h3>
-                <p style="color:#7eb8ff;font-weight:800;margin-top:8px;font-size:1.1rem;" id="precio-desde-index">—</p>
-                <p style="color:rgba(200,220,255,.5);font-size:.72rem;margin-top:6px;">Plan para 4 adultos · 18 cuotas</p>
+        <div style="max-width:520px;margin:32px auto 0;">
+            <div class="cuota-glow-card">
+                <div class="cuota-hero-label">Cuota desde</div>
+                <div class="cuota-hero-amount" id="cuota-hero-index">USD 0</div>
+                <div class="cuota-hero-sub" id="cuota-hero-sub-index">por persona / mes</div>
+                <div class="cuota-hero-badge" id="cuota-hero-badge-index">✨ Cargando la mejor oferta...</div>
             </div>
         </div>
-        <a href="simulador.html" class="view-all-btn">📊 Simulá tu plan →</a>
+        <a href="simulador.html" class="view-all-btn" style="margin-top:32px;display:inline-block;">📊 Simulá tu plan →</a>
     </section>
 
     <!-- BANNER SIMULADOR -->
@@ -448,7 +518,7 @@ html{color-scheme:dark;}
         <div style="position:relative; z-index:2; padding: 50px 30px; text-align: center;">
             <div style="font-size: 1rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: #7eb8ff; margin-bottom: 15px;">✨ TRANSFORMÁ CUOTAS EN RECUERDOS ✨</div>
             <h2 style="font-size: 2.2rem; font-weight: 900; line-height: 1.2; margin-bottom: 20px;">
-                Viajá a Brasil desde <span style="color: #7eb8ff;" id="precioDestacado">USD 0</span><br>
+                Tu próximo viaje desde <span style="color: #7eb8ff;" id="precioDestacado">USD 0</span><br>
                 <span style="font-size: 1.2rem;">por persona / mes</span>
             </h2>
             <div id="detalleOferta" style="font-size: 1rem; color: rgba(200,220,255,.8); margin-bottom: 30px;">Cargando la mejor oferta...</div>
@@ -577,39 +647,52 @@ function closeMobileNav() {
 </script>
 
 <script>
-// Precios dinámicos para index.html — modelo por noche + menores + grupos
+// Precios dinámicos para index.html v3.5 — cuota más baja con fallback + glow
 (function() {
     var sb = supabase.createClient('https://yunvqgaljopirzvjrntc.supabase.co','sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB');
+    // Fallback por si Supabase falla
+    var FALLBACK_CUOTA = 15.00;
+    var FALLBACK_DESTINO = 'Cabo Frío';
+
+    function renderPrices(persDesde, destinoNombre, gB, cuotaPkg) {
+        // Glow card
+        var heroEl = document.getElementById('cuota-hero-index');
+        if(heroEl) heroEl.textContent = 'USD ' + persDesde.toFixed(2);
+        var subEl = document.getElementById('cuota-hero-sub-index');
+        if(subEl) subEl.textContent = 'por persona / mes';
+        var badgeEl = document.getElementById('cuota-hero-badge-index');
+        if(badgeEl) badgeEl.textContent = destinoNombre + ' · 4 adultos · 7 noches · 18 cuotas';
+        // Banner
+        document.getElementById('precioDestacado').innerHTML = 'USD ' + persDesde.toLocaleString('es-AR');
+        document.getElementById('detalleOferta').innerHTML = destinoNombre + ' · 4 adultos · 7 noches · 18 cuotas · <strong>USD ' + cuotaPkg.toLocaleString('es-AR') + '</strong>/mes' + (gB > 0 ? ' · Descuento grupo: -' + gB + '%' : '');
+    }
+
     Promise.all([
         sb.from('catalogo_precios').select('id,nombre_destino,precio_adulto_noche,max_ocupacion').eq('activo',true).order('precio_adulto_noche'),
         sb.from('configuracion_simulador').select('*').eq('id',1).maybeSingle()
     ]).then(function(results) {
         var rD=results[0], rC=results[1];
-        if(rD.error) return;
+        if(rD.error) throw new Error('Supabase: ' + rD.error.message);
         var destinos=rD.data||[];
-        if(!destinos.length)return;
+        if(!destinos.length) throw new Error('No hay destinos activos');
         var cfg=rC.data||{menor_0_4_pct:0,menor_5_11_pct:50,menor_12_17_pct:80,grupo_4_5_pct:5,grupo_6_7_pct:8,grupo_8_mas_pct:10};
-        // Deduplicar destinos
+        // Deduplicar
         var seen={},unique=[];
         destinos.forEach(function(d){if(!seen[d.nombre_destino]){seen[d.nombre_destino]=true;unique.push(d);}});
-        // Cuota más baja por persona/mes (destino más barato · 4 adultos · 18 cuotas)
-        var minPrecio=Infinity,destinoMasBarato='';
-        unique.forEach(function(d){if(d.precio_adulto_noche<minPrecio){minPrecio=d.precio_adulto_noche;destinoMasBarato=d.nombre_destino||'';}});
-        var gBMin=0;
-        if(4>=8)gBMin=cfg.grupo_8_mas_pct||0;else if(4>=6)gBMin=cfg.grupo_6_7_pct||0;else if(4>=4)gBMin=cfg.grupo_4_5_pct||0;
-        var aDesde=minPrecio*4*7,aDtoDesde=Math.round(aDesde*gBMin/100),aFinalDesde=aDesde-aDtoDesde;
-        var cuotaDesde=Math.round(aFinalDesde/18*100)/100,persDesde=Math.round(cuotaDesde/4*100)/100;
-        var elDesde=document.getElementById('precio-desde-index');
-        if(elDesde)elDesde.innerHTML='USD '+persDesde.toFixed(2)+'<span style="font-size:.75rem;opacity:.7;"> /persona/mes</span>';
-        // Tarjeta 4 adultos eliminada — solo cuota más baja
-        // Banner: mejor oferta por persona/mes (4 adultos, 18 cuotas, destino más barato)
+        // Destino más barato
+        var minPrecio=Infinity, minDest=null;
+        unique.forEach(function(d){if(d.precio_adulto_noche<minPrecio){minPrecio=d.precio_adulto_noche;minDest=d;}});
+        // Grupo discount
         var gB=0;
         if(4>=8)gB=cfg.grupo_8_mas_pct||0;else if(4>=6)gB=cfg.grupo_6_7_pct||0;else if(4>=4)gB=cfg.grupo_4_5_pct||0;
         var aB=minPrecio*4*7,aDB=Math.round(aB*gB/100),aFB=aB-aDB;
-        var cB=Math.round(aFB/18*100)/100,pP=Math.round(cB/4*100)/100;
-        document.getElementById('precioDestacado').innerHTML='USD '+pP.toLocaleString('es-AR');
-        document.getElementById('detalleOferta').innerHTML=destinoMasBarato+' · 4 adultos · 7 noches · 18 cuotas · <strong>USD '+cB.toLocaleString('es-AR')+'</strong>/mes · Descuento grupo: -'+gB+'%';
-    });\n})();
+        var cuotaPkg=Math.round(aFB/18*100)/100,pP=Math.round(cuotaPkg/4*100)/100;
+        renderPrices(pP, minDest.nombre_destino, gB, cuotaPkg);
+    }).catch(function(err) {
+        console.warn('[Luazul Index] Error cargando precios:', err);
+        renderPrices(FALLBACK_CUOTA, FALLBACK_DESTINO, 5, Math.round(FALLBACK_CUOTA*4*100)/100);
+    });
+})();
 </script>
 </body>
 </html>
