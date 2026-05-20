@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="css/style.css">
 
 <style>
+html{color-scheme:dark;}
 
 /* ── DESTINATION CARDS ── */
 .dest-grid {
@@ -428,23 +429,18 @@
 
     <!-- DESTINOS — PRECIOS DESDE USD/DÍA -->
     <section class="section">
-        <h2>🏖️ Viajá a Brasil <span>desde USD 3/día</span></h2>
-        <p class="section-desc">Elegí tu destino, la cantidad de viajeros y noches. El precio se calcula automáticamente con descuentos por grupo y menores.</p>
-        <div class="preview-grid" style="margin-top:28px;">
+        <h2>🏖️ Viajá a Brasil <span>desde tu primera cuota</span></h2>
+        <p class="section-desc">Elegí tu destino y la cantidad de viajeros. Tu cuota mensual se calcula automáticamente.</p>
+        <div class="preview-grid" style="margin-top:28px;grid-template-columns:repeat(2,1fr);">
             <div class="preview-mini">
                 <div style="font-size:1.8rem;margin-bottom:8px;">🏖️</div>
-                <h3>Desde</h3>
+                <h3>Cuota más baja</h3>
                 <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-desde-index">—</p>
             </div>
             <div class="preview-mini">
                 <div style="font-size:1.8rem;margin-bottom:8px;">👥</div>
                 <h3>4 adultos · 7 noches</h3>
                 <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-4amigos-index">—</p>
-            </div>
-            <div class="preview-mini">
-                <div style="font-size:1.8rem;margin-bottom:8px;">👶</div>
-                <h3>Con menores</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;font-size:.82rem;" id="precio-menores-index">—</p>
             </div>
         </div>
         <a href="simulador.html" class="view-all-btn">📊 Simulá tu plan →</a>
@@ -600,24 +596,22 @@ function closeMobileNav() {
         // Deduplicar destinos
         var seen={},unique=[];
         destinos.forEach(function(d){if(!seen[d.nombre_destino]){seen[d.nombre_destino]=true;unique.push(d);}});
-        // Precio más bajo (por noche) para "Desde"
+        // Cuota más baja por persona/mes (destino más barato · 4 adultos · 18 cuotas)
         var minPrecio=Infinity;
         unique.forEach(function(d){if(d.precio_adulto_noche<minPrecio)minPrecio=d.precio_adulto_noche;});
+        var gBMin=0;
+        if(4>=8)gBMin=cfg.grupo_8_mas_pct||0;else if(4>=6)gBMin=cfg.grupo_6_7_pct||0;else if(4>=4)gBMin=cfg.grupo_4_5_pct||0;
+        var aDesde=minPrecio*4*7,aDtoDesde=Math.round(aDesde*gBMin/100),aFinalDesde=aDesde-aDtoDesde;
+        var cuotaDesde=Math.round(aFinalDesde/18*100)/100,persDesde=Math.round(cuotaDesde/4*100)/100;
         var elDesde=document.getElementById('precio-desde-index');
-        if(elDesde)elDesde.innerHTML='USD '+minPrecio.toFixed(2)+'/persona/noche';
+        if(elDesde)elDesde.innerHTML='USD '+persDesde.toFixed(2)+'/persona/mes';
         // 4 adultos · 7 noches con dto grupo
         var destino4=unique[0]||unique;var pan4=destino4.precio_adulto_noche||0;
         var g4=cfg.grupo_4_5_pct||0,aBruto4=pan4*4*7,aDto4=Math.round(aBruto4*g4/100),aFinal4=aBruto4-aDto4;
         var cuota4=Math.round(aFinal4/10*100)/100,pers4=Math.round(cuota4/4*100)/100;
         var el4=document.getElementById('precio-4amigos-index');
-        if(el4)el4.innerHTML='USD '+aFinal4.toLocaleString('es-AR')+' total<br><span style="font-size:.78rem;">USD '+pers4+'/persona/mes</span>';
-        // 2 adultos + 1 niño 5-11 · 7 noches
-        var panM=pan4,mMenor=panM*7*1*(cfg.menor_5_11_pct||0)/100;
-        var totalM=Math.round((panM*2*7)+mMenor);
-        var cuotaM=Math.round(totalM/10*100)/100;
-        var persM=Math.round(cuotaM/3*100)/100;
-        var elM=document.getElementById('precio-menores-index');
-        if(elM)elM.innerHTML='2 adultos + 1 niño (50%)<br><span style="font-size:.78rem;">USD '+totalM.toLocaleString('es-AR')+' · USD '+persM+'/persona/mes</span>';
+        if(el4)el4.innerHTML='USD '+pers4.toFixed(2)+'/persona/mes<br><span style="font-size:.78rem;opacity:.7;">'+destino4.nombre_destino+' · 10 cuotas · -'+g4+'% grupo</span>';
+        // Con menores eliminado del index — esa conversación la maneja el vendedor
         // Banner: mejor oferta por persona/mes (4 adultos, 18 cuotas, destino más barato)
         var gB=0;
         if(4>=8)gB=cfg.grupo_8_mas_pct||0;else if(4>=6)gB=cfg.grupo_6_7_pct||0;else if(4>=4)gB=cfg.grupo_4_5_pct||0;
