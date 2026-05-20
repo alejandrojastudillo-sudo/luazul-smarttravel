@@ -1815,9 +1815,11 @@ function renderPaquete() {
   document.getElementById('pkgName').textContent = u.paquete || 'Paquete Luazul Smart Travel';
   document.getElementById('pkgDest').textContent = u.destino || 'Destino por confirmar';
 
+  var totalMenores = (parseInt(u.menores_0_4) || 0) + (parseInt(u.menores_5_11) || 0) + (parseInt(u.menores_12_17) || 0);
   var chips = [
+    (u.adultos || '?') + ' adultos',
+    totalMenores > 0 ? totalMenores + ' menores' : null,
     u.noches   ? u.noches + ' noches'  : null,
-    u.personas ? u.personas + ' personas' : null,
     u.estado   ? u.estado.toUpperCase() : 'ACTIVO'
   ].filter(Boolean);
 
@@ -1840,12 +1842,20 @@ function renderPaquete() {
     fechaItem = {label:'📅 Fecha de viaje', value: '🔒 Disponible al 80% · faltan ' + faltanPkg + ' cuota' + (faltanPkg !== 1 ? 's' : '')};
   }
 
+  var pasajerosValue = '';
+  if (u.adultos) {
+    pasajerosValue = u.adultos + ' adultos';
+    if (totalMenores > 0) pasajerosValue += ', ' + totalMenores + ' menores';
+  } else {
+    pasajerosValue = u.personas ? u.personas + ' personas' : '—';
+  }
+
   var infos = [
     {label:'💰 Total del plan', value: u.total_usd ? 'USD ' + u.total_usd : '—'},
     {label:'💳 Cuota mensual',  value: u.monto_cuota ? 'USD ' + u.monto_cuota : '—'},
     fechaItem,
     {label:'🏝️ Destino',       value: u.destino || '—'},
-    {label:'👥 Pasajeros',      value: u.personas ? u.personas + ' personas' : '—'},
+    {label:'👥 Pasajeros',      value: pasajerosValue},
     {label:'🌙 Noches',         value: u.noches || '—'},
   ];
 
