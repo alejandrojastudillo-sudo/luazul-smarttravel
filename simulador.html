@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <title>Simulador · Luazul Smart Travel</title>
     <link rel="stylesheet" href="css/style.css">
+<style>html{color-scheme:dark;}</style>
             <link rel="preload" as="image" href="images/cabo-frio-pero.webp" type="image/webp">
     <link rel="canonical" href="https://www.luazul.com/simulador.html">
     <meta name="description" content="Simulá tu plan de viaje a Brasil por noche con Luazul Smart Travel. Elegí destino, noches y viajeros. Descuentos por grupo y menores incluidos.">
@@ -86,16 +87,16 @@
                 </div>
                 <div class="result-sim" style="margin-top:16px;">
                     <div class="result-item" style="border-bottom:1px solid rgba(100,160,255,.12);padding-bottom:14px;margin-bottom:14px;">
-                        <span class="result-label">Total del plan</span>
-                        <span class="result-value" id="simTotal" style="font-size:1.5rem;color:#7eb8ff;">—</span>
+                        <span class="result-label" style="display:none;">Total del plan</span>
+                        <span class="result-value" id="simTotal" style="display:none;">—</span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label">Por persona / mes</span>
-                        <span class="result-value" id="cuotaMensual">—</span>
+                        <span class="result-label" style="font-size:1rem;">Tu cuota mensual</span>
+                        <span class="result-value" id="cuotaMensual" style="font-size:2rem;color:#7eb8ff;">—</span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label">Por día / persona ☕</span>
-                        <span class="result-value" id="porDia" style="font-size:1.1rem;color:rgba(200,220,255,.8);">—</span>
+                        <span class="result-label" style="opacity:.6;">Por día / persona</span>
+                        <span class="result-value" id="porDia" style="opacity:.6;">—</span>
                     </div>
                 </div>
                 <p class="sim-note" id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;">Elegí destino, noches y viajeros</p>
@@ -201,16 +202,17 @@ function buildSimUI(){
     var c=document.getElementById('selectGroup');if(!c)return;
     var seen={},dests=[];
     _simDestinos.forEach(function(d){if(!seen[d.nombre_destino]){seen[d.nombre_destino]=true;dests.push(d);}});
-    var h='<select id="destinoSelect" class="web-select" onchange="calcSim()">';
+    var h='<select id="destinoSelect" class="web-select" onchange="onDestinoOrAdultoChanged()">';
     h+='<option value="">— Elegí destino —</option>';
-    dests.forEach(function(d){h+='<option value="'+d.id+'" data-precio="'+d.precio_adulto_noche+'" data-max="'+(d.max_ocupacion||4)+'">'+d.nombre_destino+' · USD '+d.precio_adulto_noche+'/noche</option>';});
+    dests.forEach(function(d){h+='<option value="'+d.id+'" data-precio="'+d.precio_adulto_noche+'" data-max="'+(d.max_ocupacion||4)+'">'+d.nombre_destino+'</option>';});
     h+='</select>';
     h+='<select id="nochesSelect" class="web-select" onchange="calcSim()">';
     for(var n=1;n<=30;n++)h+='<option value="'+n+'"'+(n===7?' selected':'')+'>'+n+' noche'+(n>1?'s':'')+'</option>';
     h+='</select>';
-    h+='<select id="adultosSelect" class="web-select" onchange="calcSim()">';
+    h+='<select id="adultosSelect" class="web-select" onchange="onDestinoOrAdultoChanged()">';
     for(var a=1;a<=10;a++)h+='<option value="'+a+'"'+(a===2?' selected':'')+'>'+a+' adulto'+(a>1?'s':'')+'</option>';
     h+='</select>';
+    h+='<div id="simMaxOcupMsg" style="grid-column:1/-1;font-size:.72rem;color:#fbbf24;margin-top:2px;"></div>';
     h+='<select id="cuotasSelect" class="web-select" onchange="calcSim()">';
     h+='<option value="6">6 cuotas</option><option value="10" selected>10 cuotas</option><option value="12">12 cuotas</option><option value="18">18 cuotas</option></select>';
     h+='<div id="menoresBox" style="margin-top:10px;padding:14px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:14px;">';
@@ -221,6 +223,32 @@ function buildSimUI(){
     h+='<div><div style="font-size:.62rem;color:rgba(200,220,255,.55);margin-bottom:4px;">Adolescentes 12-17 ('+_simCfg.menor_12_17_pct+'%)</div><select id="m3Sel" class="web-select" onchange="calcSim()" style="padding:8px 10px;font-size:.85rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>';
     h+='</div></div>';
     c.innerHTML=h;
+}
+
+function onDestinoOrAdultoChanged(){
+    var dSel=document.getElementById('destinoSelect'),opt=dSel?dSel.options[dSel.selectedIndex]:null;
+    var selAdultos=document.getElementById('adultosSelect');
+    var msgEl=document.getElementById('simMaxOcupMsg');
+    if(!opt||!opt.value||!selAdultos){if(msgEl)msgEl.innerHTML='';calcSim();return;}
+    var maxOc=parseInt(opt.dataset.max)||0;
+    if(maxOc>0){
+        var currentVal=parseInt(selAdultos.value)||2;
+        var html='';
+        for(var a=1;a<=maxOc;a++)html+='<option value="'+a+'"'+(a===Math.min(currentVal,maxOc)?' selected':'')+'>'+a+' adulto'+(a>1?'s':'')+'</option>';
+        selAdultos.innerHTML=html;
+        // Cap menores selects too
+        ['m1Sel','m2Sel','m3Sel'].forEach(function(id){
+            var el=document.getElementById(id);if(!el)return;
+            var cur=parseInt(el.value)||0;
+            var h2='';
+            for(var m=0;m<=Math.min(maxOc,3);m++)h2+='<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>';
+            el.innerHTML=h2;
+        });
+        if(msgEl)msgEl.innerHTML='<span style="color:#34d399;">Máximo '+maxOc+' personas para este destino</span>';
+    }else{
+        if(msgEl)msgEl.innerHTML='';
+    }
+    calcSim();
 }
 
 function calcSim(){
