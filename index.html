@@ -426,31 +426,31 @@
         <a href="tours.html" class="view-all-btn">🌟 Ver todos los tours →</a>
     </section>
 
-    <!-- PREVIEW OFERTAS -->
+    <!-- DESTINOS — PRECIOS DESDE USD/DÍA -->
     <section class="section">
-        <h2>🏖️ Paquetes <span>Diciembre 2026</span></h2>
-        <p class="section-desc">Cabo Frío · 7 noches frente al mar · Traslados privados · Tour en Río incluido.</p>
+        <h2>🏖️ Viajá a Brasil <span>desde USD 3/día</span></h2>
+        <p class="section-desc">Elegí tu destino, la cantidad de viajeros y noches. El precio se calcula automáticamente con descuentos por grupo y menores.</p>
         <div class="preview-grid" style="margin-top:28px;">
             <div class="preview-mini">
-                <div style="font-size:1.8rem;margin-bottom:8px;">💑</div>
-                <h3>Escapada en Pareja</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-pareja-index">—</p>
-            </div>
-            <div class="preview-mini">
-                <div style="font-size:1.8rem;margin-bottom:8px;">👫</div>
-                <h3>4 Amigos</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-4amigos-index">—</p>
+                <div style="font-size:1.8rem;margin-bottom:8px;">🏖️</div>
+                <h3>Desde</h3>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-desde-index">—</p>
             </div>
             <div class="preview-mini">
                 <div style="font-size:1.8rem;margin-bottom:8px;">👥</div>
-                <h3>6 Amigos</h3>
-                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-6amigos-index">—</p>
+                <h3>4 adultos · 7 noches</h3>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;" id="precio-4amigos-index">—</p>
+            </div>
+            <div class="preview-mini">
+                <div style="font-size:1.8rem;margin-bottom:8px;">👶</div>
+                <h3>Con menores</h3>
+                <p style="color:#7eb8ff;font-weight:700;margin-top:6px;font-size:.82rem;" id="precio-menores-index">—</p>
             </div>
         </div>
-        <a href="ofertas.html" class="view-all-btn">🏖️ Ver todos los paquetes →</a>
+        <a href="simulador.html" class="view-all-btn">📊 Simulá tu plan →</a>
     </section>
 
-    <!-- PREVIEW SIMULADOR – BANNER AGRESIVO -->
+    <!-- BANNER SIMULADOR -->
     <section class="section" id="simulador-preview" style="position:relative; overflow:hidden; border-radius: 32px;">
         <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #0B2B5E, #041430); z-index:1;"></div>
         <div style="position:relative; z-index:2; padding: 50px 30px; text-align: center;">
@@ -585,60 +585,47 @@ function closeMobileNav() {
 </script>
 
 <script>
-// Cargar precios dinámicos para index.html (sección Paquetes)
+// Precios dinámicos para index.html — modelo por noche + menores + grupos
 (function() {
-    var sbIdxClient = supabase.createClient('https://yunvqgaljopirzvjrntc.supabase.co', 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB');
-    sbIdxClient.from('catalogo_precios').select('*').eq('activo', true).then(function(res) {
-        if (res.error) return;
-        var catalogo = res.data || [];
-        var pareja = catalogo.find(function(p) { return p.paquete === 'Escapada en Pareja' && p.personas === 2; });
-        var cuatro = catalogo.find(function(p) { return p.paquete === 'Paquete 4 Amigos' && p.personas === 4; });
-        var seis   = catalogo.find(function(p) { return p.paquete === 'Paquete 6 Amigos' && p.personas === 6; });
-        if (pareja) {
-            var el1 = document.getElementById('precio-pareja-index');
-            if (el1) el1.innerHTML = 'USD ' + pareja.precio_usd + ' · 10 cuotas';
-        }
-        if (cuatro) {
-            var el2 = document.getElementById('precio-4amigos-index');
-            if (el2) el2.innerHTML = 'USD ' + cuatro.precio_usd + ' · 10 cuotas';
-        }
-        if (seis) {
-            var el3 = document.getElementById('precio-6amigos-index');
-            if (el3) el3.innerHTML = 'USD ' + seis.precio_usd + ' · 10 cuotas';
-        }
-    });
-})();
-</script>
-
-<script>
-// Oferta destacada en index.html: muestra el precio por persona/más bajo disponible
-(function() {
-    const sb = supabase.createClient('https://yunvqgaljopirzvjrntc.supabase.co', 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB');
-    sb.from('catalogo_precios').select('*').eq('activo', true).then(res => {
-        if (res.error) return;
-        const catalogo = res.data || [];
-        if (!catalogo.length) return;
-        
-        // Calcular la mejor oferta: buscamos el mínimo (precio_usd / 18 / personas) porque 18 es el máximo de cuotas atractivo
-        let mejor = null;
-        let mejorValor = Infinity;
-        const cuotasMax = 18;
-        for (let i = 0; i < catalogo.length; i++) {
-            const p = catalogo[i];
-            const precioPorPersonaMes = (p.precio_usd / cuotasMax) / p.personas;
-            if (precioPorPersonaMes < mejorValor) {
-                mejorValor = precioPorPersonaMes;
-                mejor = p;
-            }
-        }
-        if (mejor) {
-            const cuotaMensualTotal = Math.floor(mejor.precio_usd / cuotasMax * 100) / 100;
-            const porPersona = (cuotaMensualTotal / mejor.personas).toFixed(2);
-            document.getElementById('precioDestacado').innerHTML = 'USD ' + porPersona;
-            document.getElementById('detalleOferta').innerHTML = mejor.personas + ' personas · ' + cuotasMax + ' cuotas · <strong>USD ' + cuotaMensualTotal.toFixed(2) + '</strong> total por mes · Precios en dólares · Sin costos ocultos';
-        }
-    });
-})();
+    var sb = supabase.createClient('https://yunvqgaljopirzvjrntc.supabase.co','sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB');
+    Promise.all([
+        sb.from('catalogo_precios').select('id,nombre_destino,precio_adulto_noche,max_ocupacion').eq('activo',true).order('precio_adulto_noche'),
+        sb.from('configuracion_simulador').select('*').eq('id',1).maybeSingle()
+    ]).then(function(results) {
+        var rD=results[0], rC=results[1];
+        if(rD.error) return;
+        var destinos=rD.data||[];
+        if(!destinos.length)return;
+        var cfg=rC.data||{menor_0_4_pct:0,menor_5_11_pct:50,menor_12_17_pct:80,grupo_4_5_pct:5,grupo_6_7_pct:8,grupo_8_mas_pct:10};
+        // Deduplicar destinos
+        var seen={},unique=[];
+        destinos.forEach(function(d){if(!seen[d.nombre_destino]){seen[d.nombre_destino]=true;unique.push(d);}});
+        // Precio más bajo (por noche) para "Desde"
+        var minPrecio=Infinity;
+        unique.forEach(function(d){if(d.precio_adulto_noche<minPrecio)minPrecio=d.precio_adulto_noche;});
+        var elDesde=document.getElementById('precio-desde-index');
+        if(elDesde)elDesde.innerHTML='USD '+minPrecio.toFixed(2)+'/persona/noche';
+        // 4 adultos · 7 noches con dto grupo
+        var destino4=unique[0]||unique;var pan4=destino4.precio_adulto_noche||0;
+        var g4=cfg.grupo_4_5_pct||0,aBruto4=pan4*4*7,aDto4=Math.round(aBruto4*g4/100),aFinal4=aBruto4-aDto4;
+        var cuota4=Math.round(aFinal4/10*100)/100,pers4=Math.round(cuota4/4*100)/100;
+        var el4=document.getElementById('precio-4amigos-index');
+        if(el4)el4.innerHTML='USD '+aFinal4.toLocaleString('es-AR')+' total<br><span style="font-size:.78rem;">USD '+pers4+'/persona/mes</span>';
+        // 2 adultos + 1 niño 5-11 · 7 noches
+        var panM=pan4,mMenor=panM*7*1*(cfg.menor_5_11_pct||0)/100;
+        var totalM=Math.round((panM*2*7)+mMenor);
+        var cuotaM=Math.round(totalM/10*100)/100;
+        var persM=Math.round(cuotaM/3*100)/100;
+        var elM=document.getElementById('precio-menores-index');
+        if(elM)elM.innerHTML='2 adultos + 1 niño (50%)<br><span style="font-size:.78rem;">USD '+totalM.toLocaleString('es-AR')+' · USD '+persM+'/persona/mes</span>';
+        // Banner: mejor oferta por persona/mes (4 adultos, 18 cuotas, destino más barato)
+        var gB=0;
+        if(4>=8)gB=cfg.grupo_8_mas_pct||0;else if(4>=6)gB=cfg.grupo_6_7_pct||0;else if(4>=4)gB=cfg.grupo_4_5_pct||0;
+        var aB=minPrecio*4*7,aDB=Math.round(aB*gB/100),aFB=aB-aDB;
+        var cB=Math.round(aFB/18*100)/100,pP=Math.round(cB/4*100)/100;
+        document.getElementById('precioDestacado').innerHTML='USD '+pP.toLocaleString('es-AR');
+        document.getElementById('detalleOferta').innerHTML=destino4.nombre_destino+' · 4 adultos · 7 noches · 18 cuotas · <strong>USD '+cB.toLocaleString('es-AR')+'</strong>/mes · Descuento grupo: -'+gB+'%';
+    });\n})();
 </script>
 </body>
 </html>

@@ -234,6 +234,10 @@
                     <p style="color:rgba(200,220,255,.6);">Cargando destinos...</p>
                 </div>
                 <div class="sim-result">
+                    <div class="sim-result-box highlight" style="flex:1;border-bottom:1px solid rgba(100,160,255,.12);padding-bottom:14px;margin-bottom:14px;">
+                        <span class="sim-val" id="simTotal" style="font-size:1.6rem;color:#7eb8ff;">—</span>
+                        <span class="sim-label">Total del plan</span>
+                    </div>
                     <div class="sim-result-box highlight" style="flex:1;">
                         <span class="sim-val" id="cuotaMensual">—</span>
                         <span class="sim-label">Por persona / mes</span>
@@ -243,7 +247,7 @@
                         <span class="sim-label">Por día / persona ☕</span>
                     </div>
                 </div>
-                <p class="sim-note" id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;">Seleccioná un paquete</p>
+                <p class="sim-note" id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;">Elegí noches y viajeros</p>
                 <p class="sim-note">Precios en dólares (USD) · Sin costos ocultos</p>
                 <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="text-align:center;border-radius:14px;display:inline-block;margin-top:12px;">🔵 Comenzar ahora</a>
             </div>
@@ -317,123 +321,86 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ========== LUAZUL SIMULADOR DINÁMICO (inline con preselección automática) ==========
-console.log('app.js iniciado');
-const SUPABASE_URL = 'https://yunvqgaljopirzvjrntc.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB';
-const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ========== LUAZUL SIMULADOR v2 — Destino preseleccionado · Modelo por noche + menores + grupos ==========
+const sbClient = supabase.createClient('https://yunvqgaljopirzvjrntc.supabase.co','sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB');
+var _simDestinos=[],_simCfg={menor_0_4_pct:0,menor_5_11_pct:50,menor_12_17_pct:80,grupo_4_5_pct:5,grupo_6_7_pct:8,grupo_8_mas_pct:10};
+var _PRESET_SLUG='rio'; // REPLAZAR CON: arraial / buzios / cabofrio / rio
 
-let catalogo = [];
-let destinosMap = {};
-let paquetesPorDestino = {};
+async function initSimulador(){
+    var sg=document.getElementById('selectGroup');if(!sg)return;
+    sg.innerHTML='<p style="color:rgba(200,220,255,.6);">Cargando...</p>';
+    try{
+        var[rD,rC]=await Promise.all([
+            sbClient.from('catalogo_precios').select('id,nombre_destino,slug,precio_adulto_noche,max_ocupacion').eq('activo',true).order('nombre_destino'),
+            sbClient.from('configuracion_simulador').select('*').eq('id',1).maybeSingle()
+        ]);
+        if(rD.error)throw rD.error;
+        _simDestinos=rD.data||[];
+        if(rC.data)_simCfg=rC.data;
+        if(!_simDestinos.length)throw new Error('No hay destinos');
+        buildSimUI();
+        preseleccionar();
+    }catch(e){sg.innerHTML='<p style="color:#f87171;">❌ '+e.message+'</p>';}
+}
 
-async function initSimulador() {
-    console.log('initSimulador ejecutada');
-    const selectGroup = document.getElementById('selectGroup');
-    if (!selectGroup) { console.error('No se encontró #selectGroup'); return; }
-    try {
-        const { data, error } = await sbClient.from('catalogo_precios').select('*').eq('activo', true).order('orden');
-        if (error) throw error;
-        catalogo = data || [];
-        if (catalogo.length === 0) throw new Error('No hay destinos activos');
-        catalogo.forEach(item => {
-            if (!destinosMap[item.slug]) { destinosMap[item.slug] = item.nombre_destino; paquetesPorDestino[item.slug] = []; }
-            paquetesPorDestino[item.slug].push(item);
-        });
-        construirSelects();
-        // ✅ PRESELECCIÓN Y OCULTAMIENTO DESPUÉS DE CONSTRUIR SELECTS (los datos ya están)
-        preseleccionarDestino();
-    } catch (err) {
-        selectGroup.innerHTML = '<p style="color:#f87171;">❌ Error: ' + err.message + '</p>';
-        console.error(err);
+function buildSimUI(){
+    var c=document.getElementById('selectGroup');if(!c)return;
+    var seen={},dests=[];
+    _simDestinos.forEach(function(d){if(!seen[d.nombre_destino]){seen[d.nombre_destino]=true;dests.push(d);}});
+    var h='<select id="destinoSelect" class="web-select" onchange="calcSim()">';
+    h+='<option value="">— Elegí destino —</option>';
+    dests.forEach(function(d){h+='<option value="'+d.id+'" data-precio="'+d.precio_adulto_noche+'" data-max="'+(d.max_ocupacion||4)+'">'+d.nombre_destino+'</option>';});
+    h+='</select>';
+    h+='<select id="nochesSelect" class="web-select" onchange="calcSim()">';
+    for(var n=1;n<=30;n++)h+='<option value="'+n+'"'+(n===7?' selected':'')+'>'+n+' noche'+(n>1?'s':'')+'</option>';
+    h+='</select>';
+    h+='<select id="adultosSelect" class="web-select" onchange="calcSim()">';
+    for(var a=1;a<=10;a++)h+='<option value="'+a+'"'+(a===2?' selected':'')+'>'+a+' adulto'+(a>1?'s':'')+'</option>';
+    h+='</select>';
+    h+='<select id="cuotasSelect" class="web-select" onchange="calcSim()">';
+    h+='<option value="6">6 cuotas</option><option value="10" selected>10 cuotas</option><option value="12">12 cuotas</option><option value="18">18 cuotas</option></select>';
+    h+='<div style="margin-top:10px;padding:14px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:14px;">';
+    h+='<div style="font-size:.7rem;font-weight:700;color:#fbbf24;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">👶 Menores de edad</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">';
+    h+='<div><div style="font-size:.62rem;color:rgba(200,220,255,.55);margin-bottom:4px;">Bebés 0-4 ('+_simCfg.menor_0_4_pct+'%)</div><select id="m1Sel" class="web-select" onchange="calcSim()" style="padding:8px 10px;font-size:.85rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>';
+    h+='<div><div style="font-size:.62rem;color:rgba(200,220,255,.55);margin-bottom:4px;">Niños 5-11 ('+_simCfg.menor_5_11_pct+'%)</div><select id="m2Sel" class="web-select" onchange="calcSim()" style="padding:8px 10px;font-size:.85rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>';
+    h+='<div><div style="font-size:.62rem;color:rgba(200,220,255,.55);margin-bottom:4px;">Adolescentes 12-17 ('+_simCfg.menor_12_17_pct+'%)</div><select id="m3Sel" class="web-select" onchange="calcSim()" style="padding:8px 10px;font-size:.85rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>';
+    h+='</div></div>';
+    c.innerHTML=h;
+}
+
+function preseleccionar(){
+    var dSel=document.getElementById('destinoSelect');if(!dSel)return;
+    for(var i=0;i<dSel.options.length;i++){
+        var o=dSel.options[i];
+        var found=_simDestinos.find(function(d){return d.slug===_PRESET_SLUG;});
+        if(found&&o.value==found.id){dSel.value=found.id;dSel.dispatchEvent(new Event('change'));dSel.style.display='none';return;}
     }
 }
 
-function construirSelects() {
-    const container = document.getElementById('selectGroup');
-    if (!container) return;
-    let h = '<select id="destinoSelect" class="web-select" onchange="cargarPaquetes()">';
-    h += '<option value="">Seleccionar destino...</option>';
-    for (const [slug, nombre] of Object.entries(destinosMap)) { h += `<option value="${slug}">${nombre}</option>`; }
-    h += '</select>';
-    h += '<select id="paqueteSelect" class="web-select" disabled><option value="">Primero selecciona un destino</option></select>';
-    h += '<select id="cuotasSelect" class="web-select" onchange="calcular()">';
-    h += '<option value="6">6 cuotas</option><option value="10" selected>10 cuotas</option>';
-    h += '<option value="12">12 cuotas</option><option value="18">18 cuotas</option></select>';
-    container.innerHTML = h;
+function calcSim(){
+    var dSel=document.getElementById('destinoSelect'),opt=dSel?dSel.options[dSel.selectedIndex]:null;
+    var elT=document.getElementById('simTotal'),elC=document.getElementById('cuotaMensual'),elD=document.getElementById('porDia'),elS=document.getElementById('simSubLabel');
+    if(!opt||!opt.value){elT.textContent='—';elC.textContent='—';elD.textContent='—';return;}
+    var pan=parseFloat(opt.dataset.precio)||0,noches=parseInt(document.getElementById('nochesSelect').value)||7,adultos=parseInt(document.getElementById('adultosSelect').value)||1;
+    var m1=parseInt((document.getElementById('m1Sel')||{}).value)||0,m2=parseInt((document.getElementById('m2Sel')||{}).value)||0,m3=parseInt((document.getElementById('m3Sel')||{}).value)||0;
+    var cuotas=parseInt(document.getElementById('cuotasSelect').value)||10;
+    var gPct=0;if(adultos>=8)gPct=_simCfg.grupo_8_mas_pct||0;else if(adultos>=6)gPct=_simCfg.grupo_6_7_pct||0;else if(adultos>=4)gPct=_simCfg.grupo_4_5_pct||0;
+    var aBruto=pan*adultos*noches,aDto=Math.round(aBruto*gPct/100),aFinal=aBruto-aDto;
+    var mFinal=0;mFinal+=pan*noches*m1*(_simCfg.menor_0_4_pct||0)/100;mFinal+=pan*noches*m2*(_simCfg.menor_5_11_pct||0)/100;mFinal+=pan*noches*m3*(_simCfg.menor_12_17_pct||0)/100;mFinal=Math.round(mFinal);
+    var total=aFinal+mFinal,totPers=adultos+m1+m2+m3,cuotaTot=Math.round(total/cuotas*100)/100;
+    var cuotaPers=totPers>0?Math.round(cuotaTot/totPers*100)/100:0,porDia=totPers>0?(cuotaPers/30).toFixed(2):'0.00';
+    elT.textContent='USD '+total.toLocaleString('es-AR');
+    elC.textContent='USD '+cuotaPers.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    elD.textContent='USD '+porDia;
+    var lbl=adultos+' adulto'+(adultos>1?'s':'')+' · '+noches+' noche'+(noches>1?'s':'')+' · '+cuotas+' cuotas';
+    if(gPct>0)lbl+=' · <span style="color:#34d399;">-'+gPct+'% grupo</span>';
+    var tM=m1+m2+m3;if(tM>0)lbl+=' · '+tM+' menor'+(tM>1?'es':'');
+    elS.innerHTML=lbl;
 }
 
-function cargarPaquetes() {
-    const destinoSlug = document.getElementById('destinoSelect').value;
-    const paqueteSelect = document.getElementById('paqueteSelect');
-    if (!destinoSlug) {
-        paqueteSelect.innerHTML = '<option value="">Primero selecciona un destino</option>';
-        paqueteSelect.disabled = true;
-        document.getElementById('simSubLabel').innerText = 'Seleccioná un destino y paquete';
-        document.getElementById('cuotaMensual').innerText = '—';
-        document.getElementById('porDia').innerText = '—';
-        return;
-    }
-    const paquetes = paquetesPorDestino[destinoSlug] || [];
-    if (paquetes.length === 0) {
-        paqueteSelect.innerHTML = '<option value="">No hay paquetes para este destino</option>';
-        paqueteSelect.disabled = true;
-        return;
-    }
-    let options = '<option value="">Seleccionar paquete...</option>';
-    paquetes.forEach(p => {
-        options += `<option value="${p.id}" data-precio="${p.precio_usd}" data-personas="${p.personas}" data-noches="${p.noches}">${p.paquete} · ${p.personas} pers. · USD ${p.precio_usd}</option>`;
-    });
-    paqueteSelect.innerHTML = options;
-    paqueteSelect.disabled = false;
-    calcular();
-}
-
-function calcular() {
-    const paqueteSelect = document.getElementById('paqueteSelect');
-    const cuotasSelect = document.getElementById('cuotasSelect');
-    const selectedOption = paqueteSelect.options[paqueteSelect.selectedIndex];
-    if (!selectedOption || !selectedOption.value) {
-        document.getElementById('simSubLabel').innerText = 'Seleccioná un paquete';
-        document.getElementById('cuotaMensual').innerText = '—';
-        document.getElementById('porDia').innerText = '—';
-        return;
-    }
-    const precioTotal = parseFloat(selectedOption.getAttribute('data-precio'));
-    const personas = parseInt(selectedOption.getAttribute('data-personas'), 10);
-    const cuotas = parseInt(cuotasSelect.value, 10);
-    if (isNaN(precioTotal) || isNaN(personas) || isNaN(cuotas)) return;
-    const cuotaTotal = Math.floor(precioTotal / cuotas * 100) / 100;
-    const cuotaPorPersona = cuotaTotal / personas;
-    const porDia = (cuotaPorPersona / 30).toFixed(2);
-    document.getElementById('cuotaMensual').innerHTML = 'USD ' + cuotaPorPersona.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    document.getElementById('porDia').innerHTML = 'USD ' + porDia;
-    document.getElementById('simSubLabel').innerHTML = personas + ' ' + (personas === 1 ? 'persona' : 'personas') + ' · ' + cuotas + ' cuotas · USD ' + cuotaTotal.toLocaleString('es-AR') + ' por mes (total)';
-}
-
-function preseleccionarDestino() {
-    // Obtener el slug desde un atributo data en el body o desde una variable global
-    // Lo definimos manualmente para cada página (cambiar aquí el valor)
-    const SLUG = 'rio'; // <-- CAMBIAR SEGÚN LA PÁGINA: 'cabofrio', 'arraial', 'buzios', 'rio'
-    const destinoSelect = document.getElementById('destinoSelect');
-    if (destinoSelect && destinoSelect.options.length > 1) {
-        destinoSelect.value = SLUG;
-        destinoSelect.dispatchEvent(new Event('change'));
-        destinoSelect.style.display = 'none';
-        // También ocultar la etiqueta si existiera
-        const label = destinoSelect.closest('.sim-field') || destinoSelect.previousElementSibling;
-        if (label && label.tagName === 'LABEL') label.style.display = 'none';
-    } else {
-        console.warn('No se pudo preseleccionar destino, reintentando en 500ms');
-        setTimeout(preseleccionarDestino, 500);
-    }
-}
-
-const estilo = document.createElement('style');
-estilo.textContent = '.web-select{background-color:#0c1628;color:#e8eeff;border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:12px 16px;font-family:inherit;font-size:.95rem;width:100%;cursor:pointer;margin-bottom:.5rem}.web-select option{background-color:#0c1628;color:#e8eeff}.web-select:disabled{opacity:.6;cursor:not-allowed}@media(min-width:768px){.select-group{display:flex;gap:1rem;flex-wrap:wrap}.web-select{flex:1;margin-bottom:0}}';
-document.head.appendChild(estilo);
-
-document.addEventListener('DOMContentLoaded', initSimulador);
+(function(){var s=document.createElement('style');s.textContent='.web-select{background-color:#0c1628;color:#e8eeff;border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:12px 16px;font-family:inherit;font-size:.95rem;width:100%;cursor:pointer;margin-bottom:.5rem}.web-select option{background-color:#0c1628;color:#e8eeff}@media(min-width:768px){.select-group{display:flex;gap:1rem;flex-wrap:wrap}.web-select{flex:1;margin-bottom:0}}';document.head.appendChild(s);})();
+document.addEventListener('DOMContentLoaded',initSimulador);
 </script>
 <script src="../mariposa-chat.js"></script>
 <script>
