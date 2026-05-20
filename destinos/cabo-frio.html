@@ -11,7 +11,92 @@
     <title>Cabo Frío · LUAZUL Smart Travel</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/destinos-shared.css">
-<style>html{color-scheme:dark;}</style>
+<style>html{color-scheme:dark;}
+/* ── SIMULADOR v3.5 GLOW (destinos) ── */
+.sim-cuota-hero{
+  position:relative;
+  background:linear-gradient(135deg,rgba(11,61,145,.4),rgba(5,30,90,.55));
+  border:1.5px solid rgba(126,184,255,.25);
+  border-radius:20px;padding:28px 24px;
+  text-align:center;overflow:hidden;
+  transition:border-color .4s,box-shadow .4s;
+}
+.sim-cuota-hero::before{
+  content:'';position:absolute;inset:-2px;border-radius:22px;
+  background:conic-gradient(from 0deg,transparent 0%,rgba(126,184,255,.12) 25%,transparent 50%,rgba(56,189,248,.1) 75%,transparent 100%);
+  animation:glowSpin 5s linear infinite;z-index:0;
+}
+.sim-cuota-hero::after{
+  content:'';position:absolute;inset:1.5px;border-radius:19px;
+  background:linear-gradient(135deg,rgba(5,18,55,.96),rgba(10,30,80,.96));z-index:1;
+}
+.sim-cuota-hero>*{position:relative;z-index:2;}
+@keyframes glowSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.sim-cuota-hero:hover{
+  border-color:rgba(126,184,255,.5);
+  box-shadow:0 0 35px rgba(126,184,255,.12),0 0 70px rgba(56,189,248,.06);
+}
+.sim-amount{
+  font-size:2.6rem;font-weight:900;color:#fff;
+  text-shadow:0 0 25px rgba(126,184,255,.45),0 0 50px rgba(56,189,248,.2);
+  line-height:1.1;margin:10px 0 6px;
+  animation:amtPulse 3s ease-in-out infinite;
+}
+@keyframes amtPulse{
+  0%,100%{text-shadow:0 0 25px rgba(126,184,255,.45),0 0 50px rgba(56,189,248,.2)}
+  50%{text-shadow:0 0 40px rgba(126,184,255,.65),0 0 80px rgba(56,189,248,.3)}
+}
+.sim-amount-label{
+  font-size:.75rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(126,184,255,.6);
+}
+.sim-amount-sub{
+  font-size:.88rem;color:rgba(200,220,255,.6);margin-top:6px;
+}
+.sim-detail-row{
+  display:flex;gap:14px;margin-top:16px;
+  background:rgba(11,61,145,.15);
+  border:1px solid rgba(100,160,255,.1);
+  border-radius:14px;padding:14px 16px;
+}
+.sim-detail-item{flex:1;text-align:center;}
+.sim-detail-val{
+  font-size:1.35rem;font-weight:800;color:#7eb8ff;
+  text-shadow:0 0 12px rgba(126,184,255,.2);
+}
+.sim-detail-lbl{
+  font-size:.68rem;color:rgba(200,220,255,.5);
+  text-transform:uppercase;letter-spacing:.5px;margin-top:2px;
+}
+.menores-toggle{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:14px;padding:10px 20px;
+  background:rgba(251,191,36,.06);
+  border:1px dashed rgba(251,191,36,.2);
+  border-radius:12px;cursor:pointer;
+  font-size:.82rem;font-weight:700;
+  color:#fbbf24;transition:all .25s;
+  text-transform:none;letter-spacing:0;
+}
+.menores-toggle:hover{
+  background:rgba(251,191,36,.12);
+  border-color:rgba(251,191,36,.35);
+}
+.menores-toggle.open{
+  border-style:solid;
+  border-color:rgba(251,191,36,.3);
+  border-radius:12px 12px 0 0;
+  margin-bottom:0;
+}
+.menores-content{
+  display:none;padding:14px 16px 16px;
+  background:rgba(251,191,36,.04);
+  border:1px solid rgba(251,191,36,.2);
+  border-top:none;
+  border-radius:0 0 12px 12px;
+}
+.menores-content.open{display:block;}
+</style>
             <link rel="preload" as="image" href="../images/cabo-frio-hero.webp" type="image/webp">
     <link rel="canonical" href="https://www.luazul.com/destinos/cabo-frio.html">
     <meta name="description" content="Cabo Frío, Brasil — el destino más completo de la Costa do Sol. Playas con sello Bandeira Azul, historia colonial, Lagoa Araruama y 155 km de Río de Janeiro.">
@@ -233,21 +318,22 @@
                 <div class="select-group" id="selectGroup">
                     <p style="color:rgba(200,220,255,.6);">Cargando destinos...</p>
                 </div>
-                <div class="sim-result">
-                    <div class="sim-result-box highlight" style="flex:1;border-bottom:1px solid rgba(100,160,255,.12);padding-bottom:14px;margin-bottom:14px;">
-                        <span class="sim-val" id="simTotal" style="font-size:1.6rem;color:#7eb8ff;">—</span>
-                        <span class="sim-label">Tu cuota mensual</span>
+                <div class="sim-cuota-hero" style="margin-top:16px;">
+                    <div class="sim-amount-label">Cuota mensual del plan</div>
+                    <div class="sim-amount" id="cuotaPaquete">—</div>
+                    <div class="sim-amount-sub" id="simSubLabel">Elegí noches y viajeros</div>
+                </div>
+                <div class="sim-detail-row">
+                    <div class="sim-detail-item">
+                        <div class="sim-detail-val" id="cuotaMensual">—</div>
+                        <div class="sim-detail-lbl">Por persona / mes</div>
                     </div>
-                    <div class="sim-result-box highlight" style="flex:1;">
-                        <span class="sim-val" id="cuotaMensual">—</span>
-                        <span class="sim-label">Por persona / mes</span>
-                    </div>
-                    <div class="sim-result-box" style="flex:1;display:none;">
-                        <span class="sim-val" id="porDia" style="font-size:1.3rem;color:rgba(200,220,255,.8);">—</span>
-                        <span class="sim-label">Por día / persona ☕</span>
+                    <div style="width:1px;background:rgba(100,160,255,.12);"></div>
+                    <div class="sim-detail-item">
+                        <div class="sim-detail-val" id="porDia">—</div>
+                        <div class="sim-detail-lbl">Por día / persona</div>
                     </div>
                 </div>
-                <p class="sim-note" id="simSubLabel" style="color:rgba(150,190,255,.6);font-size:.82rem;text-align:center;">Elegí noches y viajeros</p>
                 <p class="sim-note">Precios en dólares (USD) · Sin costos ocultos</p>
                 <a href="#" onclick="openAgents();return false;" class="btn-hero btn-primary" style="text-align:center;border-radius:14px;display:inline-block;margin-top:12px;">🔵 Comenzar ahora</a>
             </div>
@@ -321,7 +407,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ========== LUAZUL SIMULADOR v2 — Destino preseleccionado · Modelo por noche + menores + grupos ==========
+// ========== LUAZUL DESTINO SIM v3.5 — Glow + menores colapsable + max_ocupación ==========
 const sbClient = supabase.createClient('https://yunvqgaljopirzvjrntc.supabase.co','sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB');
 var _simDestinos=[],_simCfg={menor_0_4_pct:0,menor_5_11_pct:50,menor_12_17_pct:80,grupo_4_5_pct:5,grupo_6_7_pct:8,grupo_8_mas_pct:10};
 var _PRESET_SLUG='cabofrio'; // REPLAZAR CON: arraial / buzios / cabofrio / rio
@@ -354,13 +440,15 @@ function buildSimUI(){
     h+='<select id="nochesSelect" class="web-select" onchange="calcSim()">';
     for(var n=1;n<=30;n++)h+='<option value="'+n+'"'+(n===7?' selected':'')+'>'+n+' noche'+(n>1?'s':'')+'</option>';
     h+='</select>';
-    h+='<select id="adultosSelect" class="web-select" onchange="calcSim()">';
+    h+='<select id="adultosSelect" class="web-select" onchange="onDestinoOrAdultoChanged()">';
     for(var a=1;a<=10;a++)h+='<option value="'+a+'"'+(a===2?' selected':'')+'>'+a+' adulto'+(a>1?'s':'')+'</option>';
     h+='</select>';
+    h+='<div id="simMaxOcupMsg" style="grid-column:1/-1;font-size:.72rem;color:#fbbf24;margin-top:2px;"></div>';
     h+='<select id="cuotasSelect" class="web-select" onchange="calcSim()">';
     h+='<option value="6">6 cuotas</option><option value="10" selected>10 cuotas</option><option value="12">12 cuotas</option><option value="18">18 cuotas</option></select>';
-    h+='<div style="margin-top:10px;padding:14px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:14px;">';
-    h+='<div style="font-size:.7rem;font-weight:700;color:#fbbf24;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">👶 Menores de edad</div>';
+    // Menores toggle (colapsable)
+    h+='<div class="menores-toggle" id="menoresToggle" onclick="toggleMenores()">+ Agregar menores de edad</div>';
+    h+='<div class="menores-content" id="menoresContent">';
     h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">';
     h+='<div><div style="font-size:.62rem;color:rgba(200,220,255,.55);margin-bottom:4px;">Bebés 0-4 ('+_simCfg.menor_0_4_pct+'%)</div><select id="m1Sel" class="web-select" onchange="calcSim()" style="padding:8px 10px;font-size:.85rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>';
     h+='<div><div style="font-size:.62rem;color:rgba(200,220,255,.55);margin-bottom:4px;">Niños 5-11 ('+_simCfg.menor_5_11_pct+'%)</div><select id="m2Sel" class="web-select" onchange="calcSim()" style="padding:8px 10px;font-size:.85rem;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>';
@@ -371,17 +459,48 @@ function buildSimUI(){
 
 function preseleccionar(){
     var dSel=document.getElementById('destinoSelect');if(!dSel)return;
+    var found=_simDestinos.find(function(d){return d.slug===_PRESET_SLUG;});
+    if(!found)return;
     for(var i=0;i<dSel.options.length;i++){
         var o=dSel.options[i];
-        var found=_simDestinos.find(function(d){return d.slug===_PRESET_SLUG;});
-        if(found&&o.value==found.id){dSel.value=found.id;dSel.dispatchEvent(new Event('change'));dSel.style.display='none';return;}
+        if(o.value==found.id){dSel.value=found.id;onDestinoOrAdultoChanged();dSel.style.display='none';return;}
     }
+}
+
+function onDestinoOrAdultoChanged(){
+    var dSel=document.getElementById('destinoSelect'),opt=dSel?dSel.options[dSel.selectedIndex]:null;
+    var selAdultos=document.getElementById('adultosSelect');
+    var msgEl=document.getElementById('simMaxOcupMsg');
+    if(!opt||!opt.value||!selAdultos){if(msgEl)msgEl.innerHTML='';calcSim();return;}
+    var maxOc=parseInt(opt.dataset.max)||0;
+    if(maxOc>0){
+        var currentVal=parseInt(selAdultos.value)||2;
+        var html='';
+        for(var a=1;a<=maxOc;a++)html+='<option value="'+a+'"'+(a===Math.min(currentVal,maxOc)?' selected':'')+'>'+a+' adulto'+(a>1?'s':'')+'</option>';
+        selAdultos.innerHTML=html;
+        ['m1Sel','m2Sel','m3Sel'].forEach(function(id){
+            var el=document.getElementById(id);if(!el)return;
+            var cur=parseInt(el.value)||0;var h2='';
+            for(var m=0;m<=Math.min(maxOc,3);m++)h2+='<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>';
+            el.innerHTML=h2;
+        });
+        if(msgEl)msgEl.innerHTML='<span style="color:#34d399;">Máximo '+maxOc+' personas para este destino</span>';
+    }else{if(msgEl)msgEl.innerHTML='';}
+    calcSim();
+}
+
+function toggleMenores(){
+    var t=document.getElementById('menoresToggle'),c=document.getElementById('menoresContent');
+    if(!t||!c)return;
+    var isOpen=c.classList.contains('open');
+    if(isOpen){c.classList.remove('open');t.classList.remove('open');t.textContent='+ Agregar menores de edad';}
+    else{c.classList.add('open');t.classList.add('open');t.textContent='- Ocultar menores de edad';}
 }
 
 function calcSim(){
     var dSel=document.getElementById('destinoSelect'),opt=dSel?dSel.options[dSel.selectedIndex]:null;
-    var elT=document.getElementById('simTotal'),elC=document.getElementById('cuotaMensual'),elD=document.getElementById('porDia'),elS=document.getElementById('simSubLabel');
-    if(!opt||!opt.value){elT.textContent='—';elC.textContent='—';elD.textContent='—';return;}
+    var elP=document.getElementById('cuotaPaquete'),elC=document.getElementById('cuotaMensual'),elD=document.getElementById('porDia'),elS=document.getElementById('simSubLabel');
+    if(!opt||!opt.value){elP.textContent='—';elC.textContent='—';elD.textContent='—';elS.textContent='Elegí noches y viajeros';return;}
     var pan=parseFloat(opt.dataset.precio)||0,noches=parseInt(document.getElementById('nochesSelect').value)||7,adultos=parseInt(document.getElementById('adultosSelect').value)||1;
     var m1=parseInt((document.getElementById('m1Sel')||{}).value)||0,m2=parseInt((document.getElementById('m2Sel')||{}).value)||0,m3=parseInt((document.getElementById('m3Sel')||{}).value)||0;
     var cuotas=parseInt(document.getElementById('cuotasSelect').value)||10;
@@ -390,7 +509,7 @@ function calcSim(){
     var mFinal=0;mFinal+=pan*noches*m1*(_simCfg.menor_0_4_pct||0)/100;mFinal+=pan*noches*m2*(_simCfg.menor_5_11_pct||0)/100;mFinal+=pan*noches*m3*(_simCfg.menor_12_17_pct||0)/100;mFinal=Math.round(mFinal);
     var total=aFinal+mFinal,totPers=adultos+m1+m2+m3,cuotaTot=Math.round(total/cuotas*100)/100;
     var cuotaPers=totPers>0?Math.round(cuotaTot/totPers*100)/100:0,porDia=totPers>0?(cuotaPers/30).toFixed(2):'0.00';
-    elT.textContent='USD '+cuotaPers.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    elP.textContent='USD '+cuotaTot.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
     elC.textContent='USD '+cuotaPers.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
     elD.textContent='USD '+porDia;
     var lbl=adultos+' adulto'+(adultos>1?'s':'')+' · '+noches+' noche'+(noches>1?'s':'')+' · '+cuotas+' cuotas';
