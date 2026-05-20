@@ -27,76 +27,6 @@
 <style>
 html{color-scheme:dark;}
 
-/* ── CUOTA GLOW CARD ── */
-.cuota-glow-card{
-  position:relative;
-  background:linear-gradient(135deg,rgba(11,61,145,.45),rgba(5,30,90,.6));
-  border:1.5px solid rgba(126,184,255,.3);
-  border-radius:24px;
-  padding:40px 32px;
-  text-align:center;
-  overflow:hidden;
-  transition:border-color .4s,box-shadow .4s;
-}
-.cuota-glow-card::before{
-  content:'';
-  position:absolute;inset:-2px;
-  border-radius:26px;
-  background:conic-gradient(from 0deg,transparent 0%,rgba(126,184,255,.15) 25%,transparent 50%,rgba(56,189,248,.12) 75%,transparent 100%);
-  animation:glowRotate 6s linear infinite;
-  z-index:0;
-}
-.cuota-glow-card::after{
-  content:'';
-  position:absolute;inset:1.5px;
-  border-radius:23px;
-  background:linear-gradient(135deg,rgba(5,18,55,.97),rgba(10,30,80,.97));
-  z-index:1;
-}
-.cuota-glow-card>*{position:relative;z-index:2;}
-@keyframes glowRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.cuota-glow-card:hover{
-  border-color:rgba(126,184,255,.55);
-  box-shadow:0 0 40px rgba(126,184,255,.15),0 0 80px rgba(56,189,248,.08);
-}
-.cuota-hero-amount{
-  font-size:3rem;
-  font-weight:900;
-  color:#fff;
-  text-shadow:0 0 30px rgba(126,184,255,.5),0 0 60px rgba(56,189,248,.25);
- line-height:1.1;
- margin:12px 0 8px;
- animation:amountPulse 3s ease-in-out infinite;
-}
-@keyframes amountPulse{
-  0%,100%{text-shadow:0 0 30px rgba(126,184,255,.5),0 0 60px rgba(56,189,248,.25)}
-  50%{text-shadow:0 0 45px rgba(126,184,255,.7),0 0 90px rgba(56,189,248,.35)}
-}
-.cuota-hero-label{
-  font-size:.82rem;
-  font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:rgba(126,184,255,.7);
-}
-.cuota-hero-sub{
-  font-size:.9rem;
-  color:rgba(200,220,255,.65);
-  margin-top:8px;
-}
-.cuota-hero-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  margin-top:18px;
-  padding:6px 16px;
-  background:rgba(16,185,129,.1);
-  border:1px solid rgba(16,185,129,.25);
-  border-radius:30px;
-  font-size:.72rem;
-  font-weight:700;
-  color:#34d399;
-  letter-spacing:.5px;
-}
-
 /* ── DESTINATION CARDS ── */
 .dest-grid {
   display:grid;
@@ -170,6 +100,12 @@ html{color-scheme:dark;}
 @media(max-width:600px){ .dest-grid { grid-template-columns:1fr; }
   .dest-card { aspect-ratio:16/9; } }
 
+
+/* ── GLOW ORBS ANIMATION ── */
+.glow-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.25;z-index:1;pointer-events:none;animation:orbFloat 8s ease-in-out infinite;}
+.glow-orb-1{width:300px;height:300px;background:radial-gradient(circle,rgba(100,180,255,.6),transparent 70%);top:-50px;right:-80px;animation-delay:0s;}
+.glow-orb-2{width:250px;height:250px;background:radial-gradient(circle,rgba(60,130,246,.5),transparent 70%);bottom:-40px;left:-60px;animation-delay:4s;}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1);}25%{transform:translate(20px,-15px) scale(1.1);}50%{transform:translate(-10px,20px) scale(.95);}75%{transform:translate(15px,10px) scale(1.05);}}
 
 /* Agent selector modal */
 .agent-overlay {
@@ -497,32 +433,21 @@ html{color-scheme:dark;}
         <a href="tours.html" class="view-all-btn">🌟 Ver todos los tours →</a>
     </section>
 
-    <!-- DESTINOS — CUOTA MÁS BAJA -->
-    <section class="section">
-        <h2>🏖️ Viajá a Brasil <span>en cuotas accesibles</span></h2>
-        <p class="section-desc">Elegí tu destino y la cantidad de viajeros. Tu cuota mensual se calcula automáticamente.</p>
-        <div style="max-width:520px;margin:32px auto 0;">
-            <div class="cuota-glow-card">
-                <div class="cuota-hero-label">Cuota desde</div>
-                <div class="cuota-hero-amount" id="cuota-hero-index">USD 0</div>
-                <div class="cuota-hero-sub" id="cuota-hero-sub-index">por persona / mes</div>
-                <div class="cuota-hero-badge" id="cuota-hero-badge-index">✨ Cargando la mejor oferta...</div>
+    <!-- BANNER PREMIUM — SECCIÓN ÚNICA -->
+    <section class="section" id="simulador-preview" style="position:relative;overflow:hidden;border-radius:32px;">
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0B2B5E 0%,#041430 50%,#0a1628 100%);z-index:1;"></div>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div style="position:relative;z-index:2;padding:60px 30px;text-align:center;">
+            <div style="font-size:.95rem;font-weight:800;letter-spacing:5px;text-transform:uppercase;color:#7eb8ff;margin-bottom:18px;opacity:.9;">✨ TRANSFORMÁ CUOTAS EN RECUERDOS ✨</div>
+            <h2 style="font-size:1.5rem;font-weight:600;color:rgba(200,220,255,.85);line-height:1.4;margin-bottom:24px;">Tu próximo viaje comienza con menos de lo que imaginás</h2>
+            <div style="display:inline-block;padding:32px 48px;border-radius:24px;background:rgba(11,61,145,.35);border:1px solid rgba(100,180,255,.2);box-shadow:0 0 60px rgba(100,180,255,.12),inset 0 1px 0 rgba(255,255,255,.06);margin-bottom:28px;">
+                <div style="font-size:.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(126,184,255,.7);margin-bottom:10px;">Desde</div>
+                <div id="precioDestacado" style="font-size:3.2rem;font-weight:900;color:#7eb8ff;text-shadow:0 0 40px rgba(126,184,255,.5),0 0 80px rgba(126,184,255,.25);line-height:1;margin-bottom:8px;">USD 0</div>
+                <div style="font-size:1.1rem;color:rgba(200,220,255,.7);font-weight:500;">por persona / mes</div>
             </div>
-        </div>
-        <a href="simulador.html" class="view-all-btn" style="margin-top:32px;display:inline-block;">📊 Simulá tu plan →</a>
-    </section>
-
-    <!-- BANNER SIMULADOR -->
-    <section class="section" id="simulador-preview" style="position:relative; overflow:hidden; border-radius: 32px;">
-        <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #0B2B5E, #041430); z-index:1;"></div>
-        <div style="position:relative; z-index:2; padding: 50px 30px; text-align: center;">
-            <div style="font-size: 1rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: #7eb8ff; margin-bottom: 15px;">✨ TRANSFORMÁ CUOTAS EN RECUERDOS ✨</div>
-            <h2 style="font-size: 2.2rem; font-weight: 900; line-height: 1.2; margin-bottom: 20px;">
-                Tu próximo viaje desde <span style="color: #7eb8ff;" id="precioDestacado">USD 0</span><br>
-                <span style="font-size: 1.2rem;">por persona / mes</span>
-            </h2>
-            <div id="detalleOferta" style="font-size: 1rem; color: rgba(200,220,255,.8); margin-bottom: 30px;">Cargando la mejor oferta...</div>
-            <a href="simulador.html" class="btn-hero btn-primary" style="font-size: 1.2rem; padding: 16px 40px; border-radius: 40px; box-shadow: 0 8px 28px rgba(0,0,0,0.3);">📊 Ver planes disponibles →</a>
+            <div id="detalleOferta" style="max-width:600px;margin:0 auto 32px;font-size:.92rem;color:rgba(200,220,255,.75);line-height:1.7;padding:14px 24px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(100,160,255,.1);">Cargando la mejor oferta...</div>
+            <a href="simulador.html" class="btn-hero btn-primary" style="font-size:1.1rem;padding:16px 44px;border-radius:40px;box-shadow:0 0 30px rgba(11,61,145,.5),0 8px 28px rgba(0,0,0,.3);transition:all .3s ease;" onmouseover="this.style.boxShadow='0 0 50px rgba(100,180,255,.4),0 8px 28px rgba(0,0,0,.3)'" onmouseout="this.style.boxShadow='0 0 30px rgba(11,61,145,.5),0 8px 28px rgba(0,0,0,.3)'">📊 Simulá tu plan →</a>
         </div>
     </section>
 
@@ -647,50 +572,37 @@ function closeMobileNav() {
 </script>
 
 <script>
-// Precios dinámicos para index.html v3.5 — cuota más baja con fallback + glow
+// Precios dinámicos para index.html — modelo por noche + menores + grupos
 (function() {
     var sb = supabase.createClient('https://yunvqgaljopirzvjrntc.supabase.co','sb_publishable_MqB2thv0uzVUAY2v2jh-uQ_ul6a2LzB');
-    // Fallback por si Supabase falla
-    var FALLBACK_CUOTA = 15.00;
-    var FALLBACK_DESTINO = 'Cabo Frío';
-
-    function renderPrices(persDesde, destinoNombre, gB, cuotaPkg) {
-        // Glow card
-        var heroEl = document.getElementById('cuota-hero-index');
-        if(heroEl) heroEl.textContent = 'USD ' + persDesde.toFixed(2);
-        var subEl = document.getElementById('cuota-hero-sub-index');
-        if(subEl) subEl.textContent = 'por persona / mes';
-        var badgeEl = document.getElementById('cuota-hero-badge-index');
-        if(badgeEl) badgeEl.textContent = destinoNombre + ' · 4 adultos · 7 noches · 18 cuotas';
-        // Banner
-        document.getElementById('precioDestacado').innerHTML = 'USD ' + persDesde.toLocaleString('es-AR');
-        document.getElementById('detalleOferta').innerHTML = destinoNombre + ' · 4 adultos · 7 noches · 18 cuotas · <strong>USD ' + cuotaPkg.toLocaleString('es-AR') + '</strong>/mes' + (gB > 0 ? ' · Descuento grupo: -' + gB + '%' : '');
-    }
-
     Promise.all([
         sb.from('catalogo_precios').select('id,nombre_destino,precio_adulto_noche,max_ocupacion').eq('activo',true).order('precio_adulto_noche'),
         sb.from('configuracion_simulador').select('*').eq('id',1).maybeSingle()
     ]).then(function(results) {
         var rD=results[0], rC=results[1];
-        if(rD.error) throw new Error('Supabase: ' + rD.error.message);
+        if(rD.error) throw new Error(rD.error.message||'Error Supabase');
         var destinos=rD.data||[];
-        if(!destinos.length) throw new Error('No hay destinos activos');
+        if(!destinos.length) throw new Error('Sin destinos disponibles');
         var cfg=rC.data||{menor_0_4_pct:0,menor_5_11_pct:50,menor_12_17_pct:80,grupo_4_5_pct:5,grupo_6_7_pct:8,grupo_8_mas_pct:10};
-        // Deduplicar
+        // Deduplicar destinos
         var seen={},unique=[];
         destinos.forEach(function(d){if(!seen[d.nombre_destino]){seen[d.nombre_destino]=true;unique.push(d);}});
-        // Destino más barato
-        var minPrecio=Infinity, minDest=null;
-        unique.forEach(function(d){if(d.precio_adulto_noche<minPrecio){minPrecio=d.precio_adulto_noche;minDest=d;}});
-        // Grupo discount
+        // Banner premium: mejor oferta por persona/mes (destino más barato · 4 adultos · 18 cuotas)
+        var minPrecio=Infinity,destinoMasBarato='';
+        unique.forEach(function(d){if(d.precio_adulto_noche<minPrecio){minPrecio=d.precio_adulto_noche;destinoMasBarato=d.nombre_destino||'';}});
         var gB=0;
         if(4>=8)gB=cfg.grupo_8_mas_pct||0;else if(4>=6)gB=cfg.grupo_6_7_pct||0;else if(4>=4)gB=cfg.grupo_4_5_pct||0;
         var aB=minPrecio*4*7,aDB=Math.round(aB*gB/100),aFB=aB-aDB;
-        var cuotaPkg=Math.round(aFB/18*100)/100,pP=Math.round(cuotaPkg/4*100)/100;
-        renderPrices(pP, minDest.nombre_destino, gB, cuotaPkg);
-    }).catch(function(err) {
-        console.warn('[Luazul Index] Error cargando precios:', err);
-        renderPrices(FALLBACK_CUOTA, FALLBACK_DESTINO, 5, Math.round(FALLBACK_CUOTA*4*100)/100);
+        var cB=Math.round(aFB/18*100)/100,pP=Math.round(cB/4*100)/100;
+        document.getElementById('precioDestacado').textContent='USD '+pP.toLocaleString('es-AR');
+        var detHTML='<span style="color:#34d399;">'+destinoMasBarato+'</span> · 4 adultos · 7 noches · 18 cuotas';
+        if(gB>0)detHTML+=' · <span style="color:#34d399;font-weight:700;">-'+gB+'% descuento grupo</span>';
+        detHTML+='<br><span style="color:#7eb8ff;font-weight:700;">Cuota del paquete: USD '+cB.toLocaleString('es-AR')+'/mes</span>';
+        document.getElementById('detalleOferta').innerHTML=detHTML;
+    }).catch(function(err){
+        console.warn('Supabase no disponible, usando fallback:',err);
+        document.getElementById('precioDestacado').textContent='USD 22,96';
+        document.getElementById('detalleOferta').innerHTML='<span style="color:#34d399;">Cabo Frío</span> · 4 adultos · 7 noches · 18 cuotas · <span style="color:#34d399;font-weight:700;">-5% descuento grupo</span><br><span style="color:#7eb8ff;font-weight:700;">Cuota del paquete: USD 91,83/mes</span>';
     });
 })();
 </script>
