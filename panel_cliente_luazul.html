@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" style="color-scheme:dark;">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
@@ -1815,11 +1815,9 @@ function renderPaquete() {
   document.getElementById('pkgName').textContent = u.paquete || 'Paquete Luazul Smart Travel';
   document.getElementById('pkgDest').textContent = u.destino || 'Destino por confirmar';
 
-  var totalMenores = (parseInt(u.menores_0_4) || 0) + (parseInt(u.menores_5_11) || 0) + (parseInt(u.menores_12_17) || 0);
   var chips = [
-    (u.adultos || '?') + ' adultos',
-    totalMenores > 0 ? totalMenores + ' menores' : null,
     u.noches   ? u.noches + ' noches'  : null,
+    u.personas ? u.personas + ' personas' : null,
     u.estado   ? u.estado.toUpperCase() : 'ACTIVO'
   ].filter(Boolean);
 
@@ -1842,20 +1840,12 @@ function renderPaquete() {
     fechaItem = {label:'📅 Fecha de viaje', value: '🔒 Disponible al 80% · faltan ' + faltanPkg + ' cuota' + (faltanPkg !== 1 ? 's' : '')};
   }
 
-  var pasajerosValue = '';
-  if (u.adultos) {
-    pasajerosValue = u.adultos + ' adultos';
-    if (totalMenores > 0) pasajerosValue += ', ' + totalMenores + ' menores';
-  } else {
-    pasajerosValue = u.personas ? u.personas + ' personas' : '—';
-  }
-
   var infos = [
     {label:'💰 Total del plan', value: u.total_usd ? 'USD ' + u.total_usd : '—'},
     {label:'💳 Cuota mensual',  value: u.monto_cuota ? 'USD ' + u.monto_cuota : '—'},
     fechaItem,
     {label:'🏝️ Destino',       value: u.destino || '—'},
-    {label:'👥 Pasajeros',      value: pasajerosValue},
+    {label:'👥 Pasajeros',      value: u.personas ? u.personas + ' personas' : '—'},
     {label:'🌙 Noches',         value: u.noches || '—'},
   ];
 
@@ -2805,6 +2795,10 @@ function renderContrato() {
   var montoCuota     = u.monto_cuota ? parseFloat(u.monto_cuota).toFixed(2) : '_______';
   var numeroContrato = generarNumeroContrato();
   var fechaFirma     = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'long', year:'numeric' });
+  var pkgDestino     = u.destino  || 'A confirmar';
+  var pkgNoches      = u.noches   || '7';
+  var pkgPersonas    = u.personas || u.paquete || '—';
+  var pkgPaquete     = u.paquete  || '';
 
   container.innerHTML = '<div class="contrato-doc glass" style="max-height:70vh;overflow-y:auto;padding:32px;">'
     + '<div style="text-align:center;margin-bottom:24px;">'
@@ -2819,9 +2813,9 @@ function renderContrato() {
     + '<p>LA EMPRESA garantiza a EL CLIENTE que su actividad se encuentra plenamente autorizada por el Ministerio de Turismo de Brasil, acreditada en el CADASTUR (www.cadasturturismo.gov.br). El presente plan facilita la adquisición programada del paquete turístico en la Costa do Sol (Cabo Frío, Arraial do Cabo, Búzios) y/o Río de Janeiro, asegurando la congelación de los beneficios y tarifas pactadas.</p>'
 
     + '<h3>SEGUNDA: BENEFICIOS QUE DISFRUTARÁ EL CLIENTE</h3>'
-    + '<p>Una vez completado el pago total (100%), LA EMPRESA proveerá:</p>'
+    + '<p>El presente plan corresponde al destino <strong>' + escapeHtml(pkgDestino) + '</strong>, con una estadía de <strong>' + escapeHtml(String(pkgNoches)) + ' noches</strong>, para un total de <strong>' + escapeHtml(String(pkgPersonas)) + ' personas</strong>' + (pkgPaquete ? ' (' + escapeHtml(pkgPaquete) + ')' : '') + '. Una vez completado el pago total (100%), LA EMPRESA proveerá:</p>'
     + '<ul>'
-    +   '<li><strong>Alojamiento:</strong> 7 noches en hotel 4 estrellas frente al mar, con desayuno incluido.</li>'
+    +   '<li><strong>Alojamiento:</strong> ' + escapeHtml(String(pkgNoches)) + ' noches en hotel 4 estrellas frente al mar, con desayuno incluido, para ' + escapeHtml(String(pkgPersonas)) + ' persona' + (parseInt(pkgPersonas) > 1 ? 's' : '') + '.</li>'
     +   '<li><strong>Traslados privados:</strong> Aeropuerto-hotel-aeropuerto, sin compartir con otros pasajeros.</li>'
     +   '<li><strong>Dos tours a elección:</strong> Del catálogo disponible (barco en Arraial, city tour, Búzios, buggy en Cabo Frío, etc.), sujeto a disponibilidad en la fecha confirmada.</li>'
     +   '<li><strong>Asistencia 24/7 en español</strong> por WhatsApp durante la estadía.</li>'
@@ -3129,6 +3123,10 @@ async function guardarFirmaDigital() {
     var montoCuotaContrato = u.monto_cuota ? parseFloat(u.monto_cuota).toFixed(2) : '_______';
     var numeroContrato = generarNumeroContrato();
     var fechaFirmaContrato = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'long', year:'numeric' });
+    var pkgDestContrato  = u.destino  || 'A confirmar';
+    var pkgNochesContrato = u.noches   || '7';
+    var pkgPersonasContrato = u.personas || u.paquete || '—';
+    var pkgPaqContrato   = u.paquete  || '';
 
     var htmlContrato = '<!DOCTYPE html>'
       + '<html><head><meta charset="UTF-8"><title>Contrato LUAZUL</title>'
@@ -3154,9 +3152,9 @@ async function guardarFirmaDigital() {
       +   '<h2>PRIMERA: RESPALDO LEGAL Y CALIDAD DEL SERVICIO</h2>'
       +   '<p>LA EMPRESA garantiza a EL CLIENTE que su actividad se encuentra plenamente autorizada por el Ministerio de Turismo de Brasil, acreditada en el CADASTUR (www.cadasturturismo.gov.br). El presente plan facilita la adquisici\u00F3n programada del paquete tur\u00EDstico en la Costa do Sol (Cabo Fr\u00EDo, Arraial do Cabo, B\u00FAzios) y/o R\u00EDo de Janeiro, asegurando la congelaci\u00F3n de los beneficios y tarifas pactadas.</p>'
       +   '<h2>SEGUNDA: BENEFICIOS QUE DISFRUTAR\u00C1 EL CLIENTE</h2>'
-      +   '<p>Una vez completado el pago total (100%), LA EMPRESA proveer\u00E1:</p>'
+      +   '<p>El presente plan corresponde al destino <strong>' + escapeHtml(pkgDestContrato) + '</strong>, con una estad\u00EDa de <strong>' + escapeHtml(String(pkgNochesContrato)) + ' noches</strong>, para un total de <strong>' + escapeHtml(String(pkgPersonasContrato)) + ' personas</strong>' + (pkgPaqContrato ? ' (' + escapeHtml(pkgPaqContrato) + ')' : '') + '. Una vez completado el pago total (100%), LA EMPRESA proveer\u00E1:</p>'
       +   '<ul>'
-      +     '<li><strong>Alojamiento:</strong> 7 noches en hotel 4 estrellas frente al mar, con desayuno incluido.</li>'
+      +     '<li><strong>Alojamiento:</strong> ' + escapeHtml(String(pkgNochesContrato)) + ' noches en hotel 4 estrellas frente al mar, con desayuno incluido, para ' + escapeHtml(String(pkgPersonasContrato)) + ' persona' + (parseInt(pkgPersonasContrato) > 1 ? 's' : '') + '.</li>'
       +     '<li><strong>Traslados privados:</strong> Aeropuerto-hotel-aeropuerto, sin compartir con otros pasajeros.</li>'
       +     '<li><strong>Dos tours a elecci\u00F3n:</strong> Del cat\u00E1logo disponible (barco en Arraial, city tour, B\u00FAzios, buggy en Cabo Fr\u00EDo, etc.), sujeto a disponibilidad en la fecha confirmada.</li>'
       +     '<li><strong>Asistencia 24/7 en espa\u00F1ol</strong> por WhatsApp durante la estad\u00EDa.</li>'
