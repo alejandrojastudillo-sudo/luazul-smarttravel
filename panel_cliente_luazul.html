@@ -1393,6 +1393,75 @@ var DATA_VERSION = 'v3_prod_clean';
   }
 })();
 
+/* ── PWA: botón Atrás con navegación de páginas + modales ──────────────────
+ *  1) Atrás cierra modal/sidebar si está abierto
+ *  2) Atrás vuelve a la página anterior visitada
+ *  3) En la primera página: doble atrás cierra la app
+ * ───────────────────────────────────────────────────────────────────────── */
+var _navStack = ['dashboard'];
+var _currentTab = 'dashboard';
+var _pwaBackNavigating = false;
+
+(function setupPwaBack() {
+  var lastBackTime = 0;
+  history.pushState({ pwa: 'app' }, '');
+
+  window.addEventListener('popstate', function (e) {
+    var appEl = document.getElementById('app');
+    var appVisible = appEl && appEl.style.display !== 'none';
+
+    if (!appVisible) {
+      var now = Date.now();
+      if (now - lastBackTime < 2000) { history.go(-1); }
+      else {
+        lastBackTime = now;
+        showToast('Presioná Atrás de nuevo para salir');
+        history.pushState({ pwa: 'app' }, '');
+      }
+      return;
+    }
+
+    /* 1) Cerrar sidebar si está abierto */
+    var sidebar = document.getElementById('sidebar');
+    if (sidebar && sidebar.classList.contains('open')) {
+      closeSidebar();
+      history.pushState({ pwa: 'app' }, '');
+      return;
+    }
+
+    /* 2) Cerrar modales si están abiertos */
+    var modalPago = document.getElementById('modalPago');
+    if (modalPago) { modalPago.remove(); history.pushState({ pwa: 'app' }, ''); return; }
+    var firmaModal = document.getElementById('firmaModal');
+    if (firmaModal && firmaModal.style.display === 'flex') { cerrarFirmaDigital(); history.pushState({ pwa: 'app' }, ''); return; }
+    var fechaModal = document.getElementById('modalFechaViaje');
+    if (fechaModal && fechaModal.style.display === 'flex') { fechaModal.style.display = 'none'; history.pushState({ pwa: 'app' }, ''); return; }
+    var setupModal = document.getElementById('setupModal');
+    if (setupModal && setupModal.style.display !== 'none') { closeSetup(); history.pushState({ pwa: 'app' }, ''); return; }
+
+    /* 3) Volver a la página anterior */
+    if (_navStack.length > 1) {
+      _navStack.pop();
+      var prevPage = _navStack[_navStack.length - 1];
+      _currentTab = prevPage;
+      _pwaBackNavigating = true;
+      goPage(prevPage);
+      _pwaBackNavigating = false;
+      history.pushState({ pwa: 'app' }, '');
+      return;
+    }
+
+    /* 4) Primera página → doble atrás sale */
+    var now2 = Date.now();
+    if (now2 - lastBackTime < 2000) { doLogout(); }
+    else {
+      lastBackTime = now2;
+      showToast('Presioná Atrás de nuevo para salir');
+      history.pushState({ pwa: 'app' }, '');
+    }
+  });
+})();
+
 // ══════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════
@@ -1658,6 +1727,12 @@ function closeSetup() {
 
 // ── PAGE NAVIGATION ──
 function goPage(name) {
+  /* ── PWA: registrar navegación en historial ── */
+  if (!_pwaBackNavigating && name !== _currentTab) {
+    _navStack.push(name);
+    _currentTab = name;
+    history.pushState({ pwa: 'app' }, '');
+  }
   // hide all pages
   var pages = document.querySelectorAll('.page');
   pages.forEach(function(p){ p.classList.remove('active'); });
