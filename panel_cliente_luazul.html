@@ -1100,8 +1100,10 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
     <!-- ── MIS TOURS ── -->
     <div class="page" id="page-mis_tours">
       <button class="page-back-btn" onclick="goPage('dashboard')">← Volver al Dashboard</button>
-      <div class="glass" style="padding:28px;max-width:680px;">
-        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🏆 Mis Tours</div>
+
+      <!-- TOURS GANADOS (Premio por referidos) -->
+      <div class="glass" style="padding:28px;max-width:680px;margin-bottom:20px;">
+        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🏆 Mis Tours — Premios</div>
         <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Tours ganados por tu programa de referidos. Elegí tu aventura 🏖️</p>
 
         <!-- Tours ganados / pendientes -->
@@ -1119,7 +1121,22 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         <!-- Sin tours mensaje -->
         <div id="toursEmptyMsg" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
           <div style="font-size:2.5rem;margin-bottom:12px;opacity:.5;">🏝️</div>
-          <p>Aún no tenés tours disponibles. Referí 3 amigos y ganá tu primer tour gratis.</p>
+          <p>Aún no tenés tours de premio. Referí 3 amigos y ganá tu primer tour gratis.</p>
+        </div>
+      </div>
+
+      <!-- COMPRAR TOURS (Pago directo) -->
+      <div class="glass" style="padding:28px;max-width:680px;">
+        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🛒 Comprar Tours</div>
+        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">No necesitás esperar los referidos. Elegí un tour y coordiná tu pago directamente por WhatsApp 💬</p>
+
+        <!-- Tours disponibles para compra -->
+        <div id="toursCompraList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;"></div>
+
+        <!-- Sin tours para compra -->
+        <div id="toursCompraEmpty" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
+          <div style="font-size:2.5rem;margin-bottom:12px;opacity:.5;">🗺️</div>
+          <p>No hay tours disponibles para compra en este momento.</p>
         </div>
       </div>
     </div>
@@ -1787,7 +1804,7 @@ function goPage(name) {
   }
   if (name === 'contrato') renderContrato();
   if (name === 'voucher') renderVoucher();
-  if (name === 'mis_tours') renderMisTours();
+  if (name === 'mis_tours') { renderMisTours(); renderToursCompra(); }
 }
 
 // ── SIDEBAR MOBILE ──
@@ -3239,6 +3256,96 @@ async function elegirTour(tourId, tourNombre) {
   } catch(e) {
     console.error('[ElegirTour] Error:', e);
     alert('Error al elegir tour: ' + e.message);
+  }
+}
+
+// ── COMPRAR TOURS (Pago directo) ──────────────────────────────────
+async function renderToursCompra() {
+  var listaEl  = document.getElementById('toursCompraList');
+  var emptyEl  = document.getElementById('toursCompraEmpty');
+  if (!listaEl) return;
+  try {
+    var { data: catalogo, error } = await sbClient
+      .from('tours_catalogo')
+      .select('*')
+      .eq('activo', true)
+      .not('precio_usd', 'is', null)
+      .gt('precio_usd', 0)
+      .order('orden', { ascending: true });
+
+    var tours = catalogo || [];
+    if (tours.length === 0) {
+      listaEl.innerHTML = '';
+      if (emptyEl) emptyEl.style.display = 'block';
+      return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+
+    listaEl.innerHTML = tours.map(function(t) {
+      var precio = parseFloat(t.precio_usd).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      return '<div style="display:flex;align-items:center;gap:14px;padding:18px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;transition:all .2s;" '
+        + 'onmouseover="this.style.borderColor=\'rgba(59,130,246,.4)\';this.style.background=\'rgba(59,130,246,.05)\'" '
+        + 'onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'rgba(255,255,255,.03)\'">'
+        + '<div style="font-size:2.2rem;flex-shrink:0;">' + (t.icono || '🏝️') + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(t.nombre) + '</div>'
+        + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:3px;">' + escapeHtml(t.destino) + ' · ' + escapeHtml(t.duracion || '') + ' · ' + escapeHtml(t.transporte || '') + '</div>'
+        + (t.descripcion ? '<div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;line-height:1.5;opacity:.8;">' + escapeHtml(t.descripcion) + '</div>' : '')
+        + '</div>'
+        + '<div style="text-align:right;flex-shrink:0;">'
+        + '<div style="font-family:Syne,sans-serif;font-size:1.15rem;font-weight:900;color:#fbbf24;">USD ' + precio + '</div>'
+        + '<button onclick="comprarTour(\'' + t.id + '\',\'' + escapeHtml(t.nombre).replace(/'/g, "\\\\'") + '\',' + t.precio_usd + ')" style="margin-top:6px;padding:7px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,#2563eb,#3b82f6);color:white;font-weight:700;font-size:.78rem;cursor:pointer;white-space:nowrap;">Comprar</button>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+  } catch(e) {
+    console.error('[ToursCompra] Error:', e);
+    listaEl.innerHTML = '<div style="padding:20px;color:#fca5a5;font-size:.85rem;">Error al cargar tours: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+async function comprarTour(tourId, tourNombre, tourPrecio) {
+  if (!currentUser || !sbClient) return;
+  var nombre = (currentUser.nombre || currentUser.full_name || 'Cliente');
+  var precioStr = parseFloat(tourPrecio).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  // Confirmar la compra
+  var ok = confirm(
+    '¿Querés comprar el tour "' + tourNombre + '" por USD ' + precioStr + '?\n\n' +
+    'Se generará la solicitud y serás redirigido a WhatsApp para coordinar el pago.'
+  );
+  if (!ok) return;
+
+  try {
+    // 1) Crear el tour_ganado con origen='compra' y precio_pagado > 0
+    var { data, error } = await sbClient.rpc('crear_tour_ganado', {
+      p_cliente_id: currentUser.id,
+      p_tour_id: tourId,
+      p_origen: 'compra',
+      p_precio_pagado: tourPrecio
+    });
+    if (error) throw error;
+    console.log('[ComprarTour] Tour_ganado creado:', data);
+
+    // 2) Redirigir a WhatsApp con mensaje de solicitud de compra
+    var waMsg = encodeURIComponent(
+      '¡Hola Luazul! 👋\n\n' +
+      'Soy *' + nombre + '* y quiero comprar el tour:\n\n' +
+      '🏖️ *' + tourNombre + '*\n' +
+      '💰 Precio: USD ' + precioStr + '\n\n' +
+      'Por favor, confirmame los datos para realizar el pago. ¡Gracias!'
+    );
+    window.open('https://wa.me/5492974726449?text=' + waMsg, '_blank');
+
+    // 3) Refrescar ambas vistas
+    await renderMisTours();
+    await renderToursCompra();
+
+    // 4) Toast de confirmación
+    showToast('✅ Solicitud de compra enviada. ¡Coordiná el pago por WhatsApp!');
+  } catch(e) {
+    console.error('[ComprarTour] Error:', e);
+    alert('Error al procesar la compra: ' + e.message);
   }
 }
 
