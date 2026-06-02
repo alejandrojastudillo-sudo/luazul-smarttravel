@@ -1757,6 +1757,9 @@ async function showApp() {
   window._cuotasRefreshTimer = setInterval(function(){
     if (currentUser) { renderCuotas(); _checkMoraCuota1(); }
   }, 30000);
+
+  // ── Auto-refresh de tours VIP cada 20s para detectar aprobación/rechazo del CEO ──
+  startVipTourPolling();
 }
 
 // ── SOLICITAR EXTENSIÓN (WhatsApp) ──
@@ -3120,6 +3123,49 @@ async function renderReferidos() {
       }).join('');
     }
   }
+}
+
+// ── VIP TOURS AUTO-REFRESH ────────────────────────────────────────
+var _lastVipStates = {}; // cache: tgId -> estado
+var _vipRefreshInterval = null;
+
+function startVipTourPolling() {
+  if (_vipRefreshInterval) return;
+  _vipRefreshInterval = setInterval(function() {
+    if (!currentUser || !sbClient) return;
+    sbClient.from('tours_ganados')
+      .select('id, estado')
+      .eq('cliente_id', currentUser.id)
+      .eq('origen', 'vip')
+      .then(function(res) {
+        if (res.error || !res.data) return;
+        var changed = false;
+        for (var i = 0; i < res.data.length; i++) {
+          var tg = res.data[i];
+          if (_lastVipStates[tg.id] && _lastVipStates[tg.id] !== tg.estado) {
+            changed = true;
+            break;
+          }
+        }
+        // Actualizar cache
+        _lastVipStates = {};
+        for (var j = 0; j < res.data.length; j++) {
+          _lastVipStates[res.data[j].id] = res.data[j].estado;
+        }
+        if (changed) {
+          renderMisTours();
+          // Mostrar toast si hay tours aprobados o rechazados
+          for (var k = 0; k < res.data.length; k++) {
+            var t = res.data[k];
+            if (_lastVipStates[t.id] === 'aprobado') {
+              showCompToast('✅ ¡Tu pago del tour VIP fue aprobado!', 'ok');
+            } else if (_lastVipStates[t.id] === 'rechazado') {
+              showCompToast('❌ Tu comprobante fue rechazado. Por favor reenviá el comprobante.', 'warn');
+            }
+          }
+        }
+      });
+  }, 20000); // cada 20 segundos
 }
 
 // ── MIS TOURS ──────────────────────────────────────────────────────
