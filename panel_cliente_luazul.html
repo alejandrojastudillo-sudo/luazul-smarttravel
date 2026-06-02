@@ -3270,7 +3270,7 @@ function tourEstadoBadge(estado) {
   var badges = {
     'asignado':       { label: '✅ Asignado',              bg: 'rgba(16,185,129,.1)',  color: '#6ee7b7',  border: 'rgba(16,185,129,.2)' },
     'pendiente_pago': { label: '💰 Pendiente de Pago',      bg: 'rgba(251,191,36,.1)',  color: '#fbbf24',  border: 'rgba(251,191,36,.2)' },
-    'pago_subido':    { label: '⏳ Revisión en Curso',      bg: 'rgba(59,130,246,.1)',   color: '#93c5fd',  border: 'rgba(59,130,246,.2)' },
+    'pago_subido':    { label: '📎 Comprobante Enviado',     bg: 'rgba(59,130,246,.1)',   color: '#93c5fd',  border: 'rgba(59,130,246,.2)' },
     'aprobado':       { label: '✅ Aprobado',              bg: 'rgba(16,185,129,.1)',  color: '#6ee7b7',  border: 'rgba(16,185,129,.2)' },
     'rechazado':      { label: '❌ Rechazado',              bg: 'rgba(239,68,68,.1)',   color: '#fca5a5',  border: 'rgba(239,68,68,.2)' },
     'completado':     { label: '🎉 Completado',            bg: 'rgba(168,85,247,.1)',  color: '#c4b5fd',  border: 'rgba(168,85,247,.2)' },
@@ -3331,7 +3331,7 @@ function buildTourCardVip(t) {
   } else if (t.estado === 'pago_subido' && compUrl) {
     actionHtml = '<div style="margin-top:10px;">'
       + '<div style="padding:10px 14px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
-      + '<span style="font-size:.82rem;color:#93c5fd;">⏳ Comprobante subido — esperando aprobación</span>'
+      + '<span style="font-size:.82rem;color:#93c5fd;">📎 Comprobante enviado — pendiente de aprobación por Luazul</span>'
       + '<button onclick="verTourComprobante(\'' + compUrl.replace(/'/g, "\\\\'") + '\',\'' + escapeHtml(nombre).replace(/'/g, "\\\\'") + '\')" style="padding:5px 12px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fcd34d;border-radius:8px;font-size:.72rem;cursor:pointer;">📄 Ver comprobante</button>'
       + '</div></div>';
   } else if (t.estado === 'rechazado') {
