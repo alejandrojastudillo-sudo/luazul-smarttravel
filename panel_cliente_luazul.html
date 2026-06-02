@@ -861,6 +861,10 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
         <span class="icon">🎁</span> Mis Referidos
         <span class="nav-badge" id="referidosBadge" style="background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.3);">—</span>
       </div>
+      <div class="nav-item" onclick="goPage('mis_tours')">
+        <span class="icon">🏆</span> Mis Tours
+        <span class="nav-badge" id="toursBadge" style="display:none;background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);">0</span>
+      </div>
       <div class="nav-section" style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(100,160,255,.1);">Comunidad</div>
       <div class="nav-item" onclick="window.open('comunidad.html','_blank')">
         <span class="icon">🌊</span> Comunidad
@@ -1089,6 +1093,33 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 
         <div class="contrato-doc glass" id="contratoDoc">
           <!-- filled by renderContrato() -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MIS TOURS ── -->
+    <div class="page" id="page-mis_tours">
+      <button class="page-back-btn" onclick="goPage('dashboard')">← Volver al Dashboard</button>
+      <div class="glass" style="padding:28px;max-width:680px;">
+        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🏆 Mis Tours</div>
+        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Tours ganados por tu programa de referidos. Elegí tu aventura 🏖️</p>
+
+        <!-- Tours ganados / pendientes -->
+        <div id="toursGanadosList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;"></div>
+
+        <!-- Selector de tours (solo si tiene tours disponibles para elegir) -->
+        <div id="tourSelectorWrap" style="display:none;">
+          <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+            <div style="font-weight:700;color:#6ee7b7;font-size:.9rem;margin-bottom:4px;">🎉 Tenés un tour disponible para elegir</div>
+            <div style="font-size:.82rem;color:var(--text-muted);">Seleccioná el tour que más te guste del catálogo.</div>
+          </div>
+          <div id="tourCatalogoCliente" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+
+        <!-- Sin tours mensaje -->
+        <div id="toursEmptyMsg" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
+          <div style="font-size:2.5rem;margin-bottom:12px;opacity:.5;">🏝️</div>
+          <p>Aún no tenés tours disponibles. Referí 3 amigos y ganá tu primer tour gratis.</p>
         </div>
       </div>
     </div>
@@ -1743,7 +1774,7 @@ function goPage(name) {
   var navItems = document.querySelectorAll('.nav-item');
   navItems.forEach(function(n){ n.classList.remove('active'); });
   var titles = { dashboard:'Dashboard', paquete:'Mi Paquete', cuotas:'Mis Cuotas',
-    perfil:'Mi Perfil', voucher:'Voucher', contrato:'Contrato', solicitud:'Solicitar Extensión', referidos:'Mis Referidos', comunidad:'Comunidad Luazul Smart Travel' };
+    perfil:'Mi Perfil', voucher:'Voucher', contrato:'Contrato', solicitud:'Solicitar Extensión', referidos:'Mis Referidos', mis_tours:'Mis Tours', comunidad:'Comunidad Luazul Smart Travel' };
   var titleEl = document.getElementById('pageTitle');
   if (titleEl) titleEl.textContent = titles[name] || name;
   // Cerrar sidebar en mobile al navegar
@@ -1756,6 +1787,7 @@ function goPage(name) {
   }
   if (name === 'contrato') renderContrato();
   if (name === 'voucher') renderVoucher();
+  if (name === 'mis_tours') renderMisTours();
 }
 
 // ── SIDEBAR MOBILE ──
@@ -3057,6 +3089,156 @@ async function renderReferidos() {
           + '</div>';
       }).join('');
     }
+  }
+}
+
+// ── MIS TOURS ──────────────────────────────────────────────────────
+async function renderMisTours() {
+  if (!currentUser || !sbClient) return;
+  var ganadosEl = document.getElementById('toursGanadosList');
+  var selectorEl = document.getElementById('tourSelectorWrap');
+  var catalogoEl = document.getElementById('tourCatalogoCliente');
+  var emptyEl = document.getElementById('toursEmptyMsg');
+  var badge = document.getElementById('toursBadge');
+
+  if (ganadosEl) ganadosEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Cargando tours...</div>';
+
+  try {
+    // 1) Obtener referidos confirmados del cliente
+    var { data: refs, error: refErr } = await sbClient
+      .from('referidos')
+      .select('*')
+      .eq('cliente_referidor_id', currentUser.id);
+
+    var confirmados = (refs || []).filter(function(r) {
+      return r.estado === 'confirmado' || r.estado === 'activo';
+    });
+    var toursDisponibles = Math.floor(confirmados.length / 3);
+
+    // 2) Obtener tours ganados del cliente
+    var { data: ganados, error: ganErr } = await sbClient
+      .from('tours_ganados')
+      .select('*, tours_catalogo(nombre, destino, descripcion, duracion, transporte, icono, activo)')
+      .eq('cliente_id', currentUser.id);
+
+    var toursGan = ganados || [];
+    var pendientes = toursGan.filter(function(t) { return t.estado === 'pendiente' || t.estado === 'elegido'; });
+    var confirmadosCeo = toursGan.filter(function(t) { return t.estado === 'confirmado_ceo' || t.estado === 'completado'; });
+
+    // 3) Calcular tours que puede elegir (disponibles - ya elegidos)
+    var yaElegidos = toursGan.length;
+    var puedeElegir = toursDisponibles - yaElegidos;
+
+    // 4) Actualizar badge
+    if (badge) {
+      if (toursDisponibles > 0) {
+        badge.style.display = 'block';
+        badge.textContent = toursDisponibles;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // 5) Renderizar tours ganados
+    if (ganadosEl) {
+      if (toursGan.length > 0) {
+        var h = '';
+        // Tours confirmados/completados
+        confirmadosCeo.forEach(function(t) {
+          var nombre = (t.tours_catalogo || {}).nombre || 'Tour';
+          var icono = (t.tours_catalogo || {}).icono || '🏝️';
+          var destino = (t.tours_catalogo || {}).destino || '';
+          var estadoLabel = t.estado === 'completado' ? '✅ Completado' : '🕐 Confirmado — pendiente de fecha';
+          var estadoColor = t.estado === 'completado' ? '#6ee7b7' : '#fbbf24';
+          h += '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:14px;">'
+            + '<div style="font-size:2rem;">' + icono + '</div>'
+            + '<div style="flex:1;">'
+            + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(nombre) + '</div>'
+            + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:2px;">' + escapeHtml(destino) + (t.fecha_tour ? ' · ' + t.fecha_tour : '') + '</div>'
+            + '</div>'
+            + '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(16,185,129,.1);color:' + estadoColor + ';">' + estadoLabel + '</span>'
+            + '</div>';
+        });
+        // Tours pendientes/elegidos
+        pendientes.forEach(function(t) {
+          var nombre = (t.tours_catalogo || {}).nombre || 'Tour por elegir';
+          var icono = (t.tours_catalogo || {}).icono || '📍';
+          var destino = (t.tours_catalogo || {}).destino || '';
+          h += '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:14px;">'
+            + '<div style="font-size:2rem;">' + icono + '</div>'
+            + '<div style="flex:1;">'
+            + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(nombre) + '</div>'
+            + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:2px;">' + escapeHtml(destino) + '</div>'
+            + '</div>'
+            + '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(251,191,36,.1);color:#fbbf24;">⏳ Pendiente</span>'
+            + '</div>';
+        });
+        ganadosEl.innerHTML = h;
+      } else {
+        ganadosEl.innerHTML = '';
+      }
+    }
+
+    // 6) Mostrar selector si puede elegir tours
+    if (puedeElegir > 0 && selectorEl && catalogoEl) {
+      selectorEl.style.display = 'block';
+      // Cargar catálogo de tours activos
+      var { data: catalogo, error: catErr } = await sbClient
+        .from('tours_catalogo')
+        .select('*')
+        .eq('activo', true)
+        .order('orden', { ascending: true });
+
+      var tours = catalogo || [];
+      if (tours.length > 0) {
+        catalogoEl.innerHTML = tours.map(function(t) {
+          return '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all .2s;" '
+            + 'onmouseover="this.style.borderColor=\'rgba(16,185,129,.4)\';this.style.background=\'rgba(16,185,129,.06)\'" '
+            + 'onmouseout="this.style.borderColor=\'rgba(100,160,255,.18)\';this.style.background=\'rgba(255,255,255,.03)\'" '
+            + 'onclick="elegirTour(\'' + t.id + '\',\'' + escapeHtml(t.nombre).replace(/'/g, "\\\\'") + '\')">'
+            + '<div style="font-size:2rem;">' + (t.icono || '🏝️') + '</div>'
+            + '<div style="flex:1;">'
+            + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(t.nombre) + '</div>'
+            + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:2px;">' + escapeHtml(t.destino) + ' · ' + escapeHtml(t.duracion || '') + ' · ' + escapeHtml(t.transporte || '') + '</div>'
+            + (t.descripcion ? '<div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;line-height:1.5;">' + escapeHtml(t.descripcion) + '</div>' : '')
+            + '</div>'
+            + '<div style="padding:8px 16px;background:linear-gradient(135deg,#059669,#10b981);border:none;color:white;border-radius:10px;font-weight:700;font-size:.78rem;white-space:nowrap;">Elegir</div>'
+            + '</div>';
+        }).join('');
+      } else {
+        catalogoEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:.85rem;">No hay tours disponibles en el catálogo.</div>';
+      }
+    } else if (selectorEl) {
+      selectorEl.style.display = 'none';
+    }
+
+    // 7) Mostrar mensaje vacío si no tiene nada
+    if (emptyEl) {
+      emptyEl.style.display = (toursGan.length === 0 && toursDisponibles === 0) ? 'block' : 'none';
+    }
+
+  } catch(e) {
+    console.error('[MisTours] Error:', e);
+    if (ganadosEl) ganadosEl.innerHTML = '<div style="padding:20px;color:#fca5a5;font-size:.85rem;">Error al cargar tours: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+async function elegirTour(tourId, tourNombre) {
+  if (!currentUser || !sbClient) return;
+  if (!confirm('¿Elegís ' + tourNombre + ' como tu tour premio?')) return;
+  try {
+    var { data, error } = await sbClient.rpc('crear_tour_ganado', {
+      p_cliente_id: currentUser.id,
+      p_tour_id: tourId,
+      p_origen: 'referido',
+      p_precio_pagado: 0
+    });
+    if (error) throw error;
+    // Refrescar la vista
+    await renderMisTours();
+  } catch(e) {
+    console.error('[ElegirTour] Error:', e);
+    alert('Error al elegir tour: ' + e.message);
   }
 }
 
