@@ -1101,14 +1101,33 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
     <div class="page" id="page-mis_tours">
       <button class="page-back-btn" onclick="goPage('dashboard')">← Volver al Dashboard</button>
 
-      <!-- TOURS GANADOS (Premio por referidos) -->
+      <!-- TOURS INCLUIDOS (Asignados por CEO, gratis con el paquete) -->
       <div class="glass" style="padding:28px;max-width:680px;margin-bottom:20px;">
-        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🏆 Mis Tours — Premios</div>
-        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Tours ganados por tu programa de referidos. Elegí tu aventura 🏖️</p>
+        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🏆 Mis Tours Incluidos</div>
+        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Tours incluidos en tu paquete, asignados por Luazul. Tu aventura te espera 🏖️</p>
+        <div id="toursIncluidosList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <div id="toursIncluidosEmpty" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
+          <div style="font-size:2.5rem;margin-bottom:12px;opacity:.5;">🏝️</div>
+          <p>Aún no tenés tours incluidos asignados. Tu asesor te asignará los tours cuando apruebes la primera cuota.</p>
+        </div>
+      </div>
 
-        <!-- Tours ganados / pendientes -->
-        <div id="toursGanadosList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;"></div>
+      <!-- TOURS VIP (Ofrecidos por vendedor, con pago) -->
+      <div class="glass" style="padding:28px;max-width:680px;margin-bottom:20px;">
+        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🗺️ Tours VIP</div>
+        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Tours adicionales ofrecidos por tu asesor. Elegí vivir experiencias extra 🚀</p>
+        <div id="toursVipList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <div id="toursVipEmpty" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
+          <div style="font-size:2.5rem;margin-bottom:12px;opacity:.5;">🗺️</div>
+          <p>No tenés tours VIP todavía. Tu asesor te ofrecerá tours adicionales cuando estén disponibles.</p>
+        </div>
+      </div>
 
+      <!-- TOURS REFERIDOS (Premio por referidos — sistema anterior compatible) -->
+      <div class="glass" style="padding:28px;max-width:680px;margin-bottom:20px;">
+        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🎁 Tours Premio — Referidos</div>
+        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Tours ganados por tu programa de referidos. Por cada 3 referidos activos, ganás un tour gratis.</p>
+        <div id="toursReferidosList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;"></div>
         <!-- Selector de tours (solo si tiene tours disponibles para elegir) -->
         <div id="tourSelectorWrap" style="display:none;">
           <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:18px 20px;margin-bottom:16px;">
@@ -1117,23 +1136,17 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
           </div>
           <div id="tourCatalogoCliente" style="display:flex;flex-direction:column;gap:10px;"></div>
         </div>
-
-        <!-- Sin tours mensaje -->
-        <div id="toursEmptyMsg" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
-          <div style="font-size:2.5rem;margin-bottom:12px;opacity:.5;">🏝️</div>
-          <p>Aún no tenés tours de premio. Referí 3 amigos y ganá tu primer tour gratis.</p>
+        <div id="toursReferidosEmpty" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
+          <div style="font-size:2.5rem;margin-bottom:12px;opacity:.5;">🏆</div>
+          <p>Aún no ganaste tours por referidos. Referí 3 amigos y ganá tu primer tour gratis.</p>
         </div>
       </div>
 
-      <!-- COMPRAR TOURS (Pago directo) -->
+      <!-- COMPRAR TOURS (Pago directo por catálogo) -->
       <div class="glass" style="padding:28px;max-width:680px;">
         <div class="section-title" style="display:flex;align-items:center;gap:10px;">🛒 Comprar Tours</div>
-        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">No necesitás esperar los referidos. Elegí un tour y coordiná tu pago directamente por WhatsApp 💬</p>
-
-        <!-- Tours disponibles para compra -->
+        <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">No necesitás esperar. Elegí un tour adicional y coordiná tu pago directamente por WhatsApp 💬</p>
         <div id="toursCompraList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;"></div>
-
-        <!-- Sin tours para compra -->
         <div id="toursCompraEmpty" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
           <div style="font-size:2.5rem;margin-bottom:12px;opacity:.5;">🗺️</div>
           <p>No hay tours disponibles para compra en este momento.</p>
@@ -3110,96 +3123,112 @@ async function renderReferidos() {
 }
 
 // ── MIS TOURS ──────────────────────────────────────────────────────
+// Renderiza las 3 secciones: Incluidos, VIP, Referidos
 async function renderMisTours() {
   if (!currentUser || !sbClient) return;
-  var ganadosEl = document.getElementById('toursGanadosList');
+
+  var incEl   = document.getElementById('toursIncluidosList');
+  var incEmpty = document.getElementById('toursIncluidosEmpty');
+  var vipEl   = document.getElementById('toursVipList');
+  var vipEmpty = document.getElementById('toursVipEmpty');
+  var refEl   = document.getElementById('toursReferidosList');
+  var refEmpty = document.getElementById('toursReferidosEmpty');
   var selectorEl = document.getElementById('tourSelectorWrap');
   var catalogoEl = document.getElementById('tourCatalogoCliente');
-  var emptyEl = document.getElementById('toursEmptyMsg');
   var badge = document.getElementById('toursBadge');
 
-  if (ganadosEl) ganadosEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Cargando tours...</div>';
+  // Loading
+  if (incEl) incEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Cargando tours...</div>';
+  if (vipEl) vipEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Cargando...</div>';
+  if (refEl) refEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Cargando...</div>';
 
   try {
-    // 1) Obtener referidos confirmados del cliente
+    // 1) Obtener TODOS los tours_ganados del cliente con datos del catálogo
+    var { data: ganados, error: ganErr } = await sbClient
+      .from('tours_ganados')
+      .select('*, tours_catalogo(nombre, destino, descripcion, duracion, transporte, icono, activo, precio_usd, comision_pct)')
+      .eq('cliente_id', currentUser.id);
+
+    var toursGan = ganados || [];
+
+    // 2) Separar por tipo: incluidos, vip, referidos, compra
+    var incluidos = toursGan.filter(function(t) { return t.origen === 'incluido'; });
+    var vips      = toursGan.filter(function(t) { return t.origen === 'vip'; });
+    var referidos = toursGan.filter(function(t) { return t.origen === 'referido'; });
+    var compras   = toursGan.filter(function(t) { return t.origen === 'compra'; });
+
+    // ────────── 3a. RENDER TOURS INCLUIDOS ──────────
+    if (incEl) {
+      if (incluidos.length > 0) {
+        incEl.innerHTML = incluidos.map(function(t) {
+          return buildTourCardIncluido(t);
+        }).join('');
+        if (incEmpty) incEmpty.style.display = 'none';
+      } else {
+        incEl.innerHTML = '';
+        if (incEmpty) incEmpty.style.display = 'block';
+      }
+    }
+
+    // ────────── 3b. RENDER TOURS VIP ──────────
+    if (vipEl) {
+      if (vips.length > 0) {
+        vipEl.innerHTML = vips.map(function(t) {
+          return buildTourCardVip(t);
+        }).join('');
+        if (vipEmpty) vipEmpty.style.display = 'none';
+      } else {
+        vipEl.innerHTML = '';
+        if (vipEmpty) vipEmpty.style.display = 'block';
+      }
+    }
+
+    // ────────── 3c. RENDER TOURS REFERIDOS + COMPRAS ──────────
+    // Referidos confirmados del cliente
     var { data: refs, error: refErr } = await sbClient
       .from('referidos')
       .select('*')
       .eq('cliente_referidor_id', currentUser.id);
 
-    var confirmados = (refs || []).filter(function(r) {
+    var refsConfirmados = (refs || []).filter(function(r) {
       return r.estado === 'confirmado' || r.estado === 'activo';
     });
-    var toursDisponibles = Math.floor(confirmados.length / 3);
+    var toursDisponibles = Math.floor(refsConfirmados.length / 3);
+    var puedeElegir = toursDisponibles - referidos.length;
 
-    // 2) Obtener tours ganados del cliente
-    var { data: ganados, error: ganErr } = await sbClient
-      .from('tours_ganados')
-      .select('*, tours_catalogo(nombre, destino, descripcion, duracion, transporte, icono, activo)')
-      .eq('cliente_id', currentUser.id);
-
-    var toursGan = ganados || [];
-    var pendientes = toursGan.filter(function(t) { return t.estado === 'pendiente' || t.estado === 'elegido'; });
-    var confirmadosCeo = toursGan.filter(function(t) { return t.estado === 'confirmado_ceo' || t.estado === 'completado'; });
-
-    // 3) Calcular tours que puede elegir (disponibles - ya elegidos)
-    var yaElegidos = toursGan.length;
-    var puedeElegir = toursDisponibles - yaElegidos;
-
-    // 4) Actualizar badge
+    // Actualizar badge en sidebar
+    var totalPendientesPago = vips.filter(function(t) { return t.estado === 'pendiente_pago'; }).length;
     if (badge) {
-      if (toursDisponibles > 0) {
+      if (totalPendientesPago > 0) {
+        badge.style.display = 'block';
+        badge.textContent = totalPendientesPago;
+        badge.style.background = 'var(--red)';
+      } else if (toursDisponibles > 0) {
         badge.style.display = 'block';
         badge.textContent = toursDisponibles;
+        badge.style.background = '';
       } else {
         badge.style.display = 'none';
       }
     }
 
-    // 5) Renderizar tours ganados
-    if (ganadosEl) {
-      if (toursGan.length > 0) {
-        var h = '';
-        // Tours confirmados/completados
-        confirmadosCeo.forEach(function(t) {
-          var nombre = (t.tours_catalogo || {}).nombre || 'Tour';
-          var icono = (t.tours_catalogo || {}).icono || '🏝️';
-          var destino = (t.tours_catalogo || {}).destino || '';
-          var estadoLabel = t.estado === 'completado' ? '✅ Completado' : '🕐 Confirmado — pendiente de fecha';
-          var estadoColor = t.estado === 'completado' ? '#6ee7b7' : '#fbbf24';
-          h += '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:14px;">'
-            + '<div style="font-size:2rem;">' + icono + '</div>'
-            + '<div style="flex:1;">'
-            + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(nombre) + '</div>'
-            + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:2px;">' + escapeHtml(destino) + (t.fecha_tour ? ' · ' + t.fecha_tour : '') + '</div>'
-            + '</div>'
-            + '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(16,185,129,.1);color:' + estadoColor + ';">' + estadoLabel + '</span>'
-            + '</div>';
-        });
-        // Tours pendientes/elegidos
-        pendientes.forEach(function(t) {
-          var nombre = (t.tours_catalogo || {}).nombre || 'Tour por elegir';
-          var icono = (t.tours_catalogo || {}).icono || '📍';
-          var destino = (t.tours_catalogo || {}).destino || '';
-          h += '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:14px;">'
-            + '<div style="font-size:2rem;">' + icono + '</div>'
-            + '<div style="flex:1;">'
-            + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(nombre) + '</div>'
-            + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:2px;">' + escapeHtml(destino) + '</div>'
-            + '</div>'
-            + '<span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(251,191,36,.1);color:#fbbf24;">⏳ Pendiente</span>'
-            + '</div>';
-        });
-        ganadosEl.innerHTML = h;
+    // Render referidos (tours ganados por referidos)
+    if (refEl) {
+      var allReferidos = referidos.concat(compras);
+      if (allReferidos.length > 0) {
+        refEl.innerHTML = allReferidos.map(function(t) {
+          return buildTourCardReferido(t);
+        }).join('');
+        if (refEmpty) refEmpty.style.display = 'none';
       } else {
-        ganadosEl.innerHTML = '';
+        refEl.innerHTML = '';
+        if (refEmpty) refEmpty.style.display = (toursDisponibles === 0) ? 'block' : 'none';
       }
     }
 
-    // 6) Mostrar selector si puede elegir tours
+    // ────────── 3d. SELECTOR DE TOURS (si puede elegir) ──────────
     if (puedeElegir > 0 && selectorEl && catalogoEl) {
       selectorEl.style.display = 'block';
-      // Cargar catálogo de tours activos
       var { data: catalogo, error: catErr } = await sbClient
         .from('tours_catalogo')
         .select('*')
@@ -3229,17 +3258,288 @@ async function renderMisTours() {
       selectorEl.style.display = 'none';
     }
 
-    // 7) Mostrar mensaje vacío si no tiene nada
-    if (emptyEl) {
-      emptyEl.style.display = (toursGan.length === 0 && toursDisponibles === 0) ? 'block' : 'none';
-    }
-
   } catch(e) {
     console.error('[MisTours] Error:', e);
-    if (ganadosEl) ganadosEl.innerHTML = '<div style="padding:20px;color:#fca5a5;font-size:.85rem;">Error al cargar tours: ' + escapeHtml(e.message) + '</div>';
+    if (incEl) incEl.innerHTML = '<div style="padding:20px;color:#fca5a5;font-size:.85rem;">Error al cargar tours: ' + escapeHtml(e.message) + '</div>';
+    if (vipEl) vipEl.innerHTML = '<div style="padding:20px;color:#fca5a5;font-size:.85rem;">Error: ' + escapeHtml(e.message) + '</div>';
   }
 }
 
+// ── Helper: badge de estado para tours ──
+function tourEstadoBadge(estado) {
+  var badges = {
+    'asignado':       { label: '✅ Asignado',              bg: 'rgba(16,185,129,.1)',  color: '#6ee7b7',  border: 'rgba(16,185,129,.2)' },
+    'pendiente_pago': { label: '💰 Pendiente de Pago',      bg: 'rgba(251,191,36,.1)',  color: '#fbbf24',  border: 'rgba(251,191,36,.2)' },
+    'pago_subido':    { label: '⏳ Revisión en Curso',      bg: 'rgba(59,130,246,.1)',   color: '#93c5fd',  border: 'rgba(59,130,246,.2)' },
+    'aprobado':       { label: '✅ Aprobado',              bg: 'rgba(16,185,129,.1)',  color: '#6ee7b7',  border: 'rgba(16,185,129,.2)' },
+    'rechazado':      { label: '❌ Rechazado',              bg: 'rgba(239,68,68,.1)',   color: '#fca5a5',  border: 'rgba(239,68,68,.2)' },
+    'completado':     { label: '🎉 Completado',            bg: 'rgba(168,85,247,.1)',  color: '#c4b5fd',  border: 'rgba(168,85,247,.2)' },
+    'pendiente':      { label: '⏳ Pendiente',             bg: 'rgba(251,191,36,.1)',  color: '#fbbf24',  border: 'rgba(251,191,36,.2)' },
+    'elegido':        { label: '📍 Elegido',               bg: 'rgba(59,130,246,.1)',   color: '#93c5fd',  border: 'rgba(59,130,246,.2)' },
+    'confirmado_ceo': { label: '🕐 Confirmado',            bg: 'rgba(16,185,129,.1)',  color: '#6ee7b7',  border: 'rgba(16,185,129,.2)' }
+  };
+  var b = badges[estado] || badges['pendiente'];
+  return '<span style="font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:20px;background:' + b.bg + ';color:' + b.color + ';border:1px solid ' + b.border + ';white-space:nowrap;">' + b.label + '</span>';
+}
+
+// ── Builder: Tour Incluido card ──
+function buildTourCardIncluido(t) {
+  var cat = t.tours_catalogo || {};
+  var nombre  = cat.nombre  || 'Tour';
+  var icono   = cat.icono   || '🏝️';
+  var destino = cat.destino || '';
+  var duracion = cat.duracion || '';
+  var transporte = cat.transporte || '';
+  var fecha = t.fecha_tour || '';
+  var nota  = t.nota || '';
+
+  return '<div style="display:flex;align-items:flex-start;gap:14px;padding:16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:14px;">'
+    + '<div style="font-size:2rem;flex-shrink:0;margin-top:2px;">' + icono + '</div>'
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+    + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(nombre) + '</div>'
+    + '<span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,.12);color:#6ee7b7;border:1px solid rgba(16,185,129,.2);">INCLUIDO</span>'
+    + tourEstadoBadge(t.estado)
+    + '</div>'
+    + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;">' + escapeHtml(destino) + (duracion ? ' · ' + escapeHtml(duracion) : '') + (transporte ? ' · ' + escapeHtml(transporte) : '') + '</div>'
+    + (fecha ? '<div style="font-size:.78rem;color:var(--blue-light);margin-top:3px;">📅 Fecha: ' + fecha + '</div>' : '')
+    + (nota ? '<div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;font-style:italic;">' + escapeHtml(nota) + '</div>' : '')
+    + '</div>'
+    + '</div>';
+}
+
+// ── Builder: Tour VIP card (con botones de pago) ──
+function buildTourCardVip(t) {
+  var cat = t.tours_catalogo || {};
+  var nombre  = cat.nombre  || 'Tour VIP';
+  var icono   = cat.icono   || '🗺️';
+  var destino = cat.destino || '';
+  var duracion = cat.duracion || '';
+  var transporte = cat.transporte || '';
+  var fecha = t.fecha_tour || '';
+  var precio  = parseFloat(t.precio_pagado) || parseFloat(cat.precio_usd) || 0;
+  var precioStr = precio.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  var personas = parseInt(t.cantidad_personas) || 1;
+  var compUrl = t.comprobante_url || '';
+
+  // Botón de acción según estado
+  var actionHtml = '';
+  if (t.estado === 'pendiente_pago') {
+    actionHtml = '<div style="margin-top:10px;">'
+      + '<button onclick="openTourPagoModal(\'' + t.id + '\',\'' + escapeHtml(nombre).replace(/'/g, "\\\\'") + '\',' + precio + ')" style="width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;font-size:.88rem;cursor:pointer;letter-spacing:.3px;">💳 Pagar USD ' + precioStr + '</button>'
+      + '</div>';
+  } else if (t.estado === 'pago_subido' && compUrl) {
+    actionHtml = '<div style="margin-top:10px;">'
+      + '<div style="padding:10px 14px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
+      + '<span style="font-size:.82rem;color:#93c5fd;">⏳ Comprobante subido — esperando aprobación</span>'
+      + '<button onclick="verTourComprobante(\'' + compUrl.replace(/'/g, "\\\\'") + '\',\'' + escapeHtml(nombre).replace(/'/g, "\\\\'") + '\')" style="padding:5px 12px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fcd34d;border-radius:8px;font-size:.72rem;cursor:pointer;">📄 Ver comprobante</button>'
+      + '</div></div>';
+  } else if (t.estado === 'rechazado') {
+    actionHtml = '<div style="margin-top:10px;">'
+      + '<div style="padding:10px 14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;margin-bottom:8px;">'
+      + '<div style="font-size:.82rem;color:#fca5a5;">❌ Pago rechazado. Volvé a adjuntar el comprobante.</div>'
+      + (t.nota ? '<div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">Motivo: ' + escapeHtml(t.nota) + '</div>' : '')
+      + '</div>'
+      + '<button onclick="uploadTourComprobante(\'' + t.id + '\')" style="width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;font-size:.88rem;cursor:pointer;">📎 Reenviar comprobante</button>'
+      + '</div>';
+  } else if (t.estado === 'aprobado' && compUrl) {
+    actionHtml = '<div style="margin-top:10px;">'
+      + '<div style="padding:10px 14px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
+      + '<span style="font-size:.82rem;color:#6ee7b7;">✅ Pago aprobado</span>'
+      + '<button onclick="verTourComprobante(\'' + compUrl.replace(/'/g, "\\\\'") + '\',\'' + escapeHtml(nombre).replace(/'/g, "\\\\'") + '\')" style="padding:5px 12px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:#6ee7b7;border-radius:8px;font-size:.72rem;cursor:pointer;">📄 Ver comprobante</button>'
+      + '</div></div>';
+  } else if (t.estado === 'completado') {
+    actionHtml = '<div style="margin-top:10px;">'
+      + '<div style="padding:10px 14px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:10px;">'
+      + '<span style="font-size:.82rem;color:#c4b5fd;">🎉 ¡Tour completado! Disfrutá tu aventura.</span>'
+      + '</div></div>';
+  }
+
+  return '<div style="padding:18px;background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.15);border-radius:14px;">'
+    + '<div style="display:flex;align-items:flex-start;gap:14px;">'
+    + '<div style="font-size:2rem;flex-shrink:0;margin-top:2px;">' + icono + '</div>'
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+    + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(nombre) + '</div>'
+    + '<span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(6,182,212,.12);color:#22d3ee;border:1px solid rgba(6,182,212,.2);">VIP</span>'
+    + tourEstadoBadge(t.estado)
+    + '</div>'
+    + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;">' + escapeHtml(destino) + (duracion ? ' · ' + escapeHtml(duracion) : '') + (transporte ? ' · ' + escapeHtml(transporte) : '') + '</div>'
+    + (fecha ? '<div style="font-size:.78rem;color:var(--blue-light);margin-top:3px;">📅 Fecha: ' + fecha + '</div>' : '')
+    // Info de precio y personas
+    + '<div style="display:flex;gap:14px;margin-top:6px;font-size:.78rem;">'
+    + '<span style="color:#fbbf24;font-weight:700;">💰 USD ' + precioStr + '</span>'
+    + (personas > 1 ? '<span style="color:var(--text-muted);">👥 ' + personas + ' personas</span>' : '')
+    + '</div>'
+    + actionHtml
+    + '</div></div></div>';
+}
+
+// ── Builder: Tour Referido/Compra card ──
+function buildTourCardReferido(t) {
+  var cat = t.tours_catalogo || {};
+  var nombre  = cat.nombre  || 'Tour';
+  var icono   = cat.icono   || '🏆';
+  var destino = cat.destino || '';
+  var fecha = t.fecha_tour || '';
+  var esCompra = t.origen === 'compra';
+  var precio = parseFloat(t.precio_pagado) || 0;
+
+  return '<div style="display:flex;align-items:flex-start;gap:14px;padding:16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;">'
+    + '<div style="font-size:2rem;flex-shrink:0;margin-top:2px;">' + icono + '</div>'
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+    + '<div style="font-weight:700;color:#fff;font-size:.95rem;">' + escapeHtml(nombre) + '</div>'
+    + '<span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:' + (esCompra ? 'rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.2)' : 'rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.2)') + ';">' + (esCompra ? 'COMPRA' : 'PREMIO') + '</span>'
+    + tourEstadoBadge(t.estado)
+    + '</div>'
+    + '<div style="font-size:.78rem;color:var(--text-muted);margin-top:4px;">' + escapeHtml(destino) + (fecha ? ' · 📅 ' + fecha : '') + '</div>'
+    + (esCompra && precio > 0 ? '<div style="font-size:.78rem;color:#fbbf24;font-weight:700;margin-top:4px;">💰 USD ' + precio.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + '</div>' : '')
+    + '</div></div>';
+}
+
+// ── MODAL DE PAGO VIP TOUR (cuentas bancarias + subir comprobante) ──
+function openTourPagoModal(tourGanadoId, tourNombre, precio) {
+  if (!sbClient) return;
+  var precioStr = precio.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  // Cargar cuentas bancarias
+  var cuentasRaw = localStorage.getItem('luazul_cuentas_pago');
+  var cuentas = [];
+  try { cuentas = cuentasRaw ? JSON.parse(cuentasRaw) : []; } catch(e) {}
+  if (!cuentas.length) {
+    cuentas = [
+      { alias: 'luazul.turismobr@gmail.com', cbu: 'luazul.turismobr@gmail.com', titular: 'Luazul Turismo', banco: 'Nubank 🇧🇷 · PIX' }
+    ];
+  }
+  var cuentasHtml = cuentas.map(function(ct, i) {
+    return '<div style="padding:14px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">'
+      + '<div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💳 Cuenta ' + (i+1) + (ct.banco ? ' — ' + escapeHtml(ct.banco) : '') + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+      + '<div style="font-size:.7rem;color:var(--text-muted);min-width:42px;">Alias:</div>'
+      + '<div style="font-size:.9rem;font-weight:700;color:#a5f3fc;font-family:monospace;" id="tourPago-alias-' + i + '">' + escapeHtml(ct.alias || '—') + '</div></div>'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+      + '<div style="font-size:.7rem;color:var(--text-muted);min-width:42px;">Titular:</div>'
+      + '<div style="font-size:.82rem;font-weight:700;color:#a5f3fc;">' + escapeHtml(ct.titular || '—') + '</div>'
+      + '<button onclick="copiarPago(\'tourPago-alias-' + i + '\',this)" style="padding:4px 10px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#a5b4fc;border-radius:7px;font-size:.68rem;cursor:pointer;margin-left:auto;">📋 Copiar</button>'
+      + '</div></div>';
+  }).join('');
+
+  var modalHtml = '<div id="modalTourPago" style="position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.7);animation:fadeIn .2s;" onclick="if(event.target===this)cerrarTourPagoModal()">'
+    + '<div style="background:#0a1628;border:1px solid var(--border);border-radius:20px 20px 0 0;padding:24px 20px 32px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">'
+    + '<div><div style="font-weight:800;font-size:1.05rem;">💳 Pagar Tour VIP</div>'
+    + '<div style="font-size:.82rem;color:var(--text-muted);margin-top:2px;">' + escapeHtml(tourNombre) + ' · <strong style="color:#fbbf24;">USD ' + precioStr + '</strong></div></div>'
+    + '<button onclick="cerrarTourPagoModal()" style="padding:6px 12px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);cursor:pointer;font-size:.85rem;">✕</button>'
+    + '</div>'
+    + '<div style="font-size:.75rem;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🏦 Cuentas habilitadas para el pago</div>'
+    + cuentasHtml
+    + '<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px;margin-top:16px;font-size:.75rem;color:#fcd34d;text-align:center;">'
+    + '⚠️ <strong>Único medio de pago:</strong> transferencia a las cuentas indicadas. Luego de transferir, adjuntá el comprobante.'
+    + '</div>'
+    + '<button onclick="uploadTourComprobante(\'' + tourGanadoId + '\')" id="btnTourPagoUpload" style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#1a5bb5,#0B3D91);border:none;color:#fff;font-weight:800;border-radius:12px;font-size:.9rem;cursor:pointer;letter-spacing:.3px;">'
+    + '📎 Ya transferí → Adjuntar comprobante'
+    + '</button>'
+    + '</div></div>';
+
+  // Remove existing if open
+  var existing = document.getElementById('modalTourPago');
+  if (existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function cerrarTourPagoModal() {
+  var m = document.getElementById('modalTourPago');
+  if (m) m.remove();
+}
+
+// ── UPLOAD COMPROBANTE TOUR VIP ────────────────────────────────────
+async function uploadTourComprobante(tourGanadoId) {
+  if (!sbClient || !currentUser) return;
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*,application/pdf';
+  input.onchange = async function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showCompToast('⚠️ Archivo demasiado grande. Máximo 5MB.', 'warn');
+      return;
+    }
+
+    // Deshabilitar botón
+    var btn = document.getElementById('btnTourPagoUpload');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Subiendo...'; }
+
+    try {
+      // 1) Subir archivo a storage
+      var ext = file.name.split('.').pop();
+      var fileName = 'comprobantes_tour/cliente_' + currentUser.id + '_tour_' + tourGanadoId + '_' + Date.now() + '.' + ext;
+
+      var { error: uploadError } = await sbClient.storage
+        .from('comprobantes')
+        .upload(fileName, file, { upsert: true });
+      if (uploadError) throw uploadError;
+
+      var { data: urlData } = sbClient.storage
+        .from('comprobantes')
+        .getPublicUrl(fileName);
+
+      // 2) Actualizar tour_ganado: estado = pago_subido, comprobante_url
+      var { error: updateError } = await sbClient
+        .from('tours_ganados')
+        .update({
+          estado: 'pago_subido',
+          comprobante_url: urlData.publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', tourGanadoId);
+      if (updateError) throw updateError;
+
+      // 3) Notificar al CEO (notificación general)
+      try {
+        await sbClient.from('notificaciones').insert({
+          tipo: 'tour_pago_subido',
+          mensaje: 'Cliente ' + (currentUser.nombre || currentUser.email) + ' subió comprobante de pago para tour VIP',
+          cliente_id: currentUser.id,
+          leida: false,
+          created_at: new Date().toISOString()
+        });
+      } catch(ne) { console.warn('Notificación tour no enviada:', ne.message); }
+
+      showCompToast('✅ Comprobante enviado. Luazul revisará tu pago pronto.', 'ok');
+      cerrarTourPagoModal();
+      await renderMisTours();
+
+    } catch(err) {
+      console.error('[TourComprobante] Error:', err);
+      showCompToast('❌ Error al subir comprobante: ' + (err.message || err), 'warn');
+      if (btn) { btn.disabled = false; btn.textContent = '📎 Ya transferí → Adjuntar comprobante'; }
+    }
+  };
+  input.click();
+}
+
+// ── VER COMPROBANTE DE TOUR ────────────────────────────────────────
+function verTourComprobante(url, tourNombre) {
+  if (!url) return;
+  if (!/^https?:\/\//i.test(url)) { console.warn('URL bloqueada por seguridad'); return; }
+  var w = window.open('', '_blank', 'width=600,height=520');
+  var ext = (url.split('.').pop() || '').toLowerCase().split('?')[0];
+  var safeUrl = url.replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  var content = ext === 'pdf'
+    ? '<iframe src="' + safeUrl + '" style="width:100%;height:480px;border:none;border-radius:8px;"></iframe>'
+    : '<img src="' + safeUrl + '" style="max-width:96%;max-height:80vh;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);" loading="lazy">';
+  w.document.write(
+    '<html><body style="margin:0;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;padding:16px;">'
+    + '<p style="color:#aaa;font-size:13px;font-family:sans-serif;">Tour VIP · ' + tourNombre + ' · Comprobante</p>'
+    + content
+    + '</body></html>'
+  );
+  w.document.close();
+}
+
+// ── ELEGIR TOUR (Referido) ────────────────────────────────────────
 async function elegirTour(tourId, tourNombre) {
   if (!currentUser || !sbClient) return;
   if (!confirm('¿Elegís ' + tourNombre + ' como tu tour premio?')) return;
@@ -3251,7 +3551,6 @@ async function elegirTour(tourId, tourNombre) {
       p_precio_pagado: 0
     });
     if (error) throw error;
-    // Refrescar la vista
     await renderMisTours();
   } catch(e) {
     console.error('[ElegirTour] Error:', e);
@@ -3259,7 +3558,7 @@ async function elegirTour(tourId, tourNombre) {
   }
 }
 
-// ── COMPRAR TOURS (Pago directo) ──────────────────────────────────
+// ── COMPRAR TOURS (Pago directo por catálogo) ──────────────────────
 async function renderToursCompra() {
   var listaEl  = document.getElementById('toursCompraList');
   var emptyEl  = document.getElementById('toursCompraEmpty');
@@ -3309,7 +3608,6 @@ async function comprarTour(tourId, tourNombre, tourPrecio) {
   var nombre = (currentUser.nombre || currentUser.full_name || 'Cliente');
   var precioStr = parseFloat(tourPrecio).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
-  // Confirmar la compra
   var ok = confirm(
     '¿Querés comprar el tour "' + tourNombre + '" por USD ' + precioStr + '?\n\n' +
     'Se generará la solicitud y serás redirigido a WhatsApp para coordinar el pago.'
@@ -3317,7 +3615,6 @@ async function comprarTour(tourId, tourNombre, tourPrecio) {
   if (!ok) return;
 
   try {
-    // 1) Crear el tour_ganado con origen='compra' y precio_pagado > 0
     var { data, error } = await sbClient.rpc('crear_tour_ganado', {
       p_cliente_id: currentUser.id,
       p_tour_id: tourId,
@@ -3327,7 +3624,6 @@ async function comprarTour(tourId, tourNombre, tourPrecio) {
     if (error) throw error;
     console.log('[ComprarTour] Tour_ganado creado:', data);
 
-    // 2) Redirigir a WhatsApp con mensaje de solicitud de compra
     var waMsg = encodeURIComponent(
       '¡Hola Luazul! 👋\n\n' +
       'Soy *' + nombre + '* y quiero comprar el tour:\n\n' +
@@ -3337,11 +3633,9 @@ async function comprarTour(tourId, tourNombre, tourPrecio) {
     );
     window.open('https://wa.me/5492974726449?text=' + waMsg, '_blank');
 
-    // 3) Refrescar ambas vistas
     await renderMisTours();
     await renderToursCompra();
 
-    // 4) Toast de confirmación
     showToast('✅ Solicitud de compra enviada. ¡Coordiná el pago por WhatsApp!');
   } catch(e) {
     console.error('[ComprarTour] Error:', e);
