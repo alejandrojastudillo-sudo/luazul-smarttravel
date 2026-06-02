@@ -3146,13 +3146,13 @@ async function renderMisTours() {
     // 1) Obtener TODOS los tours_ganados del cliente con datos del catálogo
     var { data: ganados, error: ganErr } = await sbClient
       .from('tours_ganados')
-      .select('*, tours_catalogo(nombre, destino, descripcion, duracion, transporte, icono, activo, precio_usd, comision_pct)')
+      .select('*, tour:tours_catalogo(nombre, destino, descripcion, duracion, transporte, icono, activo, precio_usd, comision_pct)')
       .eq('cliente_id', currentUser.id);
 
     var toursGan = ganados || [];
 
     // 2) Separar por tipo: incluidos, vip, referidos, compra
-    var incluidos = toursGan.filter(function(t) { return t.origen === 'incluido'; });
+    var incluidos = toursGan.filter(function(t) { return t.origen === 'incluido' || t.origen === 'paquete'; });
     var vips      = toursGan.filter(function(t) { return t.origen === 'vip'; });
     var referidos = toursGan.filter(function(t) { return t.origen === 'referido'; });
     var compras   = toursGan.filter(function(t) { return t.origen === 'compra'; });
@@ -3284,7 +3284,7 @@ function tourEstadoBadge(estado) {
 
 // ── Builder: Tour Incluido card ──
 function buildTourCardIncluido(t) {
-  var cat = t.tours_catalogo || {};
+  var cat = t.tour || {};
   var nombre  = cat.nombre  || 'Tour';
   var icono   = cat.icono   || '🏝️';
   var destino = cat.destino || '';
@@ -3310,7 +3310,7 @@ function buildTourCardIncluido(t) {
 
 // ── Builder: Tour VIP card (con botones de pago) ──
 function buildTourCardVip(t) {
-  var cat = t.tours_catalogo || {};
+  var cat = t.tour || {};
   var nombre  = cat.nombre  || 'Tour VIP';
   var icono   = cat.icono   || '🗺️';
   var destino = cat.destino || '';
@@ -3377,7 +3377,7 @@ function buildTourCardVip(t) {
 
 // ── Builder: Tour Referido/Compra card ──
 function buildTourCardReferido(t) {
-  var cat = t.tours_catalogo || {};
+  var cat = t.tour || {};
   var nombre  = cat.nombre  || 'Tour';
   var icono   = cat.icono   || '🏆';
   var destino = cat.destino || '';
