@@ -1048,7 +1048,10 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
     <div class="page" id="page-cuotas">
       <button class="page-back-btn" onclick="goPage('dashboard')">← Volver al Dashboard</button>
       <div class="glass" style="padding:24px;margin-bottom:20px;">
-        <div class="section-title">Resumen de pagos</div>
+        <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Resumen de pagos</span>
+          <button onclick="renderCuotas()" style="padding:8px 16px;border-radius:10px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:#93c5fd;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;">🔄 Actualizar Cuotas</button>
+        </div>
         <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
           <div class="stat-card" style="padding:16px;">
             <div class="stat-label">Pagadas</div>
@@ -1103,7 +1106,10 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 
       <!-- TOURS INCLUIDOS (Asignados por CEO, gratis con el paquete) -->
       <div class="glass" style="padding:28px;max-width:680px;margin-bottom:20px;">
-        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🏆 Mis Tours Incluidos</div>
+        <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>🏆 Mis Tours Incluidos</span>
+          <button onclick="renderMisTours()" style="padding:8px 16px;border-radius:10px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:#93c5fd;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;">🔄 Actualizar Tours</button>
+        </div>
         <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Tours incluidos en tu paquete, asignados por Luazul. Tu aventura te espera 🏖️</p>
         <div id="toursIncluidosList" style="display:flex;flex-direction:column;gap:12px;"></div>
         <div id="toursIncluidosEmpty" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
@@ -1114,7 +1120,10 @@ nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 
       <!-- TOURS VIP (Ofrecidos por vendedor, con pago) -->
       <div class="glass" style="padding:28px;max-width:680px;margin-bottom:20px;">
-        <div class="section-title" style="display:flex;align-items:center;gap:10px;">🗺️ Tours VIP</div>
+        <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>🗺️ Tours VIP</span>
+          <button onclick="renderMisTours()" style="padding:8px 16px;border-radius:10px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:#93c5fd;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;">🔄 Actualizar Tours</button>
+        </div>
         <p style="color:var(--text-muted);font-size:.9rem;margin:8px 0 20px;">Tours adicionales ofrecidos por tu asesor. Elegí vivir experiencias extra 🚀</p>
         <div id="toursVipList" style="display:flex;flex-direction:column;gap:12px;"></div>
         <div id="toursVipEmpty" style="display:none;text-align:center;padding:30px;color:var(--text-muted);font-size:.9rem;">
@@ -1663,7 +1672,6 @@ function loginSuccess(user) {
 
 async function doLogout() {
   if (sbClient) await sbClient.auth.signOut();
-  if (window._cuotasRefreshTimer) { clearInterval(window._cuotasRefreshTimer); window._cuotasRefreshTimer = null; }
   sessionStorage.removeItem('luazul_session');
   currentUser = null;
   document.getElementById('app').style.display = 'none';
@@ -1752,14 +1760,8 @@ async function showApp() {
   // Si cuota 1 está pendiente y la fecha_vencimiento ya pasó → marcar cliente como 'atraso'
   _checkMoraCuota1();
 
-  // ── Auto-refresh de cuotas cada 30s para detectar rechazos/aprobaciones ──
-  if (window._cuotasRefreshTimer) clearInterval(window._cuotasRefreshTimer);
-  window._cuotasRefreshTimer = setInterval(function(){
-    if (currentUser) { renderCuotas(); _checkMoraCuota1(); }
-  }, 30000);
-
-  // ── Auto-refresh de tours VIP cada 20s para detectar aprobación/rechazo del CEO ──
-  startVipTourPolling();
+  // ── Sin auto-refresh automático para ahorrar recursos ──
+  // El cliente debe usar botón "🔄 Actualizar" para refrescar tours y cuotas.
 }
 
 // ── SOLICITAR EXTENSIÓN (WhatsApp) ──
@@ -3125,48 +3127,8 @@ async function renderReferidos() {
   }
 }
 
-// ── VIP TOURS AUTO-REFRESH ────────────────────────────────────────
-var _lastVipStates = {}; // cache: tgId -> estado
-var _vipRefreshInterval = null;
-
-function startVipTourPolling() {
-  if (_vipRefreshInterval) return;
-  _vipRefreshInterval = setInterval(function() {
-    if (!currentUser || !sbClient) return;
-    sbClient.from('tours_ganados')
-      .select('id, estado')
-      .eq('cliente_id', currentUser.id)
-      .eq('origen', 'vip')
-      .then(function(res) {
-        if (res.error || !res.data) return;
-        var changed = false;
-        for (var i = 0; i < res.data.length; i++) {
-          var tg = res.data[i];
-          if (_lastVipStates[tg.id] && _lastVipStates[tg.id] !== tg.estado) {
-            changed = true;
-            break;
-          }
-        }
-        // Actualizar cache
-        _lastVipStates = {};
-        for (var j = 0; j < res.data.length; j++) {
-          _lastVipStates[res.data[j].id] = res.data[j].estado;
-        }
-        if (changed) {
-          renderMisTours();
-          // Mostrar toast si hay tours aprobados o rechazados
-          for (var k = 0; k < res.data.length; k++) {
-            var t = res.data[k];
-            if (_lastVipStates[t.id] === 'aprobado') {
-              showCompToast('✅ ¡Tu pago del tour VIP fue aprobado!', 'ok');
-            } else if (_lastVipStates[t.id] === 'rechazado') {
-              showCompToast('❌ Tu comprobante fue rechazado. Por favor reenviá el comprobante.', 'warn');
-            }
-          }
-        }
-      });
-  }, 20000); // cada 20 segundos
-}
+// ── VIP TOURS: sin polling automático, se usa botón Actualizar ──
+// El cliente debe usar el botón "🔄 Actualizar Tours" para ver cambios de estado.
 
 // ── MIS TOURS ──────────────────────────────────────────────────────
 // Renderiza las 3 secciones: Incluidos, VIP, Referidos
