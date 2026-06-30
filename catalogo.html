@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B3D91">
+<meta name="description" content="Catálogo Luazul Smart Travel — Tours, excursiones y traslados en Brasil. Río de Janeiro, Búzios, Arraial do Cabo y Cabo Frío. Atención en español.">
+<title>Catálogo · Luazul Smart Travel</title>
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preload" as="image" href="images/bg-ocean.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  background: #020618;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(11,61,145,.35) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(167,139,250,.12) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 0% 70%, rgba(34,211,238,.10) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: #e8eeff;
+  overflow-x: hidden;
+}
+
+/* ─── HERO PARALLAX 3D ─── */
+.cat-hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  perspective: 1200px;
+  z-index: 1;
+  overflow: hidden;
+}
+.cat-hero-bg {
+  position: absolute;
+  inset: -40px;
+  background-image: url('images/bg-ocean.webp');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(.45) saturate(1.1);
+  transform: translateZ(-100px) scale(1.15);
+  transition: transform .4s ease-out;
+  z-index: 0;
+}
+.cat-hero-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(2,6,24,.55) 0%, rgba(2,6,24,.30) 35%, rgba(2,6,24,.75) 75%, rgba(2,6,24,.98) 100%);
+}
+.cat-hero-watermark {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; z-index: 0; opacity: .06;
+}
+.cat-hero-watermark img { width: 640px; max-width: 80vw; filter: brightness(2) saturate(0); }
+.cat-hero-inner {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  transform-style: preserve-3d;
+  transition: transform .3s ease-out;
+  max-width: 900px;
+}
+.cat-hero-badge-logo {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: transparent;
+  margin-bottom: 18px;
+  animation: glowPulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 8px 30px rgba(80,140,255,.5));
+}
+
+/* ── NOMBRE LUAZUL GRANDE + TAGLINE ── */
+.cat-hero-brand {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(3.5rem, 9vw, 6rem);
+  font-weight: 800;
+  letter-spacing: clamp(2px, 1vw, 8px);
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 4px 30px rgba(0,0,0,.6), 0 0 60px rgba(126,184,255,.15);
+  animation: fadeDown .8s .15s ease both;
+  background: linear-gradient(180deg, #ffffff 0%, #7eb8ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.cat-hero-tagline {
+  font-size: clamp(.72rem, 1.5vw, .92rem);
+  font-weight: 600;
+  letter-spacing: clamp(2px, 1vw, 5px);
+  text-transform: uppercase;
+  color: rgba(126,184,255,.85);
+  margin-bottom: 28px;
+  animation: fadeDown .8s .25s ease both;
+}
+@keyframes glowPulse {
+  0%,100% { filter: drop-shadow(0 8px 30px rgba(80,140,255,.4)) brightness(1.05); }
+  50%     { filter: drop-shadow(0 8px 50px rgba(80,180,255,.7)) brightness(1.2); }
+}
+.cat-hero-kicker {
+  font-size: .7rem; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: #7eb8ff;
+  margin-bottom: 14px;
+  animation: fadeDown .8s .1s ease both;
+}
+.cat-hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-weight: 800; line-height: 1.05; letter-spacing: -1px;
+  margin-bottom: 18px;
+  animation: fadeDown .8s .2s ease both;
+  text-shadow: 0 4px 30px rgba(0,0,0,.6);
+}
+.cat-hero h1 .accent { color: #7eb8ff; }
+.cat-hero-sub {
+  font-size: clamp(1rem, 2vw, 1.18rem);
+  color: rgba(220,235,255,.88);
+  max-width: 640px;
+  margin-bottom: 32px;
+  animation: fadeUp .8s .35s ease both;
+  text-shadow: 0 2px 14px rgba(0,0,0,.6);
+}
+.cat-hero-cta {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp .8s .5s ease both;
+}
+.btn-cw {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-weight: 700; font-size: .95rem;
+  text-decoration: none;
+  transition: transform .25s, box-shadow .25s, background .25s;
+  border: none; font-family: inherit; letter-spacing: .3px; cursor: pointer;
+}
+.btn-cw-primary { background: linear-gradient(135deg, #22c55e, #15803d); color: white; box-shadow: 0 8px 30px rgba(34,197,94,.4); }
+.btn-cw-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(34,197,94,.55); }
+.btn-cw-glass { background: rgba(255,255,255,.10); color: white; border: 1.5px solid rgba(255,255,255,.35); backdrop-filter: blur(10px); }
+.btn-cw-glass:hover { background: rgba(255,255,255,.18); transform: translateY(-3px); }
+
+.vendedor-pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(11,61,145,.4);
+  border: 1px solid rgba(126,184,255,.35);
+  backdrop-filter: blur(12px);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: .82rem; font-weight: 600;
+  color: rgba(220,235,255,.95);
+  margin-bottom: 24px;
+  animation: fadeUp .8s .55s ease both;
+}
+.vendedor-pill .dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgba(74,222,128,.5);
+  animation: ping 2s ease-out infinite;
+}
+@keyframes ping {
+  0%   { box-shadow: 0 0 0 0 rgba(74,222,128,.5); }
+  100% { box-shadow: 0 0 0 12px rgba(74,222,128,0); }
+}
+.vendedor-pill strong { color: #7eb8ff; }
+
+@keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp   { from { opacity:0; transform:translateY(30px); }  to { opacity:1; transform:translateY(0); } }
+
+.cat-scroll-cue {
+  position: absolute; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  font-size: .7rem; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(200,220,255,.5);
+  animation: bounce 2s ease-in-out infinite;
+  z-index: 3;
+}
+.cat-scroll-cue::after {
+  content: '';
+  display: block;
+  width: 14px; height: 14px;
+  margin: 4px auto 0;
+  background: linear-gradient(180deg, rgba(200,220,255,.6), rgba(126,184,255,.85));
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5v14'/><path d='M5 12l7 7 7-7'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5v14'/><path d='M5 12l7 7 7-7'/></svg>") center/contain no-repeat;
+}
+@keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); opacity:.5; } 50% { transform: translateX(-50%) translateY(8px); opacity:1; } }
+
+/* ─── FILTROS STICKY ─── */
+.cat-filters-bar {
+  position: sticky; top: 0; z-index: 60;
+  background: rgba(2,6,24,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(100,160,255,.15);
+  padding: 14px 20px;
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  max-width: 1320px; margin: 0 auto;
+}
+.cat-filter-chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+.cat-filter-chips::-webkit-scrollbar { display: none; }
+.cat-chip {
+  flex-shrink: 0; padding: 8px 14px 8px 12px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(100,160,255,.20);
+  background: rgba(11,30,80,.4);
+  color: rgba(200,220,255,.75);
+  font-family: inherit; font-size: .8rem; font-weight: 600;
+  cursor: pointer; transition: all .25s;
+  white-space: nowrap; letter-spacing: .3px;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.cat-chip:hover { color: #fff; border-color: rgba(126,184,255,.5); background: rgba(11,61,145,.5); }
+.cat-chip.active {
+  background: linear-gradient(135deg, #1a5bb5, #0B3D91);
+  border-color: rgba(126,184,255,.7);
+  color: white;
+  box-shadow: 0 4px 18px rgba(11,61,145,.5);
+}
+.cat-chip .chip-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px;
+  color: rgba(126,184,255,.85);
+}
+.cat-chip .chip-icon svg { width: 100%; height: 100%; }
+.cat-chip.active .chip-icon { color: white; }
+.cat-search { position: relative; flex: 0 1 280px; min-width: 180px; }
+.cat-search input {
+  width: 100%; padding: 9px 14px 9px 36px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(100,160,255,.20);
+  background: rgba(11,30,80,.4);
+  color: white; font-family: inherit; font-size: .82rem;
+  outline: none; transition: border-color .2s;
+}
+.cat-search input:focus { border-color: rgba(126,184,255,.6); }
+.cat-search input::placeholder { color: rgba(150,180,220,.5); }
+.cat-search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: rgba(150,180,220,.55); pointer-events: none;
+}
+.cat-search-icon svg { width: 100%; height: 100%; }
+
+/* ─── MAIN CONTAINER ─── */
+.cat-main { max-width: 1320px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+/* ─── SECCION HEADER ─── */
+.cat-sec-head {
+  margin: 60px 0 24px; padding: 0 4px;
+  display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.cat-sec-head.revealed { opacity: 1; transform: translateY(0); }
+.cat-sec-head h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  font-weight: 800; letter-spacing: -0.5px;
+  color: #fff; margin: 0;
+  display: flex; align-items: center; gap: 12px;
+}
+.cat-sec-head h2 .icon {
+  font-size: 1.2em;
+  filter: drop-shadow(0 4px 12px rgba(126,184,255,.4));
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.2em; height: 1.2em;
+  color: #7eb8ff;
+}
+.cat-sec-head h2 .icon svg { width: 100%; height: 100%; }
+.cat-sec-head .desc { color: rgba(200,220,255,.7); font-size: .92rem; font-weight: 500; }
+.cat-sec-head .count {
+  margin-left: auto; color: rgba(150,190,255,.6);
+  font-size: .8rem; font-weight: 700;
+  padding: 4px 12px;
+  background: rgba(11,61,145,.25);
+  border-radius: 999px;
+  border: 1px solid rgba(100,160,255,.2);
+}
+
+/* ─── TOUR CARDS GRID ─── */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 22px;
+  margin-bottom: 30px;
+}
+
+/* ─── CARD 3D ─── */
+.tcard {
+  position: relative;
+  background: rgba(11,20,45,.55);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(100,160,255,.18);
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, border-color .35s ease;
+  opacity: 0; transform: translateY(40px);
+  will-change: transform;
+}
+.tcard.revealed { opacity: 1; transform: translateY(0); }
+.tcard:hover {
+  border-color: rgba(126,184,255,.5);
+  box-shadow: 0 24px 60px rgba(11,61,145,.4), 0 0 0 1px rgba(126,184,255,.2);
+}
+.tcard-img-wrap { position: relative; aspect-ratio: 16/10; overflow: hidden; transform: translateZ(0); }
+.tcard-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform .8s cubic-bezier(.22,1,.36,1);
+  filter: brightness(.88) saturate(1.05);
+}
+.tcard:hover .tcard-img { transform: scale(1.08); filter: brightness(1) saturate(1.1); }
+.tcard-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(2,6,24,.0) 30%, rgba(2,6,24,.55) 80%, rgba(2,6,24,.85) 100%);
+  pointer-events: none;
+}
+.tcard-tag {
+  position: absolute; top: 14px; left: 14px;
+  background: rgba(2,6,24,.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(126,184,255,.3);
+  color: #7eb8ff;
+  font-size: .65rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 11px; border-radius: 999px;
+}
+.tcard-popular {
+  position: absolute; top: 14px; right: 14px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #1a0a00;
+  font-size: .6rem; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+  padding: 5px 10px; border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(245,158,11,.4);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.tcard-popular .popular-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 10px; height: 10px;
+}
+.tcard-popular .popular-icon svg { width: 100%; height: 100%; }
+.tcard-body { padding: 18px 20px 16px; position: relative; z-index: 2; }
+.tcard-cat {
+  font-size: .62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(150,190,255,.65); margin-bottom: 5px;
+}
+.tcard-nombre {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.18rem; font-weight: 700; color: #fff;
+  margin-bottom: 8px; line-height: 1.2;
+}
+.tcard-desc {
+  font-size: .82rem; color: rgba(200,220,255,.7); line-height: 1.5;
+  margin-bottom: 12px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tcard-incluye {
+  list-style: none; padding: 0; margin: 0 0 14px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.tcard-incluye li {
+  font-size: .76rem; color: rgba(200,220,255,.7);
+  padding-left: 18px; position: relative; line-height: 1.4;
+}
+.tcard-incluye li::before {
+  content: '';
+  position: absolute; left: 0; top: 1px;
+  width: 11px; height: 11px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12l5 5L20 7'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12l5 5L20 7'/></svg>") center/contain no-repeat;
+  color: #4ade80; font-weight: 800; font-size: .78rem;
+}
+.tcard-footer {
+  padding: 12px 20px 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border-top: 1px solid rgba(100,160,255,.10);
+}
+.tcard-precio-bloque { display: flex; flex-direction: column; }
+.tcard-precio-label { font-size: .62rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(150,190,255,.55); }
+.tcard-precio { font-family: 'Syne', sans-serif; font-size: 1.45rem; font-weight: 800; color: #7eb8ff; line-height: 1; }
+.tcard-precio-unit { font-size: .68rem; color: rgba(150,190,255,.55); }
+.tcard-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: white;
+  font-size: .78rem; font-weight: 700;
+  text-decoration: none;
+  transition: transform .2s, box-shadow .2s;
+  border: none; cursor: pointer; font-family: inherit; letter-spacing: .3px; white-space: nowrap;
+}
+.tcard-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(34,197,94,.4); }
+.tcard-cta svg { width: 14px; height: 14px; }
+.tcard-cta-tour {
+  background: linear-gradient(135deg, #1a5bb5, #0B3D91);
+  box-shadow: 0 4px 14px rgba(11,61,145,.4);
+}
+.tcard-cta-tour:hover { box-shadow: 0 8px 22px rgba(11,61,145,.55); }
+.tcard-cta-tour svg { width: 12px; height: 12px; }
+
+/* ─── SIMULADOR BANNER ─── */
+.sim-banner {
+  margin: 60px 0 30px;
+  background: linear-gradient(135deg, rgba(11,61,145,.45) 0%, rgba(5,18,50,.55) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(126,184,255,.25);
+  border-radius: 26px;
+  padding: 38px 36px;
+  position: relative; overflow: hidden;
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .8s ease, transform .8s ease;
+}
+.sim-banner.revealed { opacity: 1; transform: translateY(0); }
+.sim-banner::before {
+  content: '';
+  position: absolute; right: -16px; top: -28px;
+  font-size: 9rem; opacity: .07; line-height: 1; pointer-events: none;
+}
+.sim-banner-kicker {
+  font-size: .65rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
+  color: #7eb8ff; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sim-banner-kicker .kicker-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px;
+}
+.sim-banner-kicker .kicker-icon svg { width: 100%; height: 100%; }
+.sim-banner h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 800; margin-bottom: 12px; color: #fff; letter-spacing: -.5px;
+}
+.sim-banner p {
+  color: rgba(220,235,255,.85); font-size: .95rem; line-height: 1.65;
+  max-width: 720px; margin-bottom: 22px;
+}
+.sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: stretch; }
+@media (max-width: 800px) { .sim-grid { grid-template-columns: 1fr; } }
+
+.sim-controls { background: rgba(2,6,24,.4); border: 1px solid rgba(100,160,255,.15); border-radius: 18px; padding: 22px; }
+.sim-row { margin-bottom: 16px; }
+.sim-row:last-child { margin-bottom: 0; }
+.sim-row label {
+  display: block; font-size: .68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: rgba(150,190,255,.7); margin-bottom: 6px;
+}
+.sim-row select {
+  width: 100%; padding: 11px 14px; border-radius: 10px;
+  border: 1px solid rgba(100,160,255,.25);
+  background: rgba(2,6,24,.6);
+  color: white; font-family: inherit; font-size: .9rem;
+  cursor: pointer; outline: none; appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%237eb8ff' d='M6 8L0 0h12z'/></svg>");
+  background-repeat: no-repeat; background-position: right 14px center;
+  padding-right: 36px;
+}
+.sim-row select:focus { border-color: rgba(126,184,255,.6); }
+.sim-row select option { background: #0a1a3a; color: white; }
+
+.sim-result {
+  background: linear-gradient(135deg, #0B3D91, #1a5bb5);
+  border-radius: 18px; padding: 26px;
+  display: flex; flex-direction: column; justify-content: center; gap: 12px;
+  box-shadow: 0 12px 36px rgba(11,61,145,.4);
+}
+.sim-result-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.sim-result-row:last-child { border-bottom: none; padding-bottom: 0; }
+.sim-result-label { font-size: .76rem; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .5px; }
+.sim-result-value { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; }
+.sim-result-value.highlight { font-size: 1.8rem; color: #fef3c7; }
+.sim-cta-wrap { margin-top: 18px; display: flex; justify-content: center; }
+
+/* ─── PAQUETES ─── */
+.cat-paquetes-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 22px; margin: 30px 0 60px;
+}
+.pkg-card {
+  position: relative; border-radius: 22px; overflow: hidden;
+  aspect-ratio: 4/5; cursor: pointer;
+  border: 1px solid rgba(100,160,255,.18);
+  transition: transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s ease;
+  opacity: 0; transform: translateY(30px);
+}
+.pkg-card.revealed { opacity: 1; transform: translateY(0); }
+.pkg-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 24px 60px rgba(11,61,145,.5); }
+.pkg-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s ease; }
+.pkg-card:hover img { transform: scale(1.08); }
+.pkg-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(2,6,24,.65) 70%, rgba(2,6,24,.95) 100%);
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 22px 22px 22px;
+}
+.pkg-card-tag {
+  align-self: flex-start;
+  background: rgba(126,184,255,.2);
+  border: 1px solid rgba(126,184,255,.4);
+  color: #7eb8ff;
+  font-size: .6rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px; margin-bottom: 10px;
+}
+.pkg-card h3 { font-family: 'Syne', sans-serif; font-size: 1.45rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+.pkg-card-desc { font-size: .82rem; color: rgba(200,220,255,.75); margin-bottom: 14px; }
+.pkg-card-precio { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #7eb8ff; }
+.pkg-card-precio small { font-size: .68rem; font-weight: 500; color: rgba(200,220,255,.6); margin-left: 4px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* ─── FAB WHATSAPP ─── */
+.fab-wa {
+  position: fixed; bottom: 22px; right: 22px; z-index: 90;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 30px rgba(37,211,102,.45);
+  border: 2px solid rgba(255,255,255,.2);
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.fab-wa:hover { transform: scale(1.08); box-shadow: 0 12px 40px rgba(37,211,102,.6); }
+.fab-wa svg { width: 32px; height: 32px; color: white; }
+.fab-wa::after {
+  content: ''; position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(37,211,102,.5);
+  animation: pulse-ring 2s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(.95); opacity: .8; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+/* ─── FOOTER ─── */
+.cat-footer {
+  margin-top: 60px; padding: 50px 20px 30px;
+  background: rgba(2,6,24,.7);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(100,160,255,.15);
+  text-align: center;
+}
+.cat-footer-logo { width: 70px; height: 70px; margin: 0 auto 14px; display: block; border-radius: 50%; filter: drop-shadow(0 4px 20px rgba(80,140,255,.4)); }
+.cat-footer-brand { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; letter-spacing: 2px; color: #fff; margin-bottom: 6px; }
+.cat-footer-tagline { font-size: .68rem; letter-spacing: 4px; text-transform: uppercase; color: rgba(150,190,255,.65); margin-bottom: 22px; }
+.cat-footer-vendedor {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(11,61,145,.3);
+  border: 1px solid rgba(126,184,255,.25);
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-size: .85rem; color: rgba(220,235,255,.85);
+  margin-bottom: 22px;
+}
+.cat-footer-vendedor strong { color: #7eb8ff; }
+.cat-footer-vendedor .footer-tel-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px;
+  color: rgba(126,184,255,.75);
+}
+.cat-footer-vendedor .footer-tel-icon svg { width: 100%; height: 100%; }
+.cat-footer-links { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
+.cat-footer-links a { color: rgba(200,220,255,.65); text-decoration: none; font-size: .8rem; font-weight: 600; transition: color .2s; }
+.cat-footer-links a:hover { color: #7eb8ff; }
+.cat-footer-copy { font-size: .72rem; color: rgba(150,180,220,.45); }
+
+.cat-empty { text-align: center; padding: 60px 20px; color: rgba(150,180,220,.5); font-size: .95rem; }
+
+@media (max-width: 768px) {
+  .cat-hero { min-height: 85vh; padding: 90px 18px 40px; }
+  .cat-hero-badge-logo { width: 90px; height: 90px; }
+  .cat-filters-bar { padding: 12px 14px; }
+  .cat-search { flex: 1 1 100%; }
+  .cat-grid { grid-template-columns: 1fr; gap: 18px; }
+  .sim-banner { padding: 26px 20px; }
+  .sim-controls, .sim-result { padding: 18px; }
+  .cat-sec-head { margin: 40px 0 18px; }
+  .tcard-body { padding: 16px 16px 12px; }
+  .tcard-footer { padding: 10px 16px 14px; }
+  .fab-wa { width: 54px; height: 54px; bottom: 16px; right: 16px; }
+  .fab-wa svg { width: 28px; height: 28px; }
+}
+</style>
+</head>
+<body>
+
+<header class="cat-hero" id="catHero">
+  <div class="cat-hero-bg" id="catHeroBg"></div>
+  <div class="cat-hero-watermark">
+    <img src="images/logo-watermark.png" alt="" aria-hidden="true">
+  </div>
+
+  <div class="cat-hero-inner" id="catHeroInner">
+    <img src="images/logo-hero.png" alt="Luazul" class="cat-hero-badge-logo">
+    <div class="cat-hero-brand">LUAZUL</div>
+    <div class="cat-hero-tagline">Brasil · Tours y experiencias</div>
+    <h1>Tours, excursiones y<br><span class="accent">experiencias en Brasil</span></h1>
+    <p class="cat-hero-sub">Desde Río hasta Búzios, Arraial do Cabo y Cabo Frío. Atención 100% en español, precios transparentes y tu asesor personalizado.</p>
+    <div class="vendedor-pill" id="vendedorPill">
+      <span class="dot"></span>
+      <span>Tu asesor: <strong id="vendedorNombre">Luazul</strong></span>
+    </div>
+    <div class="cat-hero-cta">
+      <a href="#catalogo" class="btn-cw btn-cw-primary">Ver catálogo</a>
+      <a href="#simulador" class="btn-cw btn-cw-glass">Simular cuotas</a>
+    </div>
+  </div>
+
+  <div class="cat-scroll-cue">Scroll</div>
+</header>
+
+<div class="cat-filters-bar" id="catFiltersBar">
+  <div class="cat-filter-chips" id="catChips"></div>
+  <div class="cat-search">
+    <span class="cat-search-icon" id="catSearchIcon"></span>
+    <input type="text" id="catSearch" placeholder="Buscar tour..." autocomplete="off">
+  </div>
+</div>
+
+<main class="cat-main" id="catalogo">
+  <div id="catalogoContent"></div>
+
+  <section class="sim-banner" id="simulador">
+    <div class="sim-banner-kicker"><span class="kicker-icon" id="simKickerIcon"></span> Simulador de Cuotas</div>
+    <h2>Viajá a Brasil pagando en cuotas</h2>
+    <p>Calculá tu cuota mensual en segundos. Precios fijados en dólares estadounidenses, conversión automática a tu moneda local. Descuentos grupales automáticos: 5% (4-5 personas), 8% (6-7), 10% (8+).</p>
+
+    <div class="sim-grid">
+      <div class="sim-controls">
+        <div class="sim-row"><label>Destino</label><select id="simDestino"></select></div>
+        <div class="sim-row"><label>Noches</label>
+          <select id="simNoches">
+            <option value="5">5 noches</option>
+            <option value="7" selected>7 noches</option>
+            <option value="10">10 noches</option>
+            <option value="14">14 noches</option>
+          </select>
+        </div>
+        <div class="sim-row"><label>Adultos</label>
+          <select id="simAdultos">
+            <option value="1">1 persona</option>
+            <option value="2">2 personas</option>
+            <option value="3">3 personas</option>
+            <option value="4" selected>4 personas</option>
+            <option value="5">5 personas</option>
+            <option value="6">6 personas</option>
+            <option value="8">8 personas</option>
+          </select>
+        </div>
+        <div class="sim-row"><label>Cuotas</label>
+          <select id="simCuotas">
+            <option value="6">6 cuotas</option>
+            <option value="10" selected>10 cuotas</option>
+            <option value="12">12 cuotas</option>
+            <option value="18">18 cuotas</option>
+          </select>
+        </div>
+      </div>
+      <div class="sim-result">
+        <div class="sim-result-row"><span class="sim-result-label">Subtotal</span><span class="sim-result-value" id="simSubtotal">—</span></div>
+        <div class="sim-result-row"><span class="sim-result-label">Descuento grupal</span><span class="sim-result-value" id="simDesc">—</span></div>
+        <div class="sim-result-row"><span class="sim-result-label">Precio final</span><span class="sim-result-value" id="simTotal">—</span></div>
+        <div class="sim-result-row"><span class="sim-result-label">Cuota mensual</span><span class="sim-result-value highlight" id="simCuotaMensual">—</span></div>
+        <div class="sim-result-row"><span class="sim-result-label">Por persona / mes</span><span class="sim-result-value" id="simPorPersona">—</span></div>
+        <div class="sim-cta-wrap">
+          <a href="#" id="simCta" class="btn-cw btn-cw-primary" style="font-size:.85rem;padding:11px 22px;"><span id="simCtaIcon"></span> Consultar este plan</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="paquetes">
+    <div class="cat-sec-head">
+      <h2><span class="icon" id="paquetesIcon"></span> Paquetes en Cuotas</h2>
+      <span class="desc">Planes todo incluido · Hospedaje + tours + traslados</span>
+    </div>
+    <div class="cat-paquetes-grid" id="paquetesGrid"></div>
+  </section>
+</main>
+
+<a href="#" id="fabWa" class="fab-wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<footer class="cat-footer">
+  <img src="images/logo-footer.png" alt="Luazul" class="cat-footer-logo">
+  <div class="cat-footer-brand">LUAZUL</div>
+  <div class="cat-footer-tagline">Brasil · Tours y experiencias</div>
+  <div class="cat-footer-vendedor">
+    <span class="footer-tel-icon" id="footerTelIcon"></span> <span>Tu asesor: <strong id="footerVendedor">Luazul</strong></span>
+    <span style="opacity:.5">·</span>
+    <span id="footerTel">+54 9 297 472-6449</span>
+  </div>
+  <div class="cat-footer-links">
+    <a href="https://luazulturismo.com.br/" target="_blank" rel="noopener">Web oficial</a>
+    <a href="https://catalogo.luazulturismo.com.br/" target="_blank" rel="noopener">Catálogo oficial</a>
+    <a href="#" id="footerConsultar">Consultar</a>
+  </div>
+  <div class="cat-footer-copy">© 2026 Luazul Turismo · CADASTUR · Atención 100% en español</div>
+</footer>
+
+<script>
+const TOURS = [
+  {
+    "id": "rio-fullday",
+    "seccion": "rio",
+    "cat": "Tour en Río · Full Day",
+    "nombre": "Un Día en Río Full Day",
+    "desc": "Lo mejor de Río de Janeiro en un solo día con traslado, guía y almuerzo incluido.",
+    "incluye": [
+      "Cristo Redentor + Pan de Azúcar",
+      "Escaleras de Selarón · Sambódromo · Maracaná",
+      "Traslado ida y vuelta · Almuerzo incluido"
+    ],
+    "precio": "R$440",
+    "img": "tour-cristo-redentor.webp",
+    "tag": "Full Day · 8 hs",
+    "popular": true,
+    "url": "tour-cristo-redentor.html"
+  },
+  {
+    "id": "rio-citytour",
+    "seccion": "rio",
+    "cat": "Tour en Río · Medio Día",
+    "nombre": "Cristo + City Tour",
+    "desc": "Río en menos tiempo y menor costo, sin Pan de Azúcar.",
+    "incluye": [
+      "Cristo Redentor · Escaleras de Selarón · Catedral",
+      "Traslado ida y vuelta · Guía · Parada almuerzo"
+    ],
+    "precio": "R$270",
+    "img": "rio-cristo-redentor.webp",
+    "tag": "Medio Día · 5 hs",
+    "popular": true,
+    "url": "tour-cristo-redentor.html"
+  },
+  {
+    "id": "rio-arraial",
+    "seccion": "rio",
+    "cat": "Excursión desde Río",
+    "nombre": "Arraial do Cabo",
+    "desc": "El Caribe brasileño. Aguas cristalinas y paseo en barco.",
+    "incluye": [
+      "Praia do Farol · Prainhas do Atalaia · Gruta Azul",
+      "Almuerzo incluido · Menores 10 años 50% OFF",
+      "Tasa municipal R$30 (pago en destino)"
+    ],
+    "precio": "R$250",
+    "img": "arraial-hero.webp",
+    "tag": "Excursión · Full Day"
+  },
+  {
+    "id": "rio-buzios",
+    "seccion": "rio",
+    "cat": "Excursión desde Río",
+    "nombre": "Búzios",
+    "desc": "Destino exclusivo con paseo en barco y almuerzo.",
+    "incluye": [
+      "João Fernandes · Ilha Branca · Praia da Tartaruga",
+      "Paseo en barco · Almuerzo incluido"
+    ],
+    "precio": "R$240",
+    "img": "buzios-3.webp",
+    "tag": "Excursión · Full Day"
+  },
+  {
+    "id": "rio-angra",
+    "seccion": "rio",
+    "cat": "Excursión desde Río",
+    "nombre": "Angra dos Reis e Ilha Grande",
+    "desc": "Paraíso natural, Mata Atlántica y paseo en barco.",
+    "incluye": [
+      "Lagoa Azul · Freguesia de Santana · Praia de Araçá",
+      "Almuerzo incluido · Niños hasta 4 años sin cargo",
+      "Tasa R$25 por persona (pago en destino)"
+    ],
+    "precio": "R$190",
+    "img": "tour-ilha-grande-aerea.webp",
+    "tag": "Excursión · Full Day",
+    "popular": true,
+    "url": "tour-ilha-grande.html"
+  },
+  {
+    "id": "rio-petropolis",
+    "seccion": "rio",
+    "cat": "Tour en Río",
+    "nombre": "Petrópolis + Bohemia",
+    "desc": "Ciudad imperial de Brasil, historia y tour en fábrica Bohemia.",
+    "incluye": [
+      "Palacio Quitandinha · Museo Imperial · Palacio de Cristal",
+      "Almuerzo incluido · 12 horas · Mar a Dom"
+    ],
+    "precio": "R$240",
+    "img": "tour-centro-rio.webp",
+    "tag": "Imperial · 12 hs"
+  },
+  {
+    "id": "rio-tijuca",
+    "seccion": "rio",
+    "cat": "Tour en Río · Naturaleza",
+    "nombre": "Floresta da Tijuca",
+    "desc": "El bosque urbano más grande del mundo en jeep.",
+    "incluye": [
+      "Vista Chinesa · Mesa do Imperador · Cascatinha Taunay",
+      "Duración 4 hs · Mínimo 2 personas"
+    ],
+    "precio": "R$180",
+    "img": "tour-tijuca-jeep.webp",
+    "tag": "Naturaleza · 4 hs",
+    "popular": true,
+    "url": "tour-floresta-tijuca.html"
+  },
+  {
+    "id": "rio-rocinha",
+    "seccion": "rio",
+    "cat": "Tour en Río · Cultural",
+    "nombre": "Favela Rocinha",
+    "desc": "Tour cultural en jeep por la favela más grande de Brasil.",
+    "incluye": [
+      "Arte urbano · Miradores con vistas de Río · 4 horas",
+      "Tasa comunitaria R$10 (pago en destino)"
+    ],
+    "precio": "R$180",
+    "img": "rio-3.webp",
+    "tag": "Cultural · 4 hs"
+  },
+  {
+    "id": "rio-telegrafo",
+    "seccion": "rio",
+    "cat": "Tour en Río · Aventura",
+    "nombre": "Pedra de Telégrafo",
+    "desc": "El mirador más famoso de Río. Jeep + caminata a la cima.",
+    "incluye": [
+      "Sendero en naturaleza · Vistas al mar · 5 horas",
+      "Solo mayores de 10 años · Mínimo 2 personas"
+    ],
+    "precio": "R$190",
+    "img": "rio-5.webp",
+    "tag": "Aventura · 5 hs"
+  },
+  {
+    "id": "rio-samba",
+    "seccion": "rio",
+    "cat": "Tour en Río · Nocturno",
+    "nombre": "Noche de Samba",
+    "desc": "Energía carioca auténtica: escuela de samba y ensayo real.",
+    "incluye": [
+      "Escuela de samba · Músicos y bailarines · 4–5 horas",
+      "Traslado desde hospedaje · Horario nocturno"
+    ],
+    "precio": "R$250",
+    "img": "tour-sambodromo.webp",
+    "tag": "Nocturno · 4-5 hs"
+  },
+  {
+    "id": "buz-barco",
+    "seccion": "buzios",
+    "cat": "Tour en Búzios",
+    "nombre": "Paseo de Barco Búzios",
+    "desc": "Búzios desde el mar: playas e islas, 3 paradas para nadar. Duración 2:30 hs.",
+    "incluye": [
+      "João Fernandes · Ilha Feia · Praia da Tartaruga · Azeda",
+      "Niños 0–5 sin cargo · 6–9 años 50% OFF"
+    ],
+    "precio": "R$75",
+    "img": "buzios-escuna.webp",
+    "tag": "Barco · 2:30 hs",
+    "popular": true,
+    "url": "tour-barco-buzios.html"
+  },
+  {
+    "id": "buz-citytour",
+    "seccion": "buzios",
+    "cat": "Tour en Búzios",
+    "nombre": "City Tour Búzios",
+    "desc": "Búzios completo: city tour por tierra + paseo en barco. Almuerzo incluido.",
+    "incluye": [
+      "Mirante João Fernandes · Praia Brava · Ferradurinha",
+      "Barco: Azeda, João Fernandes, Ilha Branca · Almuerzo"
+    ],
+    "precio": "R$270",
+    "img": "buzios-orla-bardot-hero.webp",
+    "tag": "Completo · Full Day"
+  },
+  {
+    "id": "buz-buggy",
+    "seccion": "buzios",
+    "cat": "Tour en Búzios",
+    "nombre": "Paseo de Buggy",
+    "desc": "Miradores y playas en buggy con conductor-guía. Mínimo 2 personas.",
+    "incluye": [
+      "Orla Bardot · João Fernandes · Praia Brava · Ferradura"
+    ],
+    "precio": "R$120",
+    "img": "buggy-1.webp",
+    "tag": "Buggy · 3 hs",
+    "popular": true,
+    "url": "tour-buggy.html"
+  },
+  {
+    "id": "buz-buceo",
+    "seccion": "buzios",
+    "cat": "Tour en Búzios · Buceo",
+    "nombre": "Buceo en Búzios",
+    "desc": "Bautismo de buceo sin saber nadar. Tortugas, corales y peces hasta 12 metros.",
+    "incluye": [
+      "Instructor exclusivo · Traje y equipo completo",
+      "Merienda y bebidas incluidas"
+    ],
+    "precio": "R$380",
+    "img": "tour-ilha-grande-peces.webp",
+    "tag": "Buceo · 4 hs"
+  },
+  {
+    "id": "buz-arubinha",
+    "seccion": "buzios",
+    "cat": "Excursión desde Búzios",
+    "nombre": "Arubinha",
+    "desc": "Buggy + playa tranquila. Mar/Jue/Sáb. Mínimo 3 personas.",
+    "incluye": [
+      "Guía bilingüe · Almuerzo frente al mar",
+      "Día completo · Inicio 07:30 hs"
+    ],
+    "precio": "R$320",
+    "img": "buggy-2.webp",
+    "tag": "Excursión · Full Day"
+  },
+  {
+    "id": "buz-rio",
+    "seccion": "buzios",
+    "cat": "Excursión desde Búzios",
+    "nombre": "City Tour en Río desde Búzios",
+    "desc": "Cristo + almuerzo buffet. Día completo desde Búzios.",
+    "incluye": [
+      "Cristo Redentor (entrada incluida) · Catedral · Selarón",
+      "Almuerzo buffet · Niños hasta 4 años sin cargo"
+    ],
+    "precio": "R$370",
+    "img": "tour-cristo-redentor.webp",
+    "tag": "Excursión · Full Day"
+  },
+  {
+    "id": "buz-arraial",
+    "seccion": "buzios",
+    "cat": "Excursión desde Búzios",
+    "nombre": "Arraial do Cabo desde Búzios",
+    "desc": "Caribe brasileño con barco, guía bilingüe y almuerzo buffet.",
+    "incluye": [
+      "Ilha do Farol · Gruta Azul · Prainhas · Praia do Forno",
+      "Tasa R$15 (pago en embarque)"
+    ],
+    "precio": "R$210",
+    "img": "arraial-prainhas.webp",
+    "tag": "Excursión · Full Day"
+  },
+  {
+    "id": "buz-cabofrio",
+    "seccion": "buzios",
+    "cat": "Excursión desde Búzios",
+    "nombre": "Cabo Frío desde Búzios",
+    "desc": "Playas, compras y almuerzo buffet. Salida 08:10 hs, regreso 16:30 hs.",
+    "incluye": [
+      "Bairro da Passagem · Isla del Japonés · Playa do Peró",
+      "Niños hasta 4 años sin cargo · 5–10 años 50% OFF"
+    ],
+    "precio": "R$190",
+    "img": "cabo-frio-hero.webp",
+    "tag": "Excursión · Full Day"
+  },
+  {
+    "id": "arr-barco",
+    "seccion": "arraial",
+    "cat": "Tour en Arraial",
+    "nombre": "Paseo de Barco",
+    "desc": "Barco de 2 pisos con tobogán. 4:30 hs. Salida diaria desde Praia dos Anjos.",
+    "incluye": [
+      "Ilha do Farol · Gruta Azul · Prainhas do Atalaia",
+      "Niños 0–5 sin cargo · Tasa R$15 (pago en destino)"
+    ],
+    "precio": "R$80",
+    "img": "arraial-farol.webp",
+    "tag": "Barco · 4:30 hs",
+    "popular": true
+  },
+  {
+    "id": "arr-buggy",
+    "seccion": "arraial",
+    "cat": "Tour en Arraial",
+    "nombre": "Buggy en Arraial",
+    "desc": "Miradores y paisajes únicos en buggy. Duración 2–2:30 hs.",
+    "incluye": [
+      "Mirante da Prainha · Morro do Miranda · Lagoa Vermelha"
+    ],
+    "precio": "R$130",
+    "img": "buggy-3.webp",
+    "tag": "Buggy · 2:30 hs"
+  },
+  {
+    "id": "arr-cuatri",
+    "seccion": "arraial",
+    "cat": "Tour en Arraial · Aventura",
+    "nombre": "Cuatriciclo en Arraial",
+    "desc": "Off-road por dunas y senderos. 2 horas. Licencia de conducir obligatoria.",
+    "incluye": [
+      "Rebeche · Estrada das Casuarinas · Desierto de Praia Grande",
+      "Horarios: 08:00 · 10:30 · 13:00 · 15:30"
+    ],
+    "precio": "R$250",
+    "img": "buggy-4.webp",
+    "tag": "Aventura · 2 hs"
+  },
+  {
+    "id": "arr-buceo",
+    "seccion": "arraial",
+    "cat": "Tour en Arraial · Buceo",
+    "nombre": "Buceo en Arraial do Cabo",
+    "desc": "Primera experiencia de buceo con instructor 1 a 1 y 10 fotos subacuáticas.",
+    "incluye": [
+      "Inmersión hasta 10 metros · Snorkel para acompañantes",
+      "Snack + bebidas · Check-in 08:30 hs"
+    ],
+    "precio": "R$320",
+    "img": "arraial-gruta-azul.webp",
+    "tag": "Buceo · 4 hs"
+  },
+  {
+    "id": "arr-rio",
+    "seccion": "arraial",
+    "cat": "Excursión desde Arraial",
+    "nombre": "City Tour en Río desde Arraial",
+    "desc": "Lo mejor de Río con búsqueda en tu hospedaje en Arraial.",
+    "incluye": [
+      "Cristo (entrada incluida) · Catedral · Selarón · Almuerzo buffet"
+    ],
+    "precio": "R$450",
+    "img": "rio-cristo-redentor.webp",
+    "tag": "Excursión · Full Day"
+  },
+  {
+    "id": "cf-barco",
+    "seccion": "cabofrio",
+    "cat": "Tour en Cabo Frío",
+    "nombre": "Paseo de Barco",
+    "desc": "Cabo Frío desde el mar. Duración 3 horas. Embarque en el centro.",
+    "incluye": [
+      "Canal Itajuru · Isla del Japonés · Fuerte São Matheus"
+    ],
+    "precio": "R$130",
+    "img": "cabo-frio-canal.webp",
+    "tag": "Barco · 3 hs"
+  },
+  {
+    "id": "cf-buggy",
+    "seccion": "cabofrio",
+    "cat": "Tour en Cabo Frío",
+    "nombre": "Buggy en Cabo Frío",
+    "desc": "Playas, dunas y miradores en buggy. 2–3 horas.",
+    "incluye": [
+      "Bairro da Passagem · Playa do Forte · Dunas y lagunas"
+    ],
+    "precio": "R$140",
+    "img": "buggy-4.webp",
+    "tag": "Buggy · 2:30 hs"
+  },
+  {
+    "id": "cf-arraial",
+    "seccion": "cabofrio",
+    "cat": "Excursión desde Cabo Frío",
+    "nombre": "Arraial do Cabo desde Cabo Frío",
+    "desc": "Barco, guía bilingüe y almuerzo buffet. 3:30–4 hs de navegación.",
+    "incluye": [
+      "Tasa R$15 (pago en embarque)"
+    ],
+    "precio": "R$210",
+    "img": "arraial-prainhas.webp",
+    "tag": "Excursión · Full Day"
+  },
+  {
+    "id": "cf-rio",
+    "seccion": "cabofrio",
+    "cat": "Excursión desde Cabo Frío",
+    "nombre": "City Tour en Río desde Cabo Frío",
+    "desc": "Cristo + almuerzo buffet. La van viene desde Búzios.",
+    "incluye": [
+      "Cristo (entrada incluida) · Catedral · Selarón",
+      "Almuerzo buffet · Niños hasta 4 años sin cargo"
+    ],
+    "precio": "R$370",
+    "img": "tour-cristo-redentor.webp",
+    "tag": "Excursión · Full Day"
+  }
+];
+const SECCIONES = [
+  {
+    "id": "rio",
+    "nombre": "Río de Janeiro",
+    "icon": "cristo",
+    "desc": "Cristo, playas, selva y vida carioca",
+    "color": "#7eb8ff"
+  },
+  {
+    "id": "buzios",
+    "nombre": "Búzios",
+    "icon": "velero",
+    "desc": "23 playas, sofisticación y paseos en barco",
+    "color": "#fbbf24"
+  },
+  {
+    "id": "arraial",
+    "nombre": "Arraial do Cabo",
+    "icon": "pez",
+    "desc": "El Caribe brasileño, aguas turquesas",
+    "color": "#22d3ee"
+  },
+  {
+    "id": "cabofrio",
+    "nombre": "Cabo Frío",
+    "icon": "ola",
+    "desc": "Playas extensas, dunas e historia",
+    "color": "#34d399"
+  }
+];
+const DESTINOS_PRECIOS = [
+  {
+    "destino": "Cabo Frío",
+    "precio": 62.5,
+    "max": 4
+  },
+  {
+    "destino": "Arraial do Cabo",
+    "precio": 70.71,
+    "max": 6
+  },
+  {
+    "destino": "Búzios",
+    "precio": 80,
+    "max": 4
+  },
+  {
+    "destino": "Rio de Janeiro (Copacabana)",
+    "precio": 103.57,
+    "max": 4
+  }
+];
+const ICONS_SVG = {
+  "cristo": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M24 6v10\"/><path d=\"M14 14h20\"/><path d=\"M24 16v10\"/><path d=\"M22 18a2 2 0 1 0 4 0 2 2 0 1 0-4 0\"/><path d=\"M16 26h16\"/><path d=\"M14 30c0 5 4 8 10 8s10-3 10-8\"/><path d=\"M10 36c2 4 8 6 14 6s12-2 14-6\"/><path d=\"M8 42h32\"/></svg>",
+  "velero": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M24 6v22\"/><path d=\"M24 8l-10 18h10\"/><path d=\"M24 12l8 14h-8\"/><path d=\"M10 30h28\"/><path d=\"M12 30l-2 8\"/><path d=\"M36 30l2 8\"/><path d=\"M8 38c4 3 8 4 16 4s12-1 16-4\"/><path d=\"M6 42h36\"/></svg>",
+  "pez": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 24c4-8 14-12 22-12 6 0 10 4 14 12-4 8-8 12-14 12-8 0-18-4-22-12z\"/><path d=\"M34 20a2 2 0 1 0 0 4 2 2 0 0 0 0-4\"/><path d=\"M6 24l-4-6v12z\"/><path d=\"M18 24c2-2 6-2 8 0\"/><path d=\"M22 22c0 4 0 4-2 4\"/></svg>",
+  "ola": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 24c4 0 6-4 10-4s6 4 10 4 6-4 10-4 6 4 10 4\"/><path d=\"M4 32c4 0 6-4 10-4s6 4 10 4 6-4 10-4 6 4 10 4\"/><path d=\"M4 40c4 0 6-4 10-4s6 4 10 4 6-4 10-4 6 4 10 4\"/><path d=\"M24 6c-3 3-5 6-5 10s2 7 5 8c3-1 5-4 5-8s-2-7-5-10z\"/></svg>",
+  "todos": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"6\" width=\"36\" height=\"36\" rx=\"4\"/><path d=\"M14 18h20\"/><path d=\"M14 24h20\"/><path d=\"M14 30h12\"/></svg>",
+  "estrella": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M24 4l5.5 12 13 1.5-9.5 8.5 2.5 13L24 32l-11.5 7 2.5-13L5 17.5 18 16z\"/></svg>",
+  "palmera": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M24 18c-2-4-6-6-10-6\"/><path d=\"M24 18c2-4 6-6 10-6\"/><path d=\"M24 14c-4-2-8-1-11 2\"/><path d=\"M24 14c4-2 8-1 11 2\"/><path d=\"M24 14v-4\"/><path d=\"M22 18c-4 0-7 2-9 5\"/><path d=\"M26 18c4 0 7 2 9 5\"/><path d=\"M24 18v22\"/><path d=\"M20 30c-2 4-2 8-2 10\"/><path d=\"M28 30c2 4 2 8 2 10\"/></svg>",
+  "tarjeta": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4\" y=\"10\" width=\"40\" height=\"28\" rx=\"3\"/><path d=\"M4 18h40\"/><path d=\"M10 26h8\"/><path d=\"M10 30h12\"/><path d=\"M32 26h6\"/><path d=\"M32 30h6\"/></svg>",
+  "buscar": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"M16 16l5 5\"/></svg>",
+  "whatsapp": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z\"/></svg>",
+  "telefono": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z\"/></svg>"
+};
+function iconSVG(name) { return ICONS_SVG[name] || ''; }
+
+const params = new URLSearchParams(window.location.search);
+let vNombre = params.get('nombre') || 'Alejandro Astudillo';
+let vTel    = params.get('tel')    || '5492974726449';
+
+function aplicarVendedor() {
+  document.getElementById('vendedorNombre').textContent = vNombre;
+  document.getElementById('footerVendedor').textContent = vNombre;
+  let telDisplay = '+' + vTel;
+  if (vTel.length >= 12) {
+    telDisplay = '+' + vTel.slice(0,2) + ' ' + vTel.slice(2,4) + ' ' + vTel.slice(4,7) + '-' + vTel.slice(7);
+  }
+  document.getElementById('footerTel').textContent = telDisplay;
+  const waMsg = encodeURIComponent('Hola! Soy cliente de ' + vNombre + '. Vi el catálogo de Luazul y quiero más info.');
+  document.getElementById('fabWa').href = 'https://wa.me/' + vTel + '?text=' + waMsg;
+  document.getElementById('footerConsultar').href = 'https://wa.me/' + vTel + '?text=' + waMsg;
+}
+
+// ── Renderizar chips de filtro con iconos SVG ──
+function renderFiltros() {
+  const chips = [
+    { id:'todos', icon:'todos', label:'Todos' },
+    { id:'rio', icon:'cristo', label:'Río' },
+    { id:'buzios', icon:'velero', label:'Búzios' },
+    { id:'arraial', icon:'pez', label:'Arraial' },
+    { id:'cabofrio', icon:'ola', label:'Cabo Frío' },
+    { id:'popular', icon:'estrella', label:'Populares' }
+  ];
+  const container = document.getElementById('catChips');
+  let html = '';
+  chips.forEach((c, i) => {
+    html += '<button class="cat-chip' + (i === 0 ? ' active' : '') + '" data-filter="' + c.id + '"><span class="chip-icon">' + iconSVG(c.icon) + '</span> ' + c.label + '</button>';
+  });
+  container.innerHTML = html;
+}
+
+// ── Inyectar iconos en elementos estáticos ──
+function inyectarIconos() {
+  document.getElementById('catSearchIcon').innerHTML = iconSVG('buscar');
+  document.getElementById('simKickerIcon').innerHTML = iconSVG('tarjeta');
+  document.getElementById('paquetesIcon').innerHTML = iconSVG('palmera');
+  document.getElementById('footerTelIcon').innerHTML = iconSVG('telefono');
+  if (document.getElementById('simCtaIcon')) {
+    document.getElementById('simCtaIcon').innerHTML = iconSVG('whatsapp');
+    document.getElementById('simCtaIcon').style.display = 'inline-flex';
+    document.getElementById('simCtaIcon').style.alignItems = 'center';
+    document.getElementById('simCtaIcon').style.width = '14px';
+    document.getElementById('simCtaIcon').style.height = '14px';
+  }
+}
+
+aplicarVendedor();
+renderFiltros();
+inyectarIconos();
+
+// Guardar datos del vendedor en sessionStorage para que las páginas de tour los hereden
+function guardarVendedorSesion() {
+  try {
+    sessionStorage.setItem('catVendedor', JSON.stringify({ nombre: vNombre, tel: vTel }));
+  } catch(e) {}
+}
+
+function consultarTour(tourNombre) {
+  const n = vNombre ? ' con ' + vNombre : '';
+  const msg = encodeURIComponent('Hola' + n + '! Vi el catálogo de Luazul y me interesa: *' + tourNombre + '*. ¿Me pasás más info y disponibilidad?');
+  window.open('https://wa.me/' + vTel + '?text=' + msg, '_blank');
+}
+
+function renderCatalogo(filtro, search) {
+  filtro = filtro || 'todos';
+  search = (search || '').toLowerCase().trim();
+  const content = document.getElementById('catalogoContent');
+
+  const grouped = {};
+  TOURS.forEach(t => {
+    let matchFiltro = true;
+    if (filtro === 'popular') matchFiltro = !!t.popular;
+    else if (filtro !== 'todos') matchFiltro = t.seccion === filtro;
+    let matchSearch = true;
+    if (search) {
+      matchSearch = (t.nombre + ' ' + t.desc + ' ' + t.cat + ' ' + t.incluye.join(' ')).toLowerCase().includes(search);
+    }
+    if (matchFiltro && matchSearch) {
+      if (!grouped[t.seccion]) grouped[t.seccion] = [];
+      grouped[t.seccion].push(t);
+    }
+  });
+
+  let html = '';
+  let totalShown = 0;
+
+  SECCIONES.forEach(sec => {
+    const tours = grouped[sec.id] || [];
+    if (tours.length === 0) return;
+    totalShown += tours.length;
+
+    html += '<div class="cat-sec-head" data-reveal>';
+    html += '  <h2><span class="icon">' + iconSVG(sec.icon) + '</span> ' + sec.nombre + '</h2>';
+    html += '  <span class="desc">' + sec.desc + '</span>';
+    html += '  <span class="count">' + tours.length + ' tours</span>';
+    html += '</div>';
+
+    html += '<div class="cat-grid">';
+    tours.forEach(t => {
+      const incluyeHtml = t.incluye.map(i => '<li>' + i + '</li>').join('');
+      const safeNombre = t.nombre.replace(/"/g, '&quot;');
+      const onclickNombre = t.nombre.replace(/'/g, "\\'");
+      html += '<article class="tcard" data-reveal data-tour-id="' + t.id + '">';
+      html += '  <div class="tcard-img-wrap">';
+      html += '    <img class="tcard-img" src="images/' + t.img + '" alt="' + safeNombre + '" loading="lazy">';
+      html += '    <div class="tcard-img-overlay"></div>';
+      html += '    <div class="tcard-tag">' + t.tag + '</div>';
+      if (t.popular) html += '    <div class="tcard-popular"><span class="popular-icon">' + iconSVG('estrella') + '</span> Popular</div>';
+      html += '  </div>';
+      html += '  <div class="tcard-body">';
+      html += '    <div class="tcard-cat">' + t.cat + '</div>';
+      html += '    <div class="tcard-nombre">' + t.nombre + '</div>';
+      html += '    <p class="tcard-desc">' + t.desc + '</p>';
+      html += '    <ul class="tcard-incluye">' + incluyeHtml + '</ul>';
+      html += '  </div>';
+      html += '  <div class="tcard-footer">';
+      html += '    <div class="tcard-precio-bloque">';
+      html += '      <span class="tcard-precio-label">Desde</span>';
+      html += '      <span class="tcard-precio">' + t.precio + '</span>';
+      html += '      <span class="tcard-precio-unit">por persona</span>';
+      html += '    </div>';
+      if (t.url) {
+        // Tour con página individual — botón "Ver tour" (link)
+        html += '    <a class="tcard-cta tcard-cta-tour" href="' + t.url + '" onclick="guardarVendedorSesion()">';
+        html += '      Ver tour';
+        html += '      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>';
+        html += '    </a>';
+      } else {
+        // Tour sin página — botón "Consultar" directo a WhatsApp
+        html += '    <button class="tcard-cta" onclick="consultarTour(\'' + onclickNombre + '\')">';
+        html += '      ' + iconSVG('whatsapp') + ' Consultar';
+        html += '    </button>';
+      }
+      html += '  </div>';
+      html += '</article>';
+    });
+    html += '</div>';
+  });
+
+  if (totalShown === 0) {
+    html = '<div class="cat-empty">' + iconSVG('buscar') + ' No se encontraron tours con ese filtro.<br>Probá con otro término o cambiá de categoría.</div>';
+  }
+
+  content.innerHTML = html;
+  initReveal();
+  initTilt();
+}
+
+function initReveal() {
+  const els = document.querySelectorAll('[data-reveal]:not(.revealed)');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const siblings = Array.from(entry.target.parentNode.children);
+        const delay = siblings.indexOf(entry.target) * 60;
+        setTimeout(() => entry.target.classList.add('revealed'), Math.min(delay, 400));
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => io.observe(el));
+}
+
+function initTilt() {
+  const cards = document.querySelectorAll('.tcard:not([data-tilt])');
+  cards.forEach(card => {
+    card.dataset.tilt = '1';
+    let rafId = null;
+    function onMove(e) {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        const rotateX = (y - 0.5) * -8;
+        const rotateY = (x - 0.5) * 8;
+        card.style.transform = 'perspective(900px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-6px)';
+      });
+    }
+    function onLeave() {
+      if (rafId) cancelAnimationFrame(rafId);
+      card.style.transform = '';
+    }
+    card.addEventListener('mousemove', onMove);
+    card.addEventListener('mouseleave', onLeave);
+  });
+}
+
+const heroBg = document.getElementById('catHeroBg');
+const heroInner = document.getElementById('catHeroInner');
+const heroEl = document.getElementById('catHero');
+
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  if (scrollY < window.innerHeight) {
+    heroBg.style.transform = 'translateZ(-100px) scale(1.15) translateY(' + (scrollY * 0.4) + 'px)';
+    heroInner.style.transform = 'translateY(' + (scrollY * 0.25) + 'px)';
+    heroInner.style.opacity = Math.max(0, 1 - scrollY / (window.innerHeight * 0.7));
+  }
+}, { passive: true });
+
+if (window.matchMedia('(pointer: fine)').matches) {
+  heroEl.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 6;
+    const y = (e.clientY / window.innerHeight - 0.5) * 6;
+    heroInner.style.transform = 'translateY(' + (window.scrollY * 0.25) + 'px) rotateX(' + (-y) + 'deg) rotateY(' + x + 'deg)';
+  });
+  heroEl.addEventListener('mouseleave', () => { heroInner.style.transform = ''; });
+}
+
+document.getElementById('catChips').addEventListener('click', (e) => {
+  const chip = e.target.closest('.cat-chip');
+  if (!chip) return;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  renderCatalogo(chip.dataset.filter, document.getElementById('catSearch').value);
+});
+
+let searchTimer;
+document.getElementById('catSearch').addEventListener('input', (e) => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const activeChip = document.querySelector('.cat-chip.active');
+    renderCatalogo(activeChip ? activeChip.dataset.filter : 'todos', e.target.value);
+  }, 200);
+});
+
+function initSimulador() {
+  const selDest = document.getElementById('simDestino');
+  DESTINOS_PRECIOS.forEach((d, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = d.destino + ' — USD ' + d.precio.toFixed(2) + '/noche';
+    selDest.appendChild(opt);
+  });
+  selDest.value = 0;
+
+  function descuentoGrupal(adultos) {
+    if (adultos >= 8) return 0.10;
+    if (adultos >= 6) return 0.08;
+    if (adultos >= 4) return 0.05;
+    return 0;
+  }
+
+  function calcular() {
+    const dest = DESTINOS_PRECIOS[parseInt(selDest.value)];
+    const noches = parseInt(document.getElementById('simNoches').value);
+    const adultos = parseInt(document.getElementById('simAdultos').value);
+    const cuotas = parseInt(document.getElementById('simCuotas').value);
+
+    const subtotal = dest.precio * noches * adultos;
+    const descPct = descuentoGrupal(adultos);
+    const descMonto = subtotal * descPct;
+    const total = subtotal - descMonto;
+    const cuotaMensual = total / cuotas;
+    const porPersona = cuotaMensual / adultos;
+
+    document.getElementById('simSubtotal').textContent = 'USD ' + subtotal.toLocaleString('es-AR', {maximumFractionDigits:2});
+    document.getElementById('simDesc').textContent = descPct > 0 ? '- USD ' + descMonto.toLocaleString('es-AR', {maximumFractionDigits:2}) + ' (' + (descPct*100) + '%)' : '—';
+    document.getElementById('simTotal').textContent = 'USD ' + total.toLocaleString('es-AR', {maximumFractionDigits:2});
+    document.getElementById('simCuotaMensual').textContent = 'USD ' + cuotaMensual.toLocaleString('es-AR', {maximumFractionDigits:2});
+    document.getElementById('simPorPersona').textContent = 'USD ' + porPersona.toLocaleString('es-AR', {maximumFractionDigits:2});
+
+    const msg = encodeURIComponent('Hola' + (vNombre ? ' con ' + vNombre : '') + '! Simulé un paquete en el catálogo:\n• Destino: ' + dest.destino + '\n• ' + noches + ' noches · ' + adultos + ' adultos\n• ' + cuotas + ' cuotas\n• Precio final: USD ' + total.toFixed(2) + '\n• Cuota: USD ' + cuotaMensual.toFixed(2) + '/mes (USD ' + porPersona.toFixed(2) + ' por persona)\n¿Me pasás más info?');
+    document.getElementById('simCta').href = 'https://wa.me/' + vTel + '?text=' + msg;
+  }
+
+  ['simDestino','simNoches','simAdultos','simCuotas'].forEach(id => {
+    document.getElementById(id).addEventListener('change', calcular);
+  });
+  calcular();
+}
+
+function renderPaquetes() {
+  const PAQUETES = [
+    { id:'pareja', nombre:'Escapada en Pareja', img:'package-pareja.webp', desc:'2 personas · 7 noches · Cabo Frío', desde:62.50, tag:'Romántico' },
+    { id:'4amigos', nombre:'4 Amigos', img:'package-4amigos.webp', desc:'4 personas · 7 noches · Cabo Frío', desde:62.50, tag:'Grupos' },
+    { id:'6amigos', nombre:'Grupo de 6', img:'package-6amigos.webp', desc:'6 personas · 7 noches · Arraial', desde:70.71, tag:'Familia' }
+  ];
+  const grid = document.getElementById('paquetesGrid');
+  let html = '';
+  PAQUETES.forEach(p => {
+    const onclickNombre = ('Paquete ' + p.nombre).replace(/'/g, "\\'");
+    html += '<article class="pkg-card" data-reveal onclick="consultarTour(\'' + onclickNombre + '\')">';
+    html += '  <img src="images/' + p.img + '" alt="' + p.nombre + '" loading="lazy">';
+    html += '  <div class="pkg-card-overlay">';
+    html += '    <div class="pkg-card-tag">' + p.tag + '</div>';
+    html += '    <h3>' + p.nombre + '</h3>';
+    html += '    <p class="pkg-card-desc">' + p.desc + '</p>';
+    html += '    <div class="pkg-card-precio">USD ' + p.desde.toFixed(2) + ' <small>por noche / adulto</small></div>';
+    html += '  </div>';
+    html += '</article>';
+  });
+  grid.innerHTML = html;
+}
+
+renderCatalogo();
+renderPaquetes();
+initSimulador();
+initReveal();
+</script>
+
+</body>
+</html>
