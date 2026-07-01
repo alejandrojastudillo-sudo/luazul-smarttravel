@@ -4,11 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0B3D91">
-<meta name="description" content="Catálogo Luazul Smart Travel — Tours, excursiones y traslados en Brasil. Río de Janeiro, Búzios, Arraial do Cabo y Cabo Frío. Atención en español.">
+<meta name="description" content="Catálogo Luazul Smart Travel — Tours, excursiones, traslados y hospedajes en Brasil. Río de Janeiro, Búzios, Arraial do Cabo y Cabo Frío. Atención en español.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Luazul Catálogo">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Catálogo · Luazul Smart Travel</title>
 <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 <link rel="preload" as="image" href="images/bg-ocean.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -413,6 +420,123 @@ body {
 .tcard-cta-tour:hover { box-shadow: 0 8px 22px rgba(11,61,145,.55); }
 .tcard-cta-tour svg { width: 12px; height: 12px; }
 
+/* ─── CARD DESTACAR (badge especial) ─── */
+.tcard-destacar {
+  position: absolute; bottom: 14px; left: 14px;
+  background: rgba(2,6,24,.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(74,222,128,.4);
+  color: #4ade80;
+  font-size: .65rem; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+  padding: 5px 10px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.tcard-destacar::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 8px rgba(74,222,128,.7);
+}
+
+/* ─── TARIFA TABLE (Traslados) ─── */
+.tarifa-table {
+  margin: 14px 0 10px;
+  background: rgba(2,6,24,.35);
+  border: 1px solid rgba(100,160,255,.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.tarifa-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(100,160,255,.08);
+  gap: 12px;
+  transition: background .2s;
+}
+.tarifa-row:last-child { border-bottom: none; }
+.tarifa-row:hover { background: rgba(11,61,145,.18); }
+.tarifa-ruta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.tarifa-ruta-nombre {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #fff;
+}
+.tarifa-nota {
+  font-size: .68rem;
+  color: rgba(150,190,255,.55);
+  font-weight: 500;
+}
+.tarifa-precio {
+  font-family: 'Syne', sans-serif;
+  font-size: .92rem;
+  font-weight: 800;
+  color: #7eb8ff;
+  white-space: nowrap;
+}
+
+.tcard-extras {
+  font-size: .72rem;
+  color: rgba(150,190,255,.6);
+  font-weight: 600;
+  padding: 6px 10px;
+  background: rgba(11,61,145,.18);
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* ─── CARD PEDIMOS (Hospedajes) ─── */
+.tcard-pedimos {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(245,158,11,.10), rgba(217,119,6,.06));
+  border: 1px solid rgba(245,158,11,.25);
+  border-radius: 12px;
+  margin-top: 14px;
+  font-size: .76rem;
+  color: rgba(254,215,170,.85);
+  line-height: 1.5;
+}
+.tcard-pedimos svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: #fbbf24;
+  margin-top: 2px;
+}
+
+/* ─── TCARD TRASLADO/HOSPEDAJE overrides ─── */
+.tcard-traslado .tcard-img-wrap,
+.tcard-hospedaje .tcard-img-wrap {
+  aspect-ratio: 16/9;
+}
+.tcard-traslado .tcard-desc,
+.tcard-hospedaje .tcard-desc {
+  -webkit-line-clamp: 4;
+  max-height: none;
+}
+.cat-grid-traslados,
+.cat-grid-hospedajes {
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+}
+@media (max-width: 768px) {
+  .cat-grid-traslados,
+  .cat-grid-hospedajes {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ─── SIMULADOR BANNER ─── */
 .sim-banner {
   margin: 60px 0 30px;
@@ -685,12 +809,8 @@ body {
     </div>
   </section>
 
-  <section id="paquetes">
-    <div class="cat-sec-head">
-      <h2><span class="icon" id="paquetesIcon"></span> Paquetes en Cuotas</h2>
-      <span class="desc">Planes todo incluido · Hospedaje + tours + traslados</span>
-    </div>
-    <div class="cat-paquetes-grid" id="paquetesGrid"></div>
+  <section id="extras">
+    <div id="extrasContent"></div>
   </section>
 </main>
 
@@ -731,8 +851,7 @@ const TOURS = [
     "precio": "R$440",
     "img": "tour-cristo-redentor.webp",
     "tag": "Full Day · 8 hs",
-    "popular": true,
-    "url": "tour-cristo-redentor.html"
+    "popular": true
   },
   {
     "id": "rio-citytour",
@@ -747,8 +866,7 @@ const TOURS = [
     "precio": "R$270",
     "img": "rio-cristo-redentor.webp",
     "tag": "Medio Día · 5 hs",
-    "popular": true,
-    "url": "tour-cristo-redentor.html"
+    "popular": true
   },
   {
     "id": "rio-arraial",
@@ -793,8 +911,7 @@ const TOURS = [
     "precio": "R$190",
     "img": "tour-ilha-grande-aerea.webp",
     "tag": "Excursión · Full Day",
-    "popular": true,
-    "url": "tour-ilha-grande.html"
+    "popular": true
   },
   {
     "id": "rio-petropolis",
@@ -823,8 +940,7 @@ const TOURS = [
     "precio": "R$180",
     "img": "tour-tijuca-jeep.webp",
     "tag": "Naturaleza · 4 hs",
-    "popular": true,
-    "url": "tour-floresta-tijuca.html"
+    "popular": true
   },
   {
     "id": "rio-rocinha",
@@ -881,8 +997,7 @@ const TOURS = [
     "precio": "R$75",
     "img": "buzios-escuna.webp",
     "tag": "Barco · 2:30 hs",
-    "popular": true,
-    "url": "tour-barco-buzios.html"
+    "popular": true
   },
   {
     "id": "buz-citytour",
@@ -910,8 +1025,7 @@ const TOURS = [
     "precio": "R$120",
     "img": "buggy-1.webp",
     "tag": "Buggy · 3 hs",
-    "popular": true,
-    "url": "tour-buggy.html"
+    "popular": true
   },
   {
     "id": "buz-buceo",
@@ -1169,7 +1283,11 @@ const ICONS_SVG = {
   "tarjeta": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4\" y=\"10\" width=\"40\" height=\"28\" rx=\"3\"/><path d=\"M4 18h40\"/><path d=\"M10 26h8\"/><path d=\"M10 30h12\"/><path d=\"M32 26h6\"/><path d=\"M32 30h6\"/></svg>",
   "buscar": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"M16 16l5 5\"/></svg>",
   "whatsapp": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z\"/></svg>",
-  "telefono": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z\"/></svg>"
+  "telefono": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z\"/></svg>",
+  "van": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 32V14a2 2 0 0 1 2-2h22a4 4 0 0 1 3.2 1.6L40 24v8\"/><path d=\"M6 32h36\"/><path d=\"M14 32v4a4 4 0 0 0 8 0v-4\"/><path d=\"M30 32v4a4 4 0 0 0 8 0v-4\"/><path d=\"M14 22h12\"/><circle cx=\"18\" cy=\"32\" r=\"0.5\" fill=\"currentColor\"/><circle cx=\"34\" cy=\"32\" r=\"0.5\" fill=\"currentColor\"/><path d=\"M30 14v8h6\"/></svg>",
+  "casa": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 22L24 6l18 16\"/><path d=\"M10 20v22h28V20\"/><path d=\"M20 42V28h8v14\"/><path d=\"M14 24h4\"/><path d=\"M30 24h4\"/></svg>",
+  "compartir": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"18\" cy=\"14\" r=\"4\"/><circle cx=\"32\" cy=\"20\" r=\"4\"/><circle cx=\"18\" cy=\"32\" r=\"4\"/><path d=\"M22 14h12\"/><path d=\"M22 32h12\"/><path d=\"M14 18v10\"/></svg>",
+  "ceniza": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"M13 5l7 7-7 7\"/></svg>"
 };
 function iconSVG(name) { return ICONS_SVG[name] || ''; }
 
@@ -1198,6 +1316,8 @@ function renderFiltros() {
     { id:'buzios', icon:'velero', label:'Búzios' },
     { id:'arraial', icon:'pez', label:'Arraial' },
     { id:'cabofrio', icon:'ola', label:'Cabo Frío' },
+    { id:'traslados', icon:'van', label:'Traslados' },
+    { id:'hospedajes', icon:'casa', label:'Hospedajes' },
     { id:'popular', icon:'estrella', label:'Populares' }
   ];
   const container = document.getElementById('catChips');
@@ -1212,7 +1332,6 @@ function renderFiltros() {
 function inyectarIconos() {
   document.getElementById('catSearchIcon').innerHTML = iconSVG('buscar');
   document.getElementById('simKickerIcon').innerHTML = iconSVG('tarjeta');
-  document.getElementById('paquetesIcon').innerHTML = iconSVG('palmera');
   document.getElementById('footerTelIcon').innerHTML = iconSVG('telefono');
   if (document.getElementById('simCtaIcon')) {
     document.getElementById('simCtaIcon').innerHTML = iconSVG('whatsapp');
@@ -1392,7 +1511,51 @@ document.getElementById('catChips').addEventListener('click', (e) => {
   if (!chip) return;
   document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
   chip.classList.add('active');
-  renderCatalogo(chip.dataset.filter, document.getElementById('catSearch').value);
+  const filtro = chip.dataset.filter;
+  const searchVal = document.getElementById('catSearch').value;
+
+  // Traslados y Hospedajes son secciones separadas (extrasContent)
+  const extrasEl = document.getElementById('extras');
+  const catalogoEl = document.getElementById('catalogoContent');
+
+  if (filtro === 'traslados') {
+    // Mostrar solo sección Traslados
+    catalogoEl.style.display = 'none';
+    extrasEl.style.display = 'block';
+    document.querySelectorAll('.cat-grid-hospedajes, .cat-sec-head').forEach(el => {
+      const isHosp = el.classList && el.classList.contains('cat-grid-hospedajes');
+      const next = el.nextElementSibling;
+      if (isHosp) el.style.display = 'none';
+    });
+    // Ocultar heading de hospedajes
+    document.querySelectorAll('#extrasContent .cat-sec-head').forEach((h, i) => {
+      h.style.display = (i === 0) ? '' : 'none';  // solo primer heading (Traslados)
+    });
+    document.querySelector('.cat-grid-hospedajes').style.display = 'none';
+    document.querySelector('.cat-grid-traslados').style.display = '';
+    if (extrasEl.scrollIntoView) extrasEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+
+  if (filtro === 'hospedajes') {
+    catalogoEl.style.display = 'none';
+    extrasEl.style.display = 'block';
+    document.querySelector('.cat-grid-traslados').style.display = 'none';
+    document.querySelectorAll('#extrasContent .cat-sec-head').forEach((h, i) => {
+      h.style.display = (i === 1) ? '' : 'none';
+    });
+    document.querySelector('.cat-grid-hospedajes').style.display = '';
+    if (extrasEl.scrollIntoView) extrasEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+
+  // Filtros normales (todos, rio, buzios, arraial, cabofrio, popular)
+  catalogoEl.style.display = '';
+  extrasEl.style.display = '';  // mostrar extras también
+  document.querySelectorAll('#extrasContent .cat-sec-head').forEach(h => h.style.display = '');
+  document.querySelector('.cat-grid-traslados').style.display = '';
+  document.querySelector('.cat-grid-hospedajes').style.display = '';
+  renderCatalogo(filtro, searchVal);
 });
 
 let searchTimer;
@@ -1450,33 +1613,145 @@ function initSimulador() {
   calcular();
 }
 
-function renderPaquetes() {
-  const PAQUETES = [
-    { id:'pareja', nombre:'Escapada en Pareja', img:'package-pareja.webp', desc:'2 personas · 7 noches · Cabo Frío', desde:62.50, tag:'Romántico' },
-    { id:'4amigos', nombre:'4 Amigos', img:'package-4amigos.webp', desc:'4 personas · 7 noches · Cabo Frío', desde:62.50, tag:'Grupos' },
-    { id:'6amigos', nombre:'Grupo de 6', img:'package-6amigos.webp', desc:'6 personas · 7 noches · Arraial', desde:70.71, tag:'Familia' }
-  ];
-  const grid = document.getElementById('paquetesGrid');
-  let html = '';
-  PAQUETES.forEach(p => {
-    const onclickNombre = ('Paquete ' + p.nombre).replace(/'/g, "\\'");
-    html += '<article class="pkg-card" data-reveal onclick="consultarTour(\'' + onclickNombre + '\')">';
-    html += '  <img src="images/' + p.img + '" alt="' + p.nombre + '" loading="lazy">';
-    html += '  <div class="pkg-card-overlay">';
-    html += '    <div class="pkg-card-tag">' + p.tag + '</div>';
-    html += '    <h3>' + p.nombre + '</h3>';
-    html += '    <p class="pkg-card-desc">' + p.desc + '</p>';
-    html += '    <div class="pkg-card-precio">USD ' + p.desde.toFixed(2) + ' <small>por noche / adulto</small></div>';
-    html += '  </div>';
-    html += '</article>';
+// ── TRASLADOS Y HOSPEDAJES (sección especial con tarifa-table) ──
+const TRASLADOS = [
+  {
+    id: 'tras-priv',
+    cat: 'Traslados · Privados',
+    nombre: 'Traslados Privados',
+    desc: 'Viajá con total comodidad y seguridad. Recepción con cartel en el aeropuerto, asistencia con equipaje, puntualidad garantizada y vehículo exclusivo para vos.',
+    img: 'traslado-privado.webp',
+    icon: 'van',
+    tag: 'Exclusivo · Puerta a puerta',
+    destacar: 'Vehículo solo para vos',
+    tarifas: [
+      { ruta: 'Río → Búzios', nota: 'Hasta 4 personas', precio: 'Desde R$430' },
+      { ruta: 'Río → Cabo Frío', nota: 'Hasta 4 personas', precio: 'Desde R$430' },
+      { ruta: 'Río → Arraial do Cabo', nota: 'Hasta 4 personas', precio: 'Desde R$430' },
+      { ruta: 'Río → Angra dos Reis', nota: 'Hasta 4 personas', precio: 'Desde R$430' },
+      { ruta: 'Traslados internos región', nota: 'Búzios · Cabo Frío · Arraial', precio: 'Desde R$150' }
+    ],
+    extras: 'Pagos: pesos argentinos, tarjeta o PIX'
+  },
+  {
+    id: 'tras-comp',
+    cat: 'Traslados · Compartidos',
+    nombre: 'Traslados Compartidos',
+    desc: 'La opción más económica sin perder organización. Salidas diarias desde aeropuerto y hoteles, con horarios fijos y vehículo confortable.',
+    img: 'traslado-compartido.webp',
+    icon: 'compartir',
+    tag: 'Económico · Salidas diarias',
+    destacar: 'Hasta 50% más barato',
+    tarifas: [
+      { ruta: 'Río → Búzios', nota: 'Salidas diarias', precio: 'R$160' },
+      { ruta: 'Río → Cabo Frío / Arraial', nota: 'Salidas diarias', precio: 'R$230' },
+      { ruta: 'Ilha Grande', nota: 'Van + lancha', precio: 'R$190' }
+    ],
+    extras: 'Pagos: pesos argentinos, tarjeta o PIX'
+  }
+];
+
+const HOSPEDAJES = [
+  {
+    id: 'hosp-ideal',
+    cat: 'Hospedajes · Personalizado',
+    nombre: 'Tu hospedaje ideal en Brasil',
+    desc: 'No te conformes con cualquier lugar. Te buscamos la opción perfecta: casas, departamentos, hoteles boutique o posadas frente al mar. Cada propuesta se elige a mano según tu fecha, presupuesto y estilo de viaje.',
+    img: 'hospedaje.webp',
+    icon: 'casa',
+    tag: 'A medida · Verificado',
+    destacar: 'Sin costos ocultos',
+    incluye: [
+      'Río de Janeiro · Búzios · Cabo Frío · Arraial do Cabo',
+      'Opciones verificadas y curadas por nuestro equipo local',
+      'Acompañamiento completo antes y durante tu estadía',
+      'Reserva directa sin intermediarios ni comisiones extra'
+    ],
+    pedimos: 'Para asesorarte necesitamos: fecha de viaje · ciudad · cantidad de personas · presupuesto orientativo'
+  }
+];
+
+function renderTrasladosHospedajes() {
+  // TRASLADOS
+  let trasladosHtml = '    <div class="cat-sec-head" data-reveal>      <h2><span class="icon">' + iconSVG('van') + '</span> Traslados</h2>      <span class="desc">Privados y compartidos · Aeropuerto y entre ciudades</span>    </div>    <div class="cat-grid cat-grid-traslados">';
+
+  TRASLADOS.forEach(t => {
+    const tarifasHtml = t.tarifas.map(tar => '      <div class="tarifa-row">        <div class="tarifa-ruta">          <span class="tarifa-ruta-nombre">' + tar.ruta + '</span>          ' + (tar.nota ? '<span class="tarifa-nota">' + tar.nota + '</span>' : '') + '        </div>        <span class="tarifa-precio">' + tar.precio + '</span>      </div>').join('');
+
+    trasladosHtml += '      <article class="tcard tcard-traslado" data-reveal>        <div class="tcard-img-wrap">          <img class="tcard-img" src="images/' + t.img + '" alt="' + t.nombre + '" loading="lazy">          <div class="tcard-img-overlay"></div>          <div class="tcard-tag">' + t.tag + '</div>          <div class="tcard-destacar">' + t.destacar + '</div>        </div>        <div class="tcard-body">          <div class="tcard-cat">' + t.cat + '</div>          <div class="tcard-nombre">' + t.nombre + '</div>          <p class="tcard-desc">' + t.desc + '</p>          <div class="tarifa-table">' + tarifasHtml + '</div>          <p class="tcard-extras">' + t.extras + '</p>        </div>        <div class="tcard-footer">          <button class="tcard-cta" onclick="consultarTour(\'' + t.nombre.replace(/'/g, "\\\'") + '\')">            ' + iconSVG('whatsapp') + ' Consultar          </button>        </div>      </article>';
   });
-  grid.innerHTML = html;
+
+  trasladosHtml += '</div>';
+
+  // HOSPEDAJES
+  let hospedajesHtml = '    <div class="cat-sec-head" data-reveal>      <h2><span class="icon">' + iconSVG('casa') + '</span> Hospedajes</h2>      <span class="desc">Te buscamos el lugar perfecto · Sin costo extra</span>    </div>    <div class="cat-grid cat-grid-hospedajes">';
+
+  HOSPEDAJES.forEach(h => {
+    const incluyeHtml = h.incluye.map(i => '<li>' + i + '</li>').join('');
+    hospedajesHtml += '      <article class="tcard tcard-hospedaje" data-reveal>        <div class="tcard-img-wrap">          <img class="tcard-img" src="images/' + h.img + '" alt="' + h.nombre + '" loading="lazy">          <div class="tcard-img-overlay"></div>          <div class="tcard-tag">' + h.tag + '</div>          <div class="tcard-destacar">' + h.destacar + '</div>        </div>        <div class="tcard-body">          <div class="tcard-cat">' + h.cat + '</div>          <div class="tcard-nombre">' + h.nombre + '</div>          <p class="tcard-desc">' + h.desc + '</p>          <ul class="tcard-incluye">' + incluyeHtml + '</ul>          <div class="tcard-pedimos">' + iconSVG('buscar') + ' ' + h.pedimos + '</div>        </div>        <div class="tcard-footer">          <button class="tcard-cta" onclick="consultarTour(\'' + h.nombre.replace(/'/g, "\\\'") + '\')">            ' + iconSVG('whatsapp') + ' Consultar hospedaje          </button>        </div>      </article>';
+  });
+
+  hospedajesHtml += '</div>';
+
+  const container = document.getElementById('extrasContent');
+  if (container) container.innerHTML = trasladosHtml + hospedajesHtml;
 }
 
 renderCatalogo();
-renderPaquetes();
+renderTrasladosHospedajes();
 initSimulador();
 initReveal();
+
+// ── REGISTRO DE SERVICE WORKER (PWA) ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      console.log('[PWA] Service Worker registrado:', reg.scope);
+    }).catch((err) => {
+      console.warn('[PWA] SW registration failed:', err);
+    });
+  });
+}
+
+// ── PROMPT DE INSTALACIÓN PWA (antes antes de descargar, captura el evento) ──
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Mostrar botón de instalar después de 30 segundos si el usuario no está en standalone
+  if (!window.matchMedia('(display-mode: standalone)').matches) {
+    setTimeout(() => {
+      if (deferredPrompt && !sessionStorage.getItem('pwaPromptShown')) {
+        mostrarPromptInstalacion();
+        sessionStorage.setItem('pwaPromptShown', '1');
+      }
+    }, 30000);
+  }
+});
+
+function mostrarPromptInstalacion() {
+  const banner = document.createElement('div');
+  banner.id = 'pwaInstallBanner';
+  banner.style.cssText = 'position:fixed;bottom:80px;right:20px;left:20px;max-width:420px;margin:0 auto;background:linear-gradient(135deg,#0B3D91,#1a5bb5);color:white;padding:16px 18px;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.5);border:1px solid rgba(126,184,255,.4);z-index:200;display:flex;gap:12px;align-items:center;font-family:Montserrat,sans-serif;backdrop-filter:blur(20px);animation:fadeUp .5s ease;';
+  banner.innerHTML = '<div style="flex-shrink:0;width:42px;height:42px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div><div style="flex:1;"><div style="font-weight:800;font-size:.95rem;margin-bottom:3px;">Instalá Luazul Catálogo</div><div style="font-size:.78rem;opacity:.85;line-height:1.4;">Acceso rápido desde tu pantalla de inicio. Funciona offline.</div></div><button id="pwaInstallBtn" style="background:white;color:#0B3D91;border:none;padding:9px 16px;border-radius:10px;font-weight:700;font-size:.82rem;cursor:pointer;font-family:inherit;">Instalar</button><button id="pwaDismissBtn" style="background:transparent;color:rgba(255,255,255,.7);border:none;padding:9px;cursor:pointer;font-size:1.2rem;line-height:1;">×</button>';
+  document.body.appendChild(banner);
+
+  document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('[PWA] Install prompt:', outcome);
+      deferredPrompt = null;
+    }
+    banner.remove();
+  });
+  document.getElementById('pwaDismissBtn').addEventListener('click', () => banner.remove());
+
+  // Auto-cerrar después de 15 segundos si no se interactúa
+  setTimeout(() => {
+    if (document.getElementById('pwaInstallBanner')) banner.remove();
+  }, 15000);
+}
 </script>
 
 </body>
