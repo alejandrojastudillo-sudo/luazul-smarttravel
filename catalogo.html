@@ -537,83 +537,6 @@ body {
   }
 }
 
-/* ─── SIMULADOR BANNER ─── */
-.sim-banner {
-  margin: 60px 0 30px;
-  background: linear-gradient(135deg, rgba(11,61,145,.45) 0%, rgba(5,18,50,.55) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(126,184,255,.25);
-  border-radius: 26px;
-  padding: 38px 36px;
-  position: relative; overflow: hidden;
-  opacity: 0; transform: translateY(30px);
-  transition: opacity .8s ease, transform .8s ease;
-}
-.sim-banner.revealed { opacity: 1; transform: translateY(0); }
-.sim-banner::before {
-  content: '';
-  position: absolute; right: -16px; top: -28px;
-  font-size: 9rem; opacity: .07; line-height: 1; pointer-events: none;
-}
-.sim-banner-kicker {
-  font-size: .65rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
-  color: #7eb8ff; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 8px;
-}
-.sim-banner-kicker .kicker-icon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px;
-}
-.sim-banner-kicker .kicker-icon svg { width: 100%; height: 100%; }
-.sim-banner h2 {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(1.5rem, 3vw, 2.1rem);
-  font-weight: 800; margin-bottom: 12px; color: #fff; letter-spacing: -.5px;
-}
-.sim-banner p {
-  color: rgba(220,235,255,.85); font-size: .95rem; line-height: 1.65;
-  max-width: 720px; margin-bottom: 22px;
-}
-.sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: stretch; }
-@media (max-width: 800px) { .sim-grid { grid-template-columns: 1fr; } }
-
-.sim-controls { background: rgba(2,6,24,.4); border: 1px solid rgba(100,160,255,.15); border-radius: 18px; padding: 22px; }
-.sim-row { margin-bottom: 16px; }
-.sim-row:last-child { margin-bottom: 0; }
-.sim-row label {
-  display: block; font-size: .68rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1px;
-  color: rgba(150,190,255,.7); margin-bottom: 6px;
-}
-.sim-row select {
-  width: 100%; padding: 11px 14px; border-radius: 10px;
-  border: 1px solid rgba(100,160,255,.25);
-  background: rgba(2,6,24,.6);
-  color: white; font-family: inherit; font-size: .9rem;
-  cursor: pointer; outline: none; appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%237eb8ff' d='M6 8L0 0h12z'/></svg>");
-  background-repeat: no-repeat; background-position: right 14px center;
-  padding-right: 36px;
-}
-.sim-row select:focus { border-color: rgba(126,184,255,.6); }
-.sim-row select option { background: #0a1a3a; color: white; }
-
-.sim-result {
-  background: linear-gradient(135deg, #0B3D91, #1a5bb5);
-  border-radius: 18px; padding: 26px;
-  display: flex; flex-direction: column; justify-content: center; gap: 12px;
-  box-shadow: 0 12px 36px rgba(11,61,145,.4);
-}
-.sim-result-row {
-  display: flex; justify-content: space-between; align-items: baseline;
-  padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.12);
-}
-.sim-result-row:last-child { border-bottom: none; padding-bottom: 0; }
-.sim-result-label { font-size: .76rem; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .5px; }
-.sim-result-value { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; }
-.sim-result-value.highlight { font-size: 1.8rem; color: #fef3c7; }
-.sim-cta-wrap { margin-top: 18px; display: flex; justify-content: center; }
-
 /* ─── PAQUETES ─── */
 .cat-paquetes-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -647,6 +570,104 @@ body {
 .pkg-card-desc { font-size: .82rem; color: rgba(200,220,255,.75); margin-bottom: 14px; }
 .pkg-card-precio { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #7eb8ff; }
 .pkg-card-precio small { font-size: .68rem; font-weight: 500; color: rgba(200,220,255,.6); margin-left: 4px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* ─── SECCIÓN CONFIANZA ─── */
+.trust-section {
+  margin: 60px 0 30px;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, rgba(11,61,145,.18) 0%, rgba(5,18,50,.25) 100%);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(100,160,255,.18);
+  border-radius: 22px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.trust-section.revealed { opacity: 1; transform: translateY(0); }
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 18px;
+}
+.trust-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 16px;
+  background: rgba(2,6,24,.4);
+  border: 1px solid rgba(100,160,255,.12);
+  border-radius: 16px;
+  transition: border-color .25s, transform .25s;
+}
+.trust-card:hover {
+  border-color: rgba(126,184,255,.35);
+  transform: translateY(-2px);
+}
+.trust-icon {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(11,61,145,.4), rgba(30,80,180,.2));
+  border: 1px solid rgba(126,184,255,.25);
+  border-radius: 10px;
+  color: #7eb8ff;
+}
+.trust-icon svg { width: 20px; height: 20px; }
+.trust-body { flex: 1; min-width: 0; }
+.trust-title {
+  font-family: 'Syne', sans-serif;
+  font-size: .92rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+  letter-spacing: .3px;
+}
+.trust-desc {
+  font-size: .76rem;
+  color: rgba(200,220,255,.7);
+  line-height: 1.45;
+}
+.trust-cadastur {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 9px;
+  background: rgba(34,197,94,.12);
+  border: 1px solid rgba(34,197,94,.3);
+  border-radius: 6px;
+  font-size: .68rem;
+  font-weight: 700;
+  color: #4ade80;
+  letter-spacing: .5px;
+  font-family: 'Syne', sans-serif;
+}
+.trust-cadastur.placeholder {
+  background: rgba(245,158,11,.10);
+  border-color: rgba(245,158,11,.3);
+  color: #fbbf24;
+}
+.trust-kicker {
+  font-size: .65rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
+  color: #7eb8ff; margin-bottom: 6px;
+}
+.trust-title-main {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+  font-weight: 800; color: #fff; letter-spacing: -.3px;
+}
+@media (max-width: 768px) {
+  .trust-section { padding: 24px 18px; margin: 40px 0 20px; }
+  .trust-grid { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* ─── PRECIO USD APROX ─── */
+.tcard-precio-usd {
+  font-size: .68rem;
+  font-weight: 600;
+  color: rgba(150,190,255,.55);
+  margin-top: 2px;
+  letter-spacing: .3px;
+}
 
 /* ─── FAB WHATSAPP ─── */
 .fab-wa {
@@ -712,8 +733,6 @@ body {
   .cat-filters-bar { padding: 12px 14px; }
   .cat-search { flex: 1 1 100%; }
   .cat-grid { grid-template-columns: 1fr; gap: 18px; }
-  .sim-banner { padding: 26px 20px; }
-  .sim-controls, .sim-result { padding: 18px; }
   .cat-sec-head { margin: 40px 0 18px; }
   .tcard-body { padding: 16px 16px 12px; }
   .tcard-footer { padding: 10px 16px 14px; }
@@ -742,7 +761,7 @@ body {
     </div>
     <div class="cat-hero-cta">
       <a href="#catalogo" class="btn-cw btn-cw-primary">Ver catálogo</a>
-      <a href="#simulador" class="btn-cw btn-cw-glass">Simular cuotas</a>
+      <a href="#trustSection" class="btn-cw btn-cw-glass">Por qué elegirnos</a>
     </div>
   </div>
 
@@ -760,57 +779,38 @@ body {
 <main class="cat-main" id="catalogo">
   <div id="catalogoContent"></div>
 
-  <section class="sim-banner" id="simulador">
-    <div class="sim-banner-kicker"><span class="kicker-icon" id="simKickerIcon"></span> Simulador de Cuotas</div>
-    <h2>Viajá a Brasil pagando en cuotas</h2>
-    <p>Calculá tu cuota mensual en segundos. Precios fijados en dólares estadounidenses, conversión automática a tu moneda local. Descuentos grupales automáticos: 5% (4-5 personas), 8% (6-7), 10% (8+).</p>
+  <section id="extras">
+    <div id="extrasContent"></div>
+  </section>
 
-    <div class="sim-grid">
-      <div class="sim-controls">
-        <div class="sim-row"><label>Destino</label><select id="simDestino"></select></div>
-        <div class="sim-row"><label>Noches</label>
-          <select id="simNoches">
-            <option value="5">5 noches</option>
-            <option value="7" selected>7 noches</option>
-            <option value="10">10 noches</option>
-            <option value="14">14 noches</option>
-          </select>
-        </div>
-        <div class="sim-row"><label>Adultos</label>
-          <select id="simAdultos">
-            <option value="1">1 persona</option>
-            <option value="2">2 personas</option>
-            <option value="3">3 personas</option>
-            <option value="4" selected>4 personas</option>
-            <option value="5">5 personas</option>
-            <option value="6">6 personas</option>
-            <option value="8">8 personas</option>
-          </select>
-        </div>
-        <div class="sim-row"><label>Cuotas</label>
-          <select id="simCuotas">
-            <option value="6">6 cuotas</option>
-            <option value="10" selected>10 cuotas</option>
-            <option value="12">12 cuotas</option>
-            <option value="18">18 cuotas</option>
-          </select>
+  <!-- ═══════════════ SECCIÓN CONFIANZA ═══════════════ -->
+  <section class="trust-section" id="trustSection">
+    <div class="trust-kicker">Por qué elegirnos</div>
+    <div class="trust-title-main">Tu viaje, en manos profesionales</div>
+    <div class="trust-grid">
+      <div class="trust-card" data-reveal>
+        <div class="trust-icon" id="trustIcon1"></div>
+        <div class="trust-body">
+          <div class="trust-title">Agencia registrada</div>
+          <div class="trust-desc">Operamos bajo CADASTUR, registro oficial del Ministerio de Turismo de Brasil.</div>
+          <span class="trust-cadastur placeholder" id="cadasturNum">N° [AGREGAR NÚMERO]</span>
         </div>
       </div>
-      <div class="sim-result">
-        <div class="sim-result-row"><span class="sim-result-label">Subtotal</span><span class="sim-result-value" id="simSubtotal">—</span></div>
-        <div class="sim-result-row"><span class="sim-result-label">Descuento grupal</span><span class="sim-result-value" id="simDesc">—</span></div>
-        <div class="sim-result-row"><span class="sim-result-label">Precio final</span><span class="sim-result-value" id="simTotal">—</span></div>
-        <div class="sim-result-row"><span class="sim-result-label">Cuota mensual</span><span class="sim-result-value highlight" id="simCuotaMensual">—</span></div>
-        <div class="sim-result-row"><span class="sim-result-label">Por persona / mes</span><span class="sim-result-value" id="simPorPersona">—</span></div>
-        <div class="sim-cta-wrap">
-          <a href="#" id="simCta" class="btn-cw btn-cw-primary" style="font-size:.85rem;padding:11px 22px;"><span id="simCtaIcon"></span> Consultar este plan</a>
+      <div class="trust-card" data-reveal>
+        <div class="trust-icon" id="trustIcon2"></div>
+        <div class="trust-body">
+          <div class="trust-title">+3 años de trayectoria</div>
+          <div class="trust-desc">Operando en Río de Janeiro con clientes de toda Latinoamérica. Reseñas 5★ en Google.</div>
+        </div>
+      </div>
+      <div class="trust-card" data-reveal>
+        <div class="trust-icon" id="trustIcon3"></div>
+        <div class="trust-body">
+          <div class="trust-title">Atención 100% en español</div>
+          <div class="trust-desc">Te respondemos en tu idioma antes, durante y después del viaje. Sin barreras ni malos entendidos.</div>
         </div>
       </div>
     </div>
-  </section>
-
-  <section id="extras">
-    <div id="extrasContent"></div>
   </section>
 </main>
 
@@ -829,8 +829,8 @@ body {
   </div>
   <div class="cat-footer-links">
     <a href="#catalogo">Ver tours</a>
-    <a href="#simulador">Simular cuotas</a>
     <a href="#extras">Traslados y hospedajes</a>
+    <a href="#trustSection">Por qué elegirnos</a>
     <a href="#" id="footerConsultar">Consultar por WhatsApp</a>
   </div>
   <div class="cat-footer-copy">© 2026 Luazul Turismo · CADASTUR · Atención 100% en español</div>
@@ -954,7 +954,7 @@ const TOURS = [
       "Tasa comunitaria R$10 (pago en destino)"
     ],
     "precio": "R$180",
-    "img": "rio-3.webp",
+    "img": "favela-rocinha.webp",
     "tag": "Cultural · 4 hs"
   },
   {
@@ -1290,7 +1290,10 @@ const ICONS_SVG = {
   "van": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 32V14a2 2 0 0 1 2-2h22a4 4 0 0 1 3.2 1.6L40 24v8\"/><path d=\"M6 32h36\"/><path d=\"M14 32v4a4 4 0 0 0 8 0v-4\"/><path d=\"M30 32v4a4 4 0 0 0 8 0v-4\"/><path d=\"M14 22h12\"/><circle cx=\"18\" cy=\"32\" r=\"0.5\" fill=\"currentColor\"/><circle cx=\"34\" cy=\"32\" r=\"0.5\" fill=\"currentColor\"/><path d=\"M30 14v8h6\"/></svg>",
   "casa": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 22L24 6l18 16\"/><path d=\"M10 20v22h28V20\"/><path d=\"M20 42V28h8v14\"/><path d=\"M14 24h4\"/><path d=\"M30 24h4\"/></svg>",
   "compartir": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"18\" cy=\"14\" r=\"4\"/><circle cx=\"32\" cy=\"20\" r=\"4\"/><circle cx=\"18\" cy=\"32\" r=\"4\"/><path d=\"M22 14h12\"/><path d=\"M22 32h12\"/><path d=\"M14 18v10\"/></svg>",
-  "ceniza": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"M13 5l7 7-7 7\"/></svg>"
+  "ceniza": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"M13 5l7 7-7 7\"/></svg>",
+  "escudo": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M24 4L6 12v12c0 11 8 18 18 20 10-2 18-9 18-20V12L24 4z\"/><path d=\"M16 24l6 6 12-12\"/></svg>",
+  "calendario": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"10\" width=\"36\" height=\"32\" rx=\"3\"/><path d=\"M6 18h36\"/><path d=\"M16 6v8\"/><path d=\"M32 6v8\"/><path d=\"M14 26h4\"/><path d=\"M22 26h4\"/><path d=\"M30 26h4\"/><path d=\"M14 34h4\"/><path d=\"M22 34h4\"/></svg>",
+  "globo": "<svg viewBox=\"0 0 48 48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"24\" cy=\"24\" r=\"20\"/><path d=\"M4 24h40\"/><path d=\"M24 4c6 6 9 12 9 20s-3 14-9 20c-6-6-9-12-9-20s3-14 9-20z\"/></svg>"
 };
 function iconSVG(name) { return ICONS_SVG[name] || ''; }
 
@@ -1334,15 +1337,11 @@ function renderFiltros() {
 // ── Inyectar iconos en elementos estáticos ──
 function inyectarIconos() {
   document.getElementById('catSearchIcon').innerHTML = iconSVG('buscar');
-  document.getElementById('simKickerIcon').innerHTML = iconSVG('tarjeta');
   document.getElementById('footerTelIcon').innerHTML = iconSVG('telefono');
-  if (document.getElementById('simCtaIcon')) {
-    document.getElementById('simCtaIcon').innerHTML = iconSVG('whatsapp');
-    document.getElementById('simCtaIcon').style.display = 'inline-flex';
-    document.getElementById('simCtaIcon').style.alignItems = 'center';
-    document.getElementById('simCtaIcon').style.width = '14px';
-    document.getElementById('simCtaIcon').style.height = '14px';
-  }
+  // Iconos sección confianza
+  document.getElementById('trustIcon1').innerHTML = iconSVG('escudo');
+  document.getElementById('trustIcon2').innerHTML = iconSVG('calendario');
+  document.getElementById('trustIcon3').innerHTML = iconSVG('globo');
 }
 
 aplicarVendedor();
@@ -1419,6 +1418,7 @@ function renderCatalogo(filtro, search) {
       html += '      <span class="tcard-precio-label">Desde</span>';
       html += '      <span class="tcard-precio">' + t.precio + '</span>';
       html += '      <span class="tcard-precio-unit">por persona</span>';
+      html += '      <span class="tcard-precio-usd" data-precio-brl="' + t.precio + '"></span>';
       html += '    </div>';
       if (t.url) {
         // Tour con página individual — botón "Ver tour" (link)
@@ -1570,52 +1570,6 @@ document.getElementById('catSearch').addEventListener('input', (e) => {
   }, 200);
 });
 
-function initSimulador() {
-  const selDest = document.getElementById('simDestino');
-  DESTINOS_PRECIOS.forEach((d, i) => {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = d.destino + ' — USD ' + d.precio.toFixed(2) + '/noche';
-    selDest.appendChild(opt);
-  });
-  selDest.value = 0;
-
-  function descuentoGrupal(adultos) {
-    if (adultos >= 8) return 0.10;
-    if (adultos >= 6) return 0.08;
-    if (adultos >= 4) return 0.05;
-    return 0;
-  }
-
-  function calcular() {
-    const dest = DESTINOS_PRECIOS[parseInt(selDest.value)];
-    const noches = parseInt(document.getElementById('simNoches').value);
-    const adultos = parseInt(document.getElementById('simAdultos').value);
-    const cuotas = parseInt(document.getElementById('simCuotas').value);
-
-    const subtotal = dest.precio * noches * adultos;
-    const descPct = descuentoGrupal(adultos);
-    const descMonto = subtotal * descPct;
-    const total = subtotal - descMonto;
-    const cuotaMensual = total / cuotas;
-    const porPersona = cuotaMensual / adultos;
-
-    document.getElementById('simSubtotal').textContent = 'USD ' + subtotal.toLocaleString('es-AR', {maximumFractionDigits:2});
-    document.getElementById('simDesc').textContent = descPct > 0 ? '- USD ' + descMonto.toLocaleString('es-AR', {maximumFractionDigits:2}) + ' (' + (descPct*100) + '%)' : '—';
-    document.getElementById('simTotal').textContent = 'USD ' + total.toLocaleString('es-AR', {maximumFractionDigits:2});
-    document.getElementById('simCuotaMensual').textContent = 'USD ' + cuotaMensual.toLocaleString('es-AR', {maximumFractionDigits:2});
-    document.getElementById('simPorPersona').textContent = 'USD ' + porPersona.toLocaleString('es-AR', {maximumFractionDigits:2});
-
-    const msg = encodeURIComponent('Hola' + (vNombre ? ' con ' + vNombre : '') + '! Simulé un paquete en el catálogo:\n• Destino: ' + dest.destino + '\n• ' + noches + ' noches · ' + adultos + ' adultos\n• ' + cuotas + ' cuotas\n• Precio final: USD ' + total.toFixed(2) + '\n• Cuota: USD ' + cuotaMensual.toFixed(2) + '/mes (USD ' + porPersona.toFixed(2) + ' por persona)\n¿Me pasás más info?');
-    document.getElementById('simCta').href = 'https://wa.me/' + vTel + '?text=' + msg;
-  }
-
-  ['simDestino','simNoches','simAdultos','simCuotas'].forEach(id => {
-    document.getElementById(id).addEventListener('change', calcular);
-  });
-  calcular();
-}
-
 // ── TRASLADOS Y HOSPEDAJES (sección especial con tarifa-table) ──
 const TRASLADOS = [
   {
@@ -1702,8 +1656,55 @@ function renderTrasladosHospedajes() {
 
 renderCatalogo();
 renderTrasladosHospedajes();
-initSimulador();
 initReveal();
+
+// ── TIPO DE CAMBIO USD/BRL EN TIEMPO REAL (AwesomeAPI) ──
+// Variable global para almacenar el tipo de cambio
+let usdBrlRate = 5.5; // valor de respaldo por si la API falla
+let usdLoaded = false;
+
+async function cargarTipoCambioUSD() {
+  try {
+    const response = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL');
+    if (!response.ok) throw new Error('API respondió ' + response.status);
+    const data = await response.json();
+    if (data && data.USDBRL && data.USDBRL.bid) {
+      usdBrlRate = parseFloat(data.USDBRL.bid);
+      usdLoaded = true;
+      console.log('[USD] Tipo de cambio cargado: 1 USD = ' + usdBrlRate + ' BRL');
+      // Actualizar todos los precios USD mostrados
+      actualizarPreciosUSD();
+    }
+  } catch (e) {
+    console.warn('[USD] No se pudo cargar tipo de cambio, usando valor de respaldo:', e);
+    usdLoaded = false;
+  }
+}
+
+function calcularUsdAprox(precioBRL) {
+  // Extraer el número del string (ej: "R$380" → 380, "Desde R$430" → 430)
+  const match = String(precioBRL).match(/R\$\s*([\d.]+)/);
+  if (!match) return null;
+  const valor = parseFloat(match[1].replace(/\./g, ''));
+  if (isNaN(valor) || valor === 0) return null;
+  const usd = valor / usdBrlRate;
+  return Math.round(usd);
+}
+
+function actualizarPreciosUSD() {
+  document.querySelectorAll('[data-precio-brl]').forEach(el => {
+    const brl = el.dataset.precioBrl;
+    const usd = calcularUsdAprox(brl);
+    if (usd !== null) {
+      el.textContent = '~USD ' + usd + ' aprox';
+    } else {
+      el.textContent = '';
+    }
+  });
+}
+
+// Cargar tipo de cambio al iniciar
+cargarTipoCambioUSD();
 
 // ── REGISTRO DE SERVICE WORKER (PWA) ──
 if ('serviceWorker' in navigator) {
