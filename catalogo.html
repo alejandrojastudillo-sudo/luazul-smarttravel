@@ -579,11 +579,7 @@ body {
   backdrop-filter: blur(14px);
   border: 1px solid rgba(100,160,255,.18);
   border-radius: 22px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity .6s ease, transform .6s ease;
 }
-.trust-section.revealed { opacity: 1; transform: translateY(0); }
 .trust-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -788,7 +784,7 @@ body {
     <div class="trust-kicker">Por qué elegirnos</div>
     <div class="trust-title-main">Tu viaje, en manos profesionales</div>
     <div class="trust-grid">
-      <div class="trust-card" data-reveal>
+      <div class="trust-card">
         <div class="trust-icon" id="trustIcon1"></div>
         <div class="trust-body">
           <div class="trust-title">Agencia registrada</div>
@@ -796,14 +792,14 @@ body {
           <span class="trust-cadastur placeholder" id="cadasturNum">N° [AGREGAR NÚMERO]</span>
         </div>
       </div>
-      <div class="trust-card" data-reveal>
+      <div class="trust-card">
         <div class="trust-icon" id="trustIcon2"></div>
         <div class="trust-body">
           <div class="trust-title">+3 años de trayectoria</div>
           <div class="trust-desc">Operando en Río de Janeiro con clientes de toda Latinoamérica. Reseñas 5★ en Google.</div>
         </div>
       </div>
-      <div class="trust-card" data-reveal>
+      <div class="trust-card">
         <div class="trust-icon" id="trustIcon3"></div>
         <div class="trust-body">
           <div class="trust-title">Atención 100% en español</div>
